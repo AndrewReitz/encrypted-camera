@@ -2,10 +2,10 @@ package co.nodeath.encryptedcamera.presentation.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 
 /**
@@ -16,13 +16,17 @@ import android.text.TextUtils;
 public class ErrorDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     private static final String TITLE = "error_dialog_title";
+
     private static final String MESSAGE = "error_dialog_message";
+
     private String mTitle;
+
     private String mMessage;
+
     private ErrorDialogCallback mCallback;
 
     /**
-     * Convience method for getting access to this dialog
+     * Convenience method for getting access to this dialog
      *
      * @param title   the title to display
      * @param message message to display
@@ -86,6 +90,7 @@ public class ErrorDialog extends DialogFragment implements DialogInterface.OnCli
     @Override
     public void onClick(DialogInterface dialogInterface, int i) {
         if (mCallback != null) {
+            dismiss();
             mCallback.onErrorDialogDismissed();
         }
     }

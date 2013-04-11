@@ -1,33 +1,36 @@
 package co.nodeath.encryptedcamera.presentation.activity;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.preference.PreferenceActivity;
+import android.widget.Toast;
 
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+import co.nodeath.encryptedcamera.R;
 
 /**
- * Main activity of the application
- *
- * @author areitz
+ * @author Andrew
  */
-public class MainActivity extends Activity {
+public class MainActivity extends PreferenceActivity implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private static final String KEY_USE_PASSWORD = "use_password";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.xml.preferences_home);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            // Image captured and saved to fileUri specified in the Intent
-        } else if (resultCode == RESULT_CANCELED) {
-            // User cancelled the image capture
-        } else {
-            // Image capture failed, advise user
+    protected void onResume() {
+        super.onResume();
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(KEY_USE_PASSWORD) && sharedPreferences.getBoolean(key, false)) {
+
         }
     }
 }

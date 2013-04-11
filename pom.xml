@@ -18,6 +18,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.actionbarsherlock</groupId>
+            <artifactId>actionbarsherlock</artifactId>
+            <version>4.2.0</version>
+            <type>apklib</type>
+        </dependency>
+
         <!-- Bug in current lib that only allows tests to be run on API 16 and below -->
         <dependency>
             <groupId>com.pivotallabs</groupId>
@@ -30,6 +37,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.9.5</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

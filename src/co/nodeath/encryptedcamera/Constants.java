@@ -10,6 +10,8 @@ package co.nodeath.encryptedcamera;
 public final class Constants {
 
     public static final String EXTERNAL_FILE_APPICATION_FOLDER = "EncryptedCamera";
+    public static final String EXTERNAL_FILE_HIDEEN_FOLDER = ".hidden";
+    public static final String EXTERNAL_FILE_ENCRYPTED_FOLDER = "Encrypted";
 
     // Suppress default constructor for noninstantiability
     private Constants() {

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:title="Encrypt"
+        android:summary="Files will just be hidden from other applications if not encrypted"
+        android:key="encrypt" />
+
+    <CheckBoxPreference
+        android:title="Use Password"
+        android:summary="Require a password to unencrypt files"
+        android:key="use_password"
+        android:dependency="encrypt" />
+
+    <PreferenceScreen
+        android:title="Change Password"
+        android:dependency="use_password">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="http://www.android.com" />
+
+    </PreferenceScreen>
+</PreferenceScreen>

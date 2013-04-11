@@ -1,7 +1,11 @@
 package co.nodeath.encryptedcamera.presentation.controller;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+
+import co.nodeath.encryptedcamera.business.exception.SDCardException;
+import co.nodeath.encryptedcamera.presentation.dialog.ErrorDialog;
 
 /**
  * All controllers should extend this class, keeps common code
@@ -10,16 +14,16 @@ import android.content.Intent;
  */
 public abstract class AbstractController {
 
-    private Activity mActivity;
+    private FragmentActivity mActivity;
 
     /**
      * The activity this controller controls.
      */
-    public Activity getActivity() {
+    public FragmentActivity getActivity() {
         return mActivity;
     }
 
-    public void setActivity(Activity activity) {
+    public void setActivity(FragmentActivity activity) {
         mActivity = activity;
     }
 
@@ -28,7 +32,7 @@ public abstract class AbstractController {
      *
      * @param activity activity that this controller controls
      */
-    public void onCreate(final Activity activity) {
+    public void onCreate(final FragmentActivity activity) {
         setActivity(activity);
     }
 
@@ -59,19 +63,46 @@ public abstract class AbstractController {
     }
 
     /**
-     * Pass in an exception to display an error message on the activity
-     *
-     * @param exception exception that was thrown
+     * @return the support fragment manager for the activity this controller controls
      */
-    public void onError(Exception exception) {
-        if (mActivity != null) {
-            throw new IllegalStateException(
-                    "Activity must be set using setActivity before this method can be called");
+    public FragmentManager getSupportFragmentManager() {
+        return mActivity.getSupportFragmentManager();
+    }
+
+    /**
+     * Show an error dialog
+     *
+     * @param title   title of the error dialog
+     * @param message the message this error dialog displays
+     */
+    public void showErrorDialog(String title, String message) {
+        showErrorDialog(title, message, null);
+    }
+
+    /**
+     * Show an error dialog
+     *
+     * @param title               title of the error dialog
+     * @param message             the message this error dialog displays
+     * @param errorDialogCallback what happens when the error dialog is dismissed
+     */
+    public void showErrorDialog(String title, String message,
+            ErrorDialog.ErrorDialogCallback errorDialogCallback) {
+
+        ErrorDialog errorDialog = ErrorDialog.newInstance(title, message);
+
+        if (errorDialogCallback != null) {
+            errorDialog.setCallback(errorDialogCallback);
         }
 
-        try {
-            throw exception;
-        } catch (Exception e) {
+        errorDialog.show(getSupportFragmentManager(), "error_dialog");
+    }
+
+    public void handleError(Exception e) {
+        if (e instanceof SDCardException) {
+            //TODO pass in callback
+            showErrorDialog("Error", "Could not access SD Card. Please ensure that it is mounted",
+                    null);
         }
     }
 }
