@@ -70,39 +70,26 @@ public abstract class AbstractController {
     }
 
     /**
-     * Show an error dialog
+     * Show an error dialog, activity must implement ErrorDialogListener
      *
      * @param title   title of the error dialog
      * @param message the message this error dialog displays
      */
     public void showErrorDialog(String title, String message) {
-        showErrorDialog(title, message, null);
-    }
-
-    /**
-     * Show an error dialog
-     *
-     * @param title               title of the error dialog
-     * @param message             the message this error dialog displays
-     * @param errorDialogCallback what happens when the error dialog is dismissed
-     */
-    public void showErrorDialog(String title, String message,
-            ErrorDialog.ErrorDialogCallback errorDialogCallback) {
 
         ErrorDialog errorDialog = ErrorDialog.newInstance(title, message);
-
-        if (errorDialogCallback != null) {
-            errorDialog.setCallback(errorDialogCallback);
-        }
-
         errorDialog.show(getSupportFragmentManager(), "error_dialog");
     }
 
+    /**
+     * Handles errors and displays them to the user.  Your activity must implement
+     * ErrorDialogListener in order to use this
+     *
+     * @param e exception to be handled and correct error message to be displayed
+     */
     public void handleError(Exception e) {
         if (e instanceof SDCardException) {
-            //TODO pass in callback
-            showErrorDialog("Error", "Could not access SD Card. Please ensure that it is mounted",
-                    null);
+            showErrorDialog("Error", "Could not access SD Card. Please ensure that it is mounted");
         }
     }
 }

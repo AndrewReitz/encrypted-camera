@@ -1,6 +1,5 @@
-package com.nerdery.bootstrap.service;
+package co.nodeath.encryptedcamera.business.service;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 
 /**
@@ -10,22 +9,26 @@ import android.content.SharedPreferences;
  */
 public class SharedPreferenceService {
 
+    public static final String KEY_USE_PASSWORD = "use_password";
+
+    public static final String KEY_ENCRYPT_PHOTOS = "encrypt";
+
+    public static final String KEY_PASSWORD = "(V)(;,,;)(V)";
+
     //Storage of preferences for this app
     private static final String PREFERENCE_NAME = SharedPreferenceService.class.getPackage()
-            + ".sharedprefs";
+            + ":sharedprefs";
 
     //Place Preference Keys Here
-
-
     private final SharedPreferences mSharedPreferences;
 
     /**
      * Constructor
      *
-     * @param context application context to get the shared preferences from
+     * @param sharedPreferences sharedpreferences to this service should use
      */
-    public SharedPreferenceService(final Context context) {
-        mSharedPreferences = context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+    public SharedPreferenceService(final SharedPreferences sharedPreferences) {
+        this.mSharedPreferences = sharedPreferences;
     }
 
     /**
@@ -35,9 +38,9 @@ public class SharedPreferenceService {
      * @param value value to store
      */
     public void saveBoolean(String key, boolean value) {
-        SharedPreferences.Editor prefs = mSharedPreferences.edit();
-        prefs.putBoolean(key, value);
-        prefs.commit();
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(key, value);
+        editor.commit();
     }
 
     /**
@@ -58,9 +61,9 @@ public class SharedPreferenceService {
      * @param value value to store
      */
     public void saveInt(String key, int value) {
-        SharedPreferences.Editor prefs = mSharedPreferences.edit();
-        prefs.putInt(key, value);
-        prefs.commit();
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(key, value);
+        editor.commit();
     }
 
     /**
@@ -104,9 +107,9 @@ public class SharedPreferenceService {
      * @param value value to store
      */
     public void saveString(String key, String value) {
-        SharedPreferences.Editor prefs = mSharedPreferences.edit();
-        prefs.putString(key, value);
-        prefs.commit();
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(key, value);
+        editor.commit();
     }
 
     /**
@@ -119,6 +122,4 @@ public class SharedPreferenceService {
     public String getString(String key, String defaultVal) {
         return mSharedPreferences.getString(key, defaultVal);
     }
-
-    //Add other methods here for items you may store/get a lot in application
 }

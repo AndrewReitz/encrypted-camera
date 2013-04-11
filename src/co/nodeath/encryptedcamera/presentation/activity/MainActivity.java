@@ -3,17 +3,15 @@ package co.nodeath.encryptedcamera.presentation.activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.widget.Toast;
 
 import co.nodeath.encryptedcamera.R;
+import co.nodeath.encryptedcamera.business.service.SharedPreferenceService;
 
 /**
  * @author Andrew
  */
 public class MainActivity extends PreferenceActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
-
-    private static final String KEY_USE_PASSWORD = "use_password";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +27,12 @@ public class MainActivity extends PreferenceActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(KEY_USE_PASSWORD) && sharedPreferences.getBoolean(key, false)) {
-
+        if (key.equals(SharedPreferenceService.KEY_USE_PASSWORD)) {
+            if (sharedPreferences.getBoolean(key, false)) {
+                //password set, get a password
+            } else {
+                //taking off the password need to verify old password and unencrypt all files with password
+            }
         }
     }
 }

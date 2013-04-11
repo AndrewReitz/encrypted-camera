@@ -10,14 +10,4 @@
         android:summary="Require a password to unencrypt files"
         android:key="use_password"
         android:dependency="encrypt" />
-
-    <PreferenceScreen
-        android:title="Change Password"
-        android:dependency="use_password">
-
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:data="http://www.android.com" />
-
-    </PreferenceScreen>
 </PreferenceScreen>

@@ -1,11 +1,13 @@
 package co.nodeath.encryptedcamera.presentation.dialog;
 
+import com.actionbarsherlock.app.SherlockDialogFragment;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
 
 /**
@@ -13,7 +15,7 @@ import android.text.TextUtils;
  *
  * @author Andrew
  */
-public class ErrorDialog extends DialogFragment implements DialogInterface.OnClickListener {
+public class ErrorDialog extends SherlockDialogFragment {
 
     private static final String TITLE = "error_dialog_title";
 
@@ -23,7 +25,7 @@ public class ErrorDialog extends DialogFragment implements DialogInterface.OnCli
 
     private String mMessage;
 
-    private ErrorDialogCallback mCallback;
+    private ErrorDialogListener mListener;
 
     /**
      * Convenience method for getting access to this dialog
@@ -44,14 +46,19 @@ public class ErrorDialog extends DialogFragment implements DialogInterface.OnCli
         return errorDialog;
     }
 
-    /**
-     * Set the callback when the error is dismissed If this is not passed in nothing happens when
-     * the ok button is pressed
-     *
-     * @param errorDialogCallback callback to set
-     */
-    public void setCallback(ErrorDialogCallback errorDialogCallback) {
-        mCallback = errorDialogCallback;
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Verify that the host activity implements the callback interface
+        try {
+            // Instantiate the NoticeDialogListener so we can send events to the host
+            mListener = (ErrorDialogListener) activity;
+        } catch (ClassCastException e) {
+            // The activity doesn't implement the interface, throw exception
+            throw new ClassCastException(activity.toString()
+                    + " must implement ErrorDialogListener");
+        }
     }
 
     @Override
@@ -79,7 +86,13 @@ public class ErrorDialog extends DialogFragment implements DialogInterface.OnCli
             builder.setMessage(mMessage);
         }
 
-        builder.setPositiveButton(context.getString(android.R.string.ok), this);
+        builder.setPositiveButton(context.getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mListener.onErrorDialogDismissed(dialog);
+                    }
+                });
 
         final Dialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
@@ -87,16 +100,13 @@ public class ErrorDialog extends DialogFragment implements DialogInterface.OnCli
         return dialog;
     }
 
-    @Override
-    public void onClick(DialogInterface dialogInterface, int i) {
-        if (mCallback != null) {
-            dismiss();
-            mCallback.onErrorDialogDismissed();
-        }
-    }
+    public interface ErrorDialogListener {
 
-    public interface ErrorDialogCallback {
-
-        public void onErrorDialogDismissed();
+        /**
+         * Called when user clicks the ok button on the error message
+         *
+         * @param dialog passes the dialog that is being displayed
+         */
+        public void onErrorDialogDismissed(DialogInterface dialog);
     }
 }
