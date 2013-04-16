@@ -19,7 +19,7 @@ import static junit.framework.Assert.assertNotNull;
 @RunWith(RobolectricTestRunner.class)
 public class AesEncryptionProviderTest {
 
-    AesEncryptionProvider mAesEncryptionProvider;
+    private AesEncryptionProvider mAesEncryptionProvider;
 
     @BeforeClass
     public static void init() {

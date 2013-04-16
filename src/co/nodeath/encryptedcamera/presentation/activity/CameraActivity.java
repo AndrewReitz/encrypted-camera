@@ -21,8 +21,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
  *
  * @author areitz
  */
-public class CameraActivity extends SherlockFragmentActivity
-        implements ErrorDialog.ErrorDialogListener {
+public class CameraActivity extends SherlockFragmentActivity {
 
     private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1337;
 
@@ -55,10 +54,10 @@ public class CameraActivity extends SherlockFragmentActivity
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
         } catch (IOException e) {
             e.printStackTrace();
-            ErrorDialog errorDialog = ErrorDialog.newInstance("Error",
-                    "Could not access SD Card. Please ensure that it is mounted");
-            errorDialog.setCallback(this);
-            errorDialog.show(getSupportFragmentManager(), "error_dialog");
+//            ErrorDialog errorDialog = ErrorDialog.newInstance("Error",
+//                    "Could not access SD Card. Please ensure that it is mounted");
+//            errorDialog.setCallback(this);
+//            errorDialog.show(getSupportFragmentManager(), "error_dialog");
         }
     }
 
@@ -72,19 +71,11 @@ public class CameraActivity extends SherlockFragmentActivity
             Logger.log(Logger.LogLevel.DEBUG, "onActivityResult: RESULT_CANCELED");
             finish();
         } else {
-            Logger.log(Logger.LogLevel.DEBUG, "onActivityResult: NO RESULT SHOWN");
-            ErrorDialog errorDialog = ErrorDialog.newInstance("Error",
-                    "Unknown Result Code " + resultCode);
-            errorDialog.setCallback(this);
-            errorDialog.show(getSupportFragmentManager(), "error_dialog");
+//            Logger.log(Logger.LogLevel.DEBUG, "onActivityResult: NO RESULT SHOWN");
+//            ErrorDialog errorDialog = ErrorDialog.newInstance("Error",
+//                    "Unknown Result Code " + resultCode);
+//            errorDialog.setCallback(this);
+//            errorDialog.show(getSupportFragmentManager(), "error_dialog");
         }
-    }
-
-    /**
-     * When the the user closes the dialog close the application
-     */
-    @Override
-    public void onErrorDialogDismissed() {
-        finish();
     }
 }
