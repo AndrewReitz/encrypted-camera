@@ -1,7 +1,5 @@
 package co.nodeath.encryptedcamera.business.encryption;
 
-import junit.framework.Assert;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,7 +17,7 @@ public class RsaEncryptionProviderTest {
     private RsaEncryptionProvider mRsaEncryptionProvider;
 
     @BeforeClass
-    public static void init()  {
+    public static void init() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
