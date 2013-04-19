@@ -1,10 +1,14 @@
 package co.nodeath.encryptedcamera.business.encryption;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -28,16 +32,11 @@ public class RsaEncryptionProvider implements IEncryptionProvider {
 
     private KeyPair mKey;
 
-    public RsaEncryptionProvider() {
+    public RsaEncryptionProvider(KeyPair key) {
+        mKey = key;
         try {
-            KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);
-            keyGen.initialize(KEY_SIZE);
-            mKey = keyGen.generateKeyPair();
-
             mCipher = Cipher.getInstance(ALGORITHM_MODE_PADDING);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchProviderException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
             e.printStackTrace();
@@ -46,7 +45,8 @@ public class RsaEncryptionProvider implements IEncryptionProvider {
 
     @Override
     public String encrypt(String value) {
-        return null;
+        final byte[] input = value != null ? value.getBytes() : new byte[0];
+        return new String(Base64.encode(this.encrypt(input)));
     }
 
     @Override
@@ -68,11 +68,42 @@ public class RsaEncryptionProvider implements IEncryptionProvider {
 
     @Override
     public String decrypt(String value) {
-        return null;
+
+        if (value == null) {
+            throw new IllegalArgumentException("Can not decrypt a null value");
+        }
+
+        final byte[] bytes = Base64.decode(value);
+        return new String(this.decrypt(bytes));
     }
 
     @Override
     public byte[] decrypt(byte[] value) {
-        return new byte[0];
+        try {
+            mCipher.init(Cipher.DECRYPT_MODE, mKey.getPrivate());
+            return mCipher.doFinal(value);
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+        throw new RuntimeException("Error Decrypting");
+    }
+
+    public static KeyPair generateKey() {
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);
+            keyGen.initialize(KEY_SIZE);
+            return keyGen.generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        }
+
+        throw new RuntimeException("Error Generating Key");
     }
 }

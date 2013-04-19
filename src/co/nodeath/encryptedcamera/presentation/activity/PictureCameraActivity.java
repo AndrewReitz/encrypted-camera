@@ -21,7 +21,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
  *
  * @author areitz
  */
-public class CameraActivity extends SherlockFragmentActivity {
+public class PictureCameraActivity extends SherlockFragmentActivity {
 
     private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1337;
 
