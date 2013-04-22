@@ -1,8 +1,8 @@
 package co.nodeath.encryptedcamera.presentation.controller;
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 
 import co.nodeath.encryptedcamera.business.exception.SDCardException;
 import co.nodeath.encryptedcamera.presentation.dialog.ErrorDialog;
@@ -14,16 +14,16 @@ import co.nodeath.encryptedcamera.presentation.dialog.ErrorDialog;
  */
 public abstract class AbstractController {
 
-    private FragmentActivity mActivity;
+    private Activity mActivity;
 
     /**
      * The activity this controller controls.
      */
-    public FragmentActivity getActivity() {
+    public Activity getActivity() {
         return mActivity;
     }
 
-    public void setActivity(FragmentActivity activity) {
+    public void setActivity(Activity activity) {
         mActivity = activity;
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractController {
      *
      * @param activity activity that this controller controls
      */
-    public void onCreate(final FragmentActivity activity) {
+    public void onCreate(final Activity activity) {
         setActivity(activity);
     }
 
@@ -66,7 +66,7 @@ public abstract class AbstractController {
      * @return the support fragment manager for the activity this controller controls
      */
     public FragmentManager getSupportFragmentManager() {
-        return mActivity.getSupportFragmentManager();
+        return mActivity.getFragmentManager();
     }
 
     /**

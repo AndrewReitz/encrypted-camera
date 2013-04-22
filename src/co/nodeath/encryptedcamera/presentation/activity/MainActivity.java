@@ -1,38 +1,33 @@
 package co.nodeath.encryptedcamera.presentation.activity;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 
 import co.nodeath.encryptedcamera.R;
 import co.nodeath.encryptedcamera.business.service.SharedPreferenceService;
+import co.nodeath.encryptedcamera.presentation.dialog.SetPasswordDialog;
 
 /**
  * @author Andrew
  */
-public class MainActivity extends PreferenceActivity implements
-        SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends Activity implements SetPasswordDialog.SetPasswordDialogListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences_home);
+        setContentView(R.layout.activity_main);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    public void handleSetPassword(String password, String confirmPassword) {
+
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(SharedPreferenceService.KEY_USE_PASSWORD)) {
-            if (sharedPreferences.getBoolean(key, false)) {
-                //password set, get a password
-            } else {
-                //taking off the password need to verify old password and unencrypt all files with password
-            }
-        }
+    public void passwordCancelled() {
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putBoolean(SharedPreferenceService.KEY_USE_PASSWORD, false);
     }
 }

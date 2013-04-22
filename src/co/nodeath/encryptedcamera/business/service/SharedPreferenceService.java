@@ -15,10 +15,6 @@ public class SharedPreferenceService {
 
     public static final String KEY_PASSWORD = "(V)(;,,;)(V)";
 
-    //Storage of preferences for this app
-    private static final String PREFERENCE_NAME = SharedPreferenceService.class.getPackage()
-            + ":sharedprefs";
-
     //Place Preference Keys Here
     private final SharedPreferences mSharedPreferences;
 

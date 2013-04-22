@@ -1,10 +1,9 @@
 package co.nodeath.encryptedcamera.presentation.dialog;
 
-import com.actionbarsherlock.app.SherlockDialogFragment;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -15,7 +14,7 @@ import android.text.TextUtils;
  *
  * @author Andrew
  */
-public class ErrorDialog extends SherlockDialogFragment {
+public class ErrorDialog extends DialogFragment {
 
     private static final String TITLE = "error_dialog_title";
 
@@ -56,7 +55,7 @@ public class ErrorDialog extends SherlockDialogFragment {
             mListener = (ErrorDialogListener) activity;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(activity.getClass().getName()
                     + " must implement ErrorDialogListener");
         }
     }
@@ -65,10 +64,26 @@ public class ErrorDialog extends SherlockDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle args = getArguments();
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(TITLE)) {
+                mTitle = savedInstanceState.getString(TITLE);
+            }
+            if (savedInstanceState.containsKey(MESSAGE)) {
+                mMessage = savedInstanceState.getString(MESSAGE);
+            }
+        } else {
+            final Bundle args = getArguments();
 
-        mTitle = args.getString(TITLE);
-        mMessage = args.getString(MESSAGE);
+            mTitle = args.getString(TITLE);
+            mMessage = args.getString(MESSAGE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(TITLE, mTitle);
+        outState.putString(MESSAGE, mMessage);
     }
 
     @Override

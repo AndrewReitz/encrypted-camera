@@ -1,7 +1,6 @@
 package co.nodeath.encryptedcamera.presentation.activity;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,7 +19,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
  *
  * @author areitz
  */
-public class VideoCameraActivity extends SherlockFragmentActivity {
+public class VideoCameraActivity extends Activity {
 
     private final static int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 1338;
 

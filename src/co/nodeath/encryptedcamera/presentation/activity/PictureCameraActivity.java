@@ -1,7 +1,6 @@
 package co.nodeath.encryptedcamera.presentation.activity;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import co.nodeath.encryptedcamera.business.log.Logger;
 import co.nodeath.encryptedcamera.business.manager.CameraManager;
 import co.nodeath.encryptedcamera.presentation.controller.CameraController;
-import co.nodeath.encryptedcamera.presentation.dialog.ErrorDialog;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
@@ -21,7 +19,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
  *
  * @author areitz
  */
-public class PictureCameraActivity extends SherlockFragmentActivity {
+public class PictureCameraActivity extends Activity {
 
     private final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1337;
 

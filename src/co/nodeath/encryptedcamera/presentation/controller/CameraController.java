@@ -1,13 +1,13 @@
 package co.nodeath.encryptedcamera.presentation.controller;
 
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 
 /**
  * @author Andrew
  */
 public class CameraController extends AbstractController {
 
-    public CameraController(final FragmentActivity activity) {
+    public CameraController(final Activity activity) {
         super.onCreate(activity);
     }
 }

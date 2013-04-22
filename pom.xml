@@ -19,13 +19,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.actionbarsherlock</groupId>
-            <artifactId>actionbarsherlock</artifactId>
-            <version>4.2.0</version>
-            <type>apklib</type>
-        </dependency>
-
-        <dependency>
             <groupId>bouncycastle</groupId>
             <artifactId>bcprov-jdk16</artifactId>
             <version>140</version>
