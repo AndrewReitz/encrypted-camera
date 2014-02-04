@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Photo Retrieval"
+        android:key="pref_key_storage_settings">
+        <CheckBoxPreference
+            android:title="Decrypt Photos"
+            android:key="pref_key_decrypt"
+            android:summary="Show photos in SD Card" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Photos Storage"
+        android:key="pref_key_storage_settings">
+        <CheckBoxPreference
+            android:title="Encrypt"
+            android:summary="Files will just be hidden from other applications if not encrypted"
+            android:key="pref_key_encrypt" />
+
+        <CheckBoxPreference
+            android:title="Use Password"
+            android:summary="Require a password to unencrypt files"
+            android:key="pref_key_use_password"
+            android:dependency="pref_key_encrypt" />
+    </PreferenceCategory>
+</PreferenceScreen>
