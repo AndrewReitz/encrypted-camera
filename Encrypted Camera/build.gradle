@@ -1,0 +1,41 @@
+apply plugin: 'android'
+apply plugin: 'hugo'
+apply plugin: 'android-test'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion '19.0.1'
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 19
+        versionCode 1
+        versionName "1.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-v4:19.0.+'
+    compile 'com.google.guava:guava:16.0'
+    compile 'com.jakewharton.timber:timber:2.1.+'
+    compile 'bouncycastle:bcprov-jdk16:140'
+    compile 'com.squareup.dagger:dagger:1.2.0'
+    provided 'com.squareup.dagger:dagger-compiler:1.2.0'
+    debugCompile 'com.jakewharton.madge:madge:1.1.1'
+
+    // test dependencies
+    testCompile 'junit:junit:4.11'
+    testCompile 'org.robolectric:robolectric:2.1.+'
+    testCompile 'org.mockito:mockito-all:1.9.+'
+}

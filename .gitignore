@@ -31,3 +31,9 @@ proguard/
 # Maven
 target/
 gen-external-apklibs/
+
+
+.gradle
+/local.properties
+/.idea/workspace.xml
+.DS_Store
