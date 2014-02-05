@@ -16,12 +16,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author Andrew
  */
-public abstract class AbstractEncryptionProvider implements EncryptionProvider {
+public abstract class EncryptionProviderImp implements EncryptionProvider {
 
     private SecretKey secretKey;
     private Cipher cipher;
 
-    public AbstractEncryptionProvider(Cipher cipher, SecretKey secretKey) {
+    public EncryptionProviderImp(Cipher cipher, SecretKey secretKey) {
         this.cipher = checkNotNull(cipher);
         this.secretKey = checkNotNull(secretKey);
     }

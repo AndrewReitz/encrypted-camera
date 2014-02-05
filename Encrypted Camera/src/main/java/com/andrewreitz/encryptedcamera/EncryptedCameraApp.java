@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author areitz
  */
 public class EncryptedCameraApp extends Application {
+    public static final String KEY_STORE_ALIAS = EncryptedCameraApp.class.getSimpleName() + ":ALIAS";
 
     private ObjectGraph applicationGraph;
 

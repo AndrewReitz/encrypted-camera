@@ -4,36 +4,31 @@ import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.NotificationCompat;
 
+import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.BaseActivity;
 import com.andrewreitz.encryptedcamera.activity.MainActivity;
 import com.andrewreitz.encryptedcamera.dialog.SetPasswordDialog;
+import com.andrewreitz.encryptedcamera.encryption.KeyManager;
+import com.andrewreitz.encryptedcamera.sharedpreference.ObscuredSharedPreferences;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import dagger.ObjectGraph;
 import hugo.weaving.DebugLog;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Andrew
@@ -42,7 +37,6 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     public static final String USE_PASSWORD = "pref_key_use_password";
-    public static final String ENCRYPT = "pref_key_encrypt";
     public static final String DECRYPT = "pref_key_decrypt";
 
     private static final int NOTIFICATION_ID = 1337;
@@ -51,6 +45,13 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     @Inject
     NotificationManager notificationManager;
+
+    @Inject
+    KeyManager keyManager;
+
+    @Inject
+    @Named("unlock-notification")
+    Notification unlockNotification;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -94,21 +95,12 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         switch (key) {
             case USE_PASSWORD:
                 if (sharedPreferences.getBoolean(key, false)) {
-                    //setting a password, get a password
                     FragmentManager fm = getFragmentManager();
                     SetPasswordDialog setPasswordDialog = SetPasswordDialog.newInstance();
                     setPasswordDialog.show(fm, "password_dialog");
                 } else {
-                    //taking off the password need to verify old password and unencrypt all files with password
+                    createKeyNoPassword();
                 }
-                break;
-            case ENCRYPT:
-                // get the setting and then save it into our preference manager
-                //preferenceManager.setShouldEncrypt(sharedPreferences.getBoolean(ENCRYPT, false));
-
-                // Create a keystore for encryption that does not require a password
-
-
                 break;
             case DECRYPT:
                 handleDecrypt(sharedPreferences, key);
@@ -116,11 +108,21 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         }
     }
 
+    private void createKeyNoPassword() {
+        // Create a keystore for encryption that does not require a password
+        try {
+            SecretKey secretKey = keyManager.generateKeyNoPassword();
+            keyManager.saveKey(EncryptedCameraApp.KEY_STORE_ALIAS, secretKey);
+        } catch (NoSuchAlgorithmException | KeyStoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void handleDecrypt(SharedPreferences sharedPreferences, String key) {
         if (sharedPreferences.getBoolean(key, false)) {
             this.notificationManager.notify(
                     NOTIFICATION_ID,
-                    getUnlockedNotification()
+                    unlockNotification
             );
 
             // TODO Decrypt
@@ -129,27 +131,5 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
             // TODO Encrypt
         }
-    }
-
-    private Notification getUnlockedNotification() {
-        Notification notification = new NotificationCompat.Builder(getActivity())
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.images_unencryped_message))
-                .setContentIntent(
-                        PendingIntent.getActivity(
-                                getActivity(),
-                                0,
-                                new Intent(
-                                        getActivity(),
-                                        MainActivity.class
-                                ),
-                                0
-                        )
-                )
-                .setSmallIcon(R.drawable.ic_unlocked)
-                .build();
-
-        notification.flags |= Notification.FLAG_NO_CLEAR;
-        return notification;
     }
 }

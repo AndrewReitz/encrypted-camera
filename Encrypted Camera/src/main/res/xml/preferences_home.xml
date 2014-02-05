@@ -12,14 +12,8 @@
         android:title="Photos Storage"
         android:key="pref_key_storage_settings">
         <CheckBoxPreference
-            android:title="Encrypt"
-            android:summary="Files will just be hidden from other applications if not encrypted"
-            android:key="pref_key_encrypt" />
-
-        <CheckBoxPreference
             android:title="Use Password"
             android:summary="Require a password to unencrypt files"
-            android:key="pref_key_use_password"
-            android:dependency="pref_key_encrypt" />
+            android:key="pref_key_use_password" />
     </PreferenceCategory>
 </PreferenceScreen>
