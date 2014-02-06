@@ -11,6 +11,7 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 import timber.log.Timber;
 
@@ -33,8 +34,9 @@ public class EncryptedCameraApp extends Application {
             Timber.plant(new Timber.DebugTree());
         }
 
-        // Add BouncyCastleProvider to encryption providers
-        Security.addProvider(new BouncyCastleProvider());
+        // Setup debugging for butterknife
+        ButterKnife.setDebug(BuildConfig.DEBUG);
+
 
         // Setup DI
         applicationGraph = ObjectGraph.create(getModules().toArray());

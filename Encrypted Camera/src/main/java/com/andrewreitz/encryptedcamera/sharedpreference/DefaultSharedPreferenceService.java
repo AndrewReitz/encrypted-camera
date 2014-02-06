@@ -20,7 +20,6 @@ public class DefaultSharedPreferenceService implements SharedPreferenceService {
      *
      * @param sharedPreferences shared preferences to use
      */
-    @Inject
     public DefaultSharedPreferenceService(SharedPreferences sharedPreferences) {
         mSharedPreferences = checkNotNull(sharedPreferences);
     }
