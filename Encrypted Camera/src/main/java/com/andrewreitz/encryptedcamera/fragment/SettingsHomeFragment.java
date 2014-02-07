@@ -1,6 +1,5 @@
 package com.andrewreitz.encryptedcamera.fragment;
 
-import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.os.Bundle;
@@ -10,6 +9,7 @@ import android.preference.PreferenceFragment;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.BaseActivity;
+import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.dialog.SetPasswordDialog;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
@@ -25,7 +25,6 @@ import javax.crypto.SecretKey;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import hugo.weaving.DebugLog;
 import timber.log.Timber;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -73,17 +72,18 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     @Override
     public void onPasswordSet(String password) {
-        preferenceManager.setHasPassword(true);
         byte[] salt = new byte[10];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(salt);
         try {
             keyManager.generateKeyWithPassword(password.toCharArray(), salt);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            // TODO Implement Error Message
-            throw new RuntimeException(e);
+            Timber.e(e, "Error saving encryption key with password");
+            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key_with_password));
+            return;
         }
         preferenceManager.setSalt(new String(salt));
+        preferenceManager.setHasPassword(true);
     }
 
     @Override
@@ -124,8 +124,8 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             keyManager.saveKeyStore();
         } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
             // The app really wouldn't work at this point
-            // TODO display error message to user
-            throw new RuntimeException(e);
+            Timber.e(e, "Error saving encryption key, no password");
+            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key_no_password));
         }
     }
 

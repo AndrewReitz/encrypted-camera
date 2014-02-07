@@ -19,4 +19,7 @@
     <string name="photo_retrieval">Photo Retrieval</string>
     <string name="passwords_not_match">Passwords did not match</string>
     <string name="password_can_not_be_empty">Password can not be empty</string>
+    <string name="error_saving_encryption_key_with_password">There was an error saving the encryption key.  Your phone does not appear to support the encryption algorithm used</string>
+    <string name="encryption_error">Encryption Error</string>
+    <string name="error_saving_encryption_key_no_password">Could not save the encryption key</string>
 </resources>

@@ -56,6 +56,7 @@ public class ErrorDialog extends DialogFragment implements DialogInterface.OnCli
 
         final Bundle args = getArguments();
 
+        //noinspection ConstantConditions
         mTitle = args.getString(TITLE);
         mMessage = args.getString(MESSAGE);
     }
@@ -65,6 +66,7 @@ public class ErrorDialog extends DialogFragment implements DialogInterface.OnCli
 
         final Context context = getActivity();
 
+        @SuppressWarnings("ConstantConditions")
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         if (!TextUtils.isEmpty(mTitle)) {
