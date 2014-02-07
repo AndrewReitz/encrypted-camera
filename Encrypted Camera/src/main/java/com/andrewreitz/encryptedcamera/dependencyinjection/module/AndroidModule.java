@@ -27,7 +27,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author areitz
  */
-@Module(library = true)
+@Module(
+        library = true,
+        includes = {
+                SharedPrefsModule.class,
+                EncryptionModule.class
+        },
+        injects = EncryptedCameraApp.class
+)
 public class AndroidModule {
 
     private final EncryptedCameraApp application;
@@ -51,29 +58,7 @@ public class AndroidModule {
 
     @Provides
     @Singleton
-    SharedPreferences provideSharedPreference() {
-        return PreferenceManager.getDefaultSharedPreferences(this.application);
-    }
-
-    @Provides
-    @Singleton
-    SharedPreferenceService provideSharedPreferenceService(SharedPreferences sharedPreferences) {
-        return new DefaultSharedPreferenceService(sharedPreferences);
-    }
-
-    @Provides
-    @Singleton
     NotificationManager provideNotificationManager() {
         return (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
-    }
-
-    @Provides
-    @Singleton
-    KeyManager provideKeyManager() {
-        try {
-            return new KeyManagerImpl(application);
-        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

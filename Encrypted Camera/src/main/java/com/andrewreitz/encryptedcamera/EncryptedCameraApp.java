@@ -4,24 +4,29 @@ import android.app.Application;
 import android.content.Context;
 
 import com.andrewreitz.encryptedcamera.dependencyinjection.module.AndroidModule;
+import com.andrewreitz.encryptedcamera.encryption.KeyManager;
+import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.security.Security;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 import timber.log.Timber;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author areitz
  */
 public class EncryptedCameraApp extends Application {
     public static final String KEY_STORE_ALIAS = EncryptedCameraApp.class.getSimpleName() + ":ALIAS";
+
+    @Inject
+    EncryptedCameraPreferenceManager preferenceManager;
+
+    @Inject
+    KeyManager keyManager;
 
     private ObjectGraph applicationGraph;
 
@@ -37,9 +42,9 @@ public class EncryptedCameraApp extends Application {
         // Setup debugging for butterknife
         ButterKnife.setDebug(BuildConfig.DEBUG);
 
-
         // Setup DI
         applicationGraph = ObjectGraph.create(getModules().toArray());
+        applicationGraph.inject(this);
     }
 
     /**
@@ -59,6 +64,6 @@ public class EncryptedCameraApp extends Application {
     }
 
     public static EncryptedCameraApp get(Context context) {
-        return (EncryptedCameraApp) checkNotNull(context).getApplicationContext();
+        return (EncryptedCameraApp) context.getApplicationContext();
     }
 }
