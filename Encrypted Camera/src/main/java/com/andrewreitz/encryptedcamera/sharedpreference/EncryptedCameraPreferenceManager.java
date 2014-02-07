@@ -1,6 +1,7 @@
 package com.andrewreitz.encryptedcamera.sharedpreference;
 
 import android.content.Context;
+import android.util.Base64;
 
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
@@ -15,6 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class EncryptedCameraPreferenceManager {
 
     private static final String SALT = "salt";
+    private static final String GENERATED_KEY = "generated_key";
 
     private final Context context;
     private final SharedPreferenceService sharedPreferenceService;
@@ -35,16 +37,34 @@ public class EncryptedCameraPreferenceManager {
         );
     }
 
-    public void setSalt(String salt) {
-        sharedPreferenceService.saveString(SALT, salt);
+    public boolean hasPassword() {
+        return sharedPreferenceService.getBoolean(
+                context.getString(R.string.pref_key_use_password),
+                false
+        );
     }
 
-    public String getSalt() {
+    public void setSalt(byte[] salt) {
+        sharedPreferenceService.saveString(SALT, Base64.encodeToString(salt, Base64.DEFAULT));
+    }
+
+    public byte[] getSalt() {
         String salt = sharedPreferenceService.getString(SALT, null);
         if (salt == null) {
             throw new IllegalStateException("You never set the salt...");
         }
 
-        return salt;
+        return Base64.decode(salt, Base64.DEFAULT);
+    }
+
+    /**
+     * check to see if a key has been generated
+     */
+    public boolean hasGeneratedKey() {
+        return sharedPreferenceService.getBoolean(GENERATED_KEY, false);
+    }
+
+    public void setGeneratedKey(boolean generated) {
+        sharedPreferenceService.saveBoolean(GENERATED_KEY, generated);
     }
 }

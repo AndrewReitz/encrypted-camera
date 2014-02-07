@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.SwitchPreference;
+import android.util.Base64;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
@@ -79,11 +81,13 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             keyManager.generateKeyWithPassword(password.toCharArray(), salt);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             Timber.e(e, "Error saving encryption key with password");
-            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key_with_password));
+            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
             return;
         }
-        preferenceManager.setSalt(new String(salt));
+        preferenceManager.setSalt(salt);
         preferenceManager.setHasPassword(true);
+        //noinspection ConstantConditions
+        ((SwitchPreference)findPreference(getString(R.string.pref_key_use_password))).setChecked(true);
     }
 
     @Override
@@ -125,7 +129,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
             // The app really wouldn't work at this point
             Timber.e(e, "Error saving encryption key, no password");
-            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key_no_password));
+            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
         }
     }
 

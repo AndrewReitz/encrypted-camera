@@ -4,12 +4,18 @@ import android.app.Application;
 import android.content.Context;
 
 import com.andrewreitz.encryptedcamera.dependencyinjection.module.AndroidModule;
+import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
@@ -45,6 +51,9 @@ public class EncryptedCameraApp extends Application {
         // Setup DI
         applicationGraph = ObjectGraph.create(getModules().toArray());
         applicationGraph.inject(this);
+
+        // Generate an encryption key if there isn't one already
+        generateKey();
     }
 
     /**
@@ -65,5 +74,19 @@ public class EncryptedCameraApp extends Application {
 
     public static EncryptedCameraApp get(Context context) {
         return (EncryptedCameraApp) context.getApplicationContext();
+    }
+
+    private void generateKey() {
+        if (!preferenceManager.hasGeneratedKey()) {
+            try {
+                SecretKey secretKey = keyManager.generateKeyNoPassword();
+                keyManager.saveKey(KEY_STORE_ALIAS, secretKey);
+                keyManager.saveKeyStore();
+                preferenceManager.setGeneratedKey(true);
+            } catch (NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException e) {
+                Timber.e(e, "Error saving key with out a password set");
+                ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
+            }
+        }
     }
 }
