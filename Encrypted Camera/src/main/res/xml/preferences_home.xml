@@ -3,7 +3,7 @@
     <PreferenceCategory
         android:title="@string/photo_retrieval"
         android:key="pref_key_storage_settings">
-        <CheckBoxPreference
+        <SwitchPreference
             android:title="@string/decrypt_photos"
             android:key="@string/pref_key_decrypt"
             android:summary="@string/show_photos_in_sd_card" />
@@ -11,7 +11,7 @@
     <PreferenceCategory
         android:title="@string/photos_storage"
         android:key="pref_key_storage_settings">
-        <CheckBoxPreference
+        <SwitchPreference
             android:title="@string/use_password"
             android:summary="@string/require_password_to_access_files"
             android:key="@string/pref_key_use_password" />

@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -17,7 +18,7 @@ import butterknife.InjectView;
 /**
  * @author areitz
  */
-public class SetPasswordDialog extends DialogFragment implements DialogInterface.OnClickListener {
+public class SetPasswordDialog extends DialogFragment implements DialogInterface.OnClickListener, DialogInterface.OnShowListener {
 
     @InjectView(R.id.dialog_editText_password)
     EditText passwordEditText;
@@ -47,14 +48,16 @@ public class SetPasswordDialog extends DialogFragment implements DialogInterface
         builder.setView(view)
                 .setPositiveButton(android.R.string.ok, this)
                 .setNegativeButton(android.R.string.cancel, this);
-        return builder.create();
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(this);
+        return dialog;
     }
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
-                handlePostitiveButtonPress();
+                // handled before default handler
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 handleNegetiveButtonPress();
@@ -71,19 +74,41 @@ public class SetPasswordDialog extends DialogFragment implements DialogInterface
         this.listener.onPasswordCancel();
     }
 
-    private void handlePostitiveButtonPress() {
+    private boolean handlePostitiveButtonPress() {
         //noinspection ConstantConditions
         String password = passwordEditText.getText().toString();
+        boolean isNullOrEmptyPassword = TextUtils.isEmpty(password);
         //noinspection ConstantConditions
-        if (password.equals(passwordEditTextConfirm.getText().toString())) {
+        if (!isNullOrEmptyPassword && password.equals(passwordEditTextConfirm.getText().toString())) {
             listener.onPasswordSet(password);
+            return true;
         } else {
-            passwordEditTextConfirm.setError(getString(R.string.passwords_do_not_match));
+            passwordEditText.setText("");
+            passwordEditTextConfirm.setText("");
+            if (isNullOrEmptyPassword) {
+                passwordEditText.setError(getString(R.string.password_can_not_be_empty));
+            } else {
+                passwordEditText.setError(getString(R.string.passwords_not_match));
+            }
+            return false;
         }
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public void onShow(final DialogInterface dialog) {
+        AlertDialog alertDialog = (AlertDialog) dialog;
+        alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (handlePostitiveButtonPress()) dialog.dismiss();
+            }
+        });
     }
 
     public interface SetPasswordDialogListener {
         void onPasswordSet(String password);
+
         void onPasswordCancel();
     }
 }

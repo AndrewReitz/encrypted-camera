@@ -33,7 +33,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author Andrew
  */
-public class SettingsHomeFragment extends PreferenceFragment implements SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener {
+public class SettingsHomeFragment extends PreferenceFragment implements
+        SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener {
 
     private static final int NOTIFICATION_ID = 1337;
 
@@ -70,7 +71,6 @@ public class SettingsHomeFragment extends PreferenceFragment implements SetPassw
         findPreference(getString(R.string.pref_key_use_password)).setOnPreferenceChangeListener(this);
     }
 
-    @DebugLog
     @Override
     public void onPasswordSet(String password) {
         preferenceManager.setHasPassword(true);
@@ -94,24 +94,23 @@ public class SettingsHomeFragment extends PreferenceFragment implements SetPassw
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         //newValue should always be a boolean but just to be sure
-        if (!newValue.getClass().isInstance(boolean.class)) {
+        if (!Boolean.class.isInstance(newValue)) {
             throw new IllegalArgumentException("newValue is not a boolean");
         }
 
         boolean value = (boolean) newValue;
 
         //noinspection ConstantConditions
-        if (preference.getKey().equals(getString(R.string.pref_key_decrypt))) {
+        if (preference.getKey().equals(getString(R.string.pref_key_use_password))) {
             if (value) {
-                FragmentManager fm = getFragmentManager();
                 SetPasswordDialog setPasswordDialog = SetPasswordDialog.newInstance(this);
                 //noinspection ConstantConditions
-                setPasswordDialog.show(fm, "password_dialog");
+                setPasswordDialog.show(getFragmentManager(), "password_dialog");
                 return false;
             } else {
                 createKeyNoPassword();
             }
-        } else if (preference.getKey().equals(getString(R.string.pref_key_use_password))) {
+        } else if (preference.getKey().equals(getString(R.string.pref_key_decrypt))) {
             handleDecrypt(value);
         }
         return true;
@@ -144,6 +143,4 @@ public class SettingsHomeFragment extends PreferenceFragment implements SetPassw
             // TODO Encrypt
         }
     }
-
-
 }

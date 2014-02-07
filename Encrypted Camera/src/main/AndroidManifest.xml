@@ -9,7 +9,7 @@
         android:theme="@style/AppTheme"
         android:name=".EncryptedCameraApp">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.SettingsActivity"
             android:launchMode="singleInstance"
             android:label="@string/app_name" >
             <intent-filter>

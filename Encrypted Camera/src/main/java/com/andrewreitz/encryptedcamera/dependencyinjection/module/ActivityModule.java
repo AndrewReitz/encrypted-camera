@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.activity.MainActivity;
+import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForActivity;
 import com.andrewreitz.encryptedcamera.fragment.SettingsHomeFragment;
 
@@ -61,7 +61,7 @@ public class ActivityModule {
                                 0,
                                 new Intent(
                                         activity,
-                                        MainActivity.class
+                                        SettingsActivity.class
                                 ),
                                 0
                         )
