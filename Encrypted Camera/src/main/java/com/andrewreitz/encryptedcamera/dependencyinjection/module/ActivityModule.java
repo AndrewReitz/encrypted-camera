@@ -5,9 +5,11 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 
 import com.andrewreitz.encryptedcamera.R;
+import com.andrewreitz.encryptedcamera.activity.CameraActivity;
 import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForActivity;
 import com.andrewreitz.encryptedcamera.fragment.SettingsHomeFragment;
@@ -25,6 +27,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 @Module(
         injects = {
+                CameraActivity.class,
                 SettingsHomeFragment.class
         },
         addsTo = AndroidModule.class,
@@ -72,5 +75,11 @@ public class ActivityModule {
         notification.flags |= Notification.FLAG_NO_CLEAR;
 
         return notification;
+    }
+
+    @Provides
+    @Named("camera-intent")
+    Intent provideCameraIntnet() {
+        return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     }
 }

@@ -112,6 +112,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 setPasswordDialog.show(getFragmentManager(), "password_dialog");
                 return false;
             } else {
+                // TODO: Get password to unencrypt files that were already there
                 createKeyNoPassword();
             }
         } else if (preference.getKey().equals(getString(R.string.pref_key_decrypt))) {

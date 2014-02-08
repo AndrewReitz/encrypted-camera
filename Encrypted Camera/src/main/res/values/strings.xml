@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Encrypted Camera</string>
     <string name="settings_title">Encrypted Camera Settings</string>
     <string name="action_settings">Settings</string>
@@ -21,4 +22,7 @@
     <string name="password_can_not_be_empty">Password can not be empty</string>
     <string name="error_saving_encryption_key">There was an error saving the encryption key.  Your phone does not appear to support the encryption algorithm used</string>
     <string name="encryption_error">Encryption Error</string>
+    <string name="title_activity_camera">CameraActivity</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>
