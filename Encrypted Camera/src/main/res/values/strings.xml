@@ -22,7 +22,12 @@
     <string name="password_can_not_be_empty">Password can not be empty</string>
     <string name="error_saving_encryption_key">There was an error saving the encryption key.  Your phone does not appear to support the encryption algorithm used</string>
     <string name="encryption_error">Encryption Error</string>
-    <string name="title_activity_camera">CameraActivity</string>
+    <string name="title_activity_camera">Encrypted Camera</string>
+    <string name="title_activity_settings">Encrypted Camera Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="error">Error</string>
+    <string name="error_no_image_recieved">I\'m sorry, but there was an issue receiving the image from the camera</string>
+    <string name="error_sdcard_title">SDCard Error</string>
+    <string name="error_sdcard_message">There was an error trying to write to the sdcard. Please check that it is mounted and try again</string>
 
 </resources>

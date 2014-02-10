@@ -3,6 +3,8 @@ package com.andrewreitz.encryptedcamera.dependencyinjection.module;
 import dagger.Module;
 
 /**
+ * Used for compile time validation
+ *
  * @author areitz
  */
 @Module(
@@ -11,5 +13,5 @@ import dagger.Module;
                 ActivityModule.class
         }
 )
-public class EncryptedCameraModule {
+public class EncryptedCameraAppModule {
 }

@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andrewreitz.encryptedcamera" >
+    package="com.andrewreitz.encryptedcamera">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name="com.andrewreitz.encryptedcamera.EncryptedCameraApp"
+        android:name=".EncryptedCameraApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
-            android:name="com.andrewreitz.encryptedcamera.activity.SettingsActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleInstance" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:launchMode="singleInstance">
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <activity
-            android:name="com.andrewreitz.encryptedcamera.activity.CameraActivity"
-            android:label="@string/title_activity_camera" >
+            android:name=".activity.CameraActivity"
+            android:label="@string/title_activity_camera"
+            android:launchMode="singleInstance">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

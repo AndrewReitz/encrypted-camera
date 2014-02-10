@@ -27,6 +27,7 @@ import timber.log.Timber;
  */
 public class EncryptedCameraApp extends Application {
     public static final String KEY_STORE_ALIAS = EncryptedCameraApp.class.getSimpleName() + ":ALIAS";
+    public static final String MEDIA_OUTPUT_DATE_FORMAT = "yyyyMMdd_HHmmss";
 
     @Inject
     EncryptedCameraPreferenceManager preferenceManager;

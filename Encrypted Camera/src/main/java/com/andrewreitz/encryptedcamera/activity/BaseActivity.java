@@ -32,7 +32,7 @@ public abstract class BaseActivity extends Activity {
                         getModules().toArray()
                 );
 
-//        mActivityGraph.inject(this);
+        mActivityGraph.inject(this);
     }
 
     @Override
