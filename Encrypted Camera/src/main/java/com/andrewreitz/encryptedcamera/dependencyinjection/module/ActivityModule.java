@@ -78,7 +78,7 @@ public class ActivityModule {
     }
 
     @Provides
-    @Named("camera-intent")
+    @Named("camera-intent") // TODO Move out of ActivityModule
     Intent provideCameraIntnet() {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     }
