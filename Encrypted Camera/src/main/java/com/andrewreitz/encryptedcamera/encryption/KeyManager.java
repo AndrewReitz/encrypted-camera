@@ -16,9 +16,9 @@ import javax.crypto.SecretKey;
 public interface KeyManager {
     void saveKeyStore() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException;
 
-    void saveKey(String alias, Key key) throws KeyStoreException;
+    void saveKey(String alias, SecretKey key) throws KeyStoreException;
 
-    Key getKey(String alias) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException;
+    SecretKey getKey(String alias) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException;
 
     SecretKey generateKeyWithPassword(char[] passphraseOrPin, byte[] salt)
             throws NoSuchAlgorithmException, InvalidKeySpecException;

@@ -76,7 +76,7 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
 
     /**
      * Create / Check that the application directory is available.  This is done based off your application's name
-     * saved in String.app_name
+     * saved in String.app_name @see getApplicationNameNoSpaces
      *
      * @return null if unable to create folder otherwise returns the directory
      */
@@ -84,7 +84,7 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
     public File getAppExternalDirectory() {
         File mediaStorageDir = new File(
                 Environment.getExternalStorageDirectory(),
-                context.getString(R.string.app_name).replace(" ", "") // remove any spaces in case the system doesn't like
+                getApplicationNameNoSpaces()
         );
 
         // Create the storage directory if it does not exist
@@ -94,6 +94,17 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
             }
         }
         return mediaStorageDir;
+    }
+
+    /**
+     * Get's the applications directory based on the app's name in strings "app_name".  If you want to
+     * need a different directory override this
+     *
+     * @return
+     */
+    protected String getApplicationNameNoSpaces() {
+        // remove any spaces in case the system doesn't like
+        return context.getString(R.string.app_name).replace(" ", "");
     }
 
     /**
