@@ -37,7 +37,7 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     private KeyStore getKeyStore() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
-        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType()); //"AndroidKeyStore"
         File file = context.getFileStreamPath(KEY_STORE_FILE);
         if (file.exists()) {
             ks.load(context.openFileInput(KEY_STORE_FILE), null);
@@ -55,17 +55,18 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public void saveKey(String alias, Key key) throws KeyStoreException {
+    public void saveKey(String alias, SecretKey key) throws KeyStoreException {
         keyStore.setKeyEntry(
                 checkNotNull(alias),
-                checkNotNull(key).getEncoded(),
+                key,
+                null,
                 null
         );
     }
 
     @Override
-    public Key getKey(String alias) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
-        return keyStore.getKey(alias, null);
+    public SecretKey getKey(String alias) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+        return (SecretKey) keyStore.getKey(alias, null);
     }
 
     @Override

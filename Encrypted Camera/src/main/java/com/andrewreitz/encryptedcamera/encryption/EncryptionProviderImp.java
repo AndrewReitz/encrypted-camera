@@ -1,8 +1,7 @@
 package com.andrewreitz.encryptedcamera.encryption;
 
 import android.text.TextUtils;
-
-import org.bouncycastle.util.encoders.Base64;
+import android.util.Base64;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,7 +35,10 @@ public class EncryptionProviderImp implements EncryptionProvider {
     @Override
     public String encrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
         final byte[] input = !TextUtils.isEmpty(value) ? value.getBytes() : new byte[0];
-        return new String(Base64.encode(this.encrypt(input)));
+        return Base64.encodeToString(
+                this.encrypt(input),
+                Base64.DEFAULT
+        );
     }
 
     @Override
@@ -75,7 +77,7 @@ public class EncryptionProviderImp implements EncryptionProvider {
     public String decrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
         checkNotNull(value);
 
-        final byte[] bytes = Base64.decode(value);
+        final byte[] bytes = Base64.decode(value, Base64.DEFAULT);
         return new String(this.decrypt(bytes));
     }
 

@@ -100,7 +100,7 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
      * Get's the applications directory based on the app's name in strings "app_name".  If you want to
      * need a different directory override this
      *
-     * @return
+     * @return Applications name stripping out all spaces
      */
     protected String getApplicationNameNoSpaces() {
         // remove any spaces in case the system doesn't like
@@ -117,7 +117,7 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
-    private File getMediaFile(MediaType type, File mediaStorageDir) {
+    protected File getMediaFile(MediaType type, File mediaStorageDir) {
         String timeStamp = dateFormat.format(new Date());
         File mediaFile;
         if (type.is(MediaType.ANY_IMAGE_TYPE)) {
@@ -127,6 +127,10 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
         } else if (type.is(MediaType.ANY_VIDEO_TYPE)) {
             mediaFile = new File(
                     getFileName(type, mediaStorageDir, VIDEO_FILENAME_PREFIX, timeStamp)
+            );
+        } else if (type.is(MediaType.ANY_TYPE)) {
+            mediaFile = new File(
+                    mediaStorageDir.getPath()
             );
         } else {
             throw new IllegalArgumentException(

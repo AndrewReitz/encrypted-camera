@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import com.andrewreitz.encryptedcamera.BuildConfig;
+import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
@@ -14,10 +15,13 @@ import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.google.common.net.MediaType;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.InvalidKeyException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import dagger.Lazy;
 import hugo.weaving.DebugLog;
 import timber.log.Timber;
 
@@ -32,10 +36,13 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
     @Inject
     ExternalStorageManager externalStorageManager;
 
+    // Create lazily otherwise the singleton is created at first run and doesn't have
+    // all of it's dependencies
     @Inject
-    EncryptionProvider encryptionProvider;
+    Lazy<EncryptionProvider> encryptionProvider;
 
     private Uri fileUri;
+    private File encryptedFileDirectory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +50,6 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         openCameraWithIntent();
     }
 
-    @DebugLog
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode != CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -55,7 +61,14 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
                 // Image captured and saved to fileUri specified in the Intent
                 // We need to encrypt it and save to EncryptedFolder
                 File unencryptedImage = new File(fileUri.getPath());
-                encryptionProvider.encrypt((byte[]) null);
+                // D/C about name since it's saved internally
+                File encryptedFile = new File(encryptedFileDirectory, unencryptedImage.getName());
+                try {
+                    encryptionProvider.get().encrypt(unencryptedImage, encryptedFile);
+                } catch (IOException | InvalidKeyException e) {
+                    // TODO
+                    throw new RuntimeException(e);
+                }
                 break;
             case RESULT_CANCELED:
                 // User cancelled taking a photo close the app
@@ -95,7 +108,11 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         }
 
         try {
-            fileUri = externalStorageManager.getOutputMediaFileUri(MediaType.JPEG); // create a file to save the image
+            // create a file to save the image
+            fileUri = externalStorageManager.getOutputMediaFileUri(MediaType.JPEG);
+
+            // create / get folder to be able to put encrypted files in
+            encryptedFileDirectory = new File(getFilesDir(), EncryptedCameraApp.ENCRYPTED_DIRECTORY);
         } catch (SDCardException e) {
             Timber.e(e, "Error writing to sdcard");
             ErrorDialog errorDialog = ErrorDialog.newInstance(

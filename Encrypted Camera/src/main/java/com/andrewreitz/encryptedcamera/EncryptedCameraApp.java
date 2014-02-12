@@ -27,6 +27,8 @@ import timber.log.Timber;
  */
 public class EncryptedCameraApp extends Application {
     public static final String KEY_STORE_ALIAS = EncryptedCameraApp.class.getSimpleName() + ":ALIAS";
+    public static final String ENCRYPTED_DIRECTORY = "Encrypted";
+    public static final String DECRYPTED_DIRECTORY = "Decrypted";
     public static final String MEDIA_OUTPUT_DATE_FORMAT = "yyyyMMdd_HHmmss";
     public static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
 

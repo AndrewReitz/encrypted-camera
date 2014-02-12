@@ -16,6 +16,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
 import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -29,6 +30,7 @@ import timber.log.Timber;
         complete = false,
         library = true
 )
+@SuppressWarnings("UnusedDeclaration")
 public class EncryptionModule {
 
     @Provides
@@ -37,6 +39,15 @@ public class EncryptionModule {
         try {
             return new KeyManagerImpl(context);
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Provides
+    Cipher provideCipher() {
+        try {
+            return Cipher.getInstance(EncryptedCameraApp.CIPHER_TRANSFORMATION);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
             throw new RuntimeException(e);
         }
     }
