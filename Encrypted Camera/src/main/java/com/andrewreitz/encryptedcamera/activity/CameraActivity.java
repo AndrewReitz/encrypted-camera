@@ -29,17 +29,9 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 12345;
 
-    @Inject
-    @Named("camera-intent")
-    Intent cameraIntent;
-
-    @Inject
-    ExternalStorageManager externalStorageManager;
-
-    // Create lazily otherwise the singleton is created at first run and doesn't have
-    // all of it's dependencies
-    @Inject
-    Lazy<EncryptionProvider> encryptionProvider;
+    @Inject @Named("camera-intent") Intent cameraIntent;
+    @Inject ExternalStorageManager externalStorageManager;
+    @Inject EncryptionProvider encryptionProvider;
 
     private Uri fileUri;
     private File encryptedFileDirectory;
@@ -64,7 +56,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
                 // D/C about name since it's saved internally
                 File encryptedFile = new File(encryptedFileDirectory, unencryptedImage.getName());
                 try {
-                    encryptionProvider.get().encrypt(unencryptedImage, encryptedFile);
+                    encryptionProvider.encrypt(unencryptedImage, encryptedFile);
                 } catch (IOException | InvalidKeyException e) {
                     // TODO
                     throw new RuntimeException(e);
