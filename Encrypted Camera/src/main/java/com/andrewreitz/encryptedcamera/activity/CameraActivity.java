@@ -16,6 +16,7 @@ import com.google.common.net.MediaType;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 
 import javax.inject.Inject;
@@ -57,7 +58,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
                 File encryptedFile = new File(encryptedFileDirectory, unencryptedImage.getName());
                 try {
                     encryptionProvider.encrypt(unencryptedImage, encryptedFile);
-                } catch (IOException | InvalidKeyException e) {
+                } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
                     // TODO
                     throw new RuntimeException(e);
                 }

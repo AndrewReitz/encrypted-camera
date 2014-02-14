@@ -5,18 +5,24 @@ import android.util.Base64;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.SecureRandom;
+import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -24,16 +30,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EncryptionProviderImp implements EncryptionProvider {
 
-    private SecretKey secretKey;
-    private Cipher cipher;
+    private final IvParameterSpec iv;
+    private final SecretKey secretKey;
+    private final Cipher cipher;
 
-    public EncryptionProviderImp(Cipher cipher, SecretKey secretKey) {
+    public EncryptionProviderImp(Cipher cipher, SecretKey secretKey, byte[] iv) {
+        checkArgument(iv.length == 16);
         this.cipher = checkNotNull(cipher);
         this.secretKey = checkNotNull(secretKey);
+        this.iv = new IvParameterSpec(iv);
     }
 
     @Override
-    public String encrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
+    public String encrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
         final byte[] input = !TextUtils.isEmpty(value) ? value.getBytes() : new byte[0];
         return Base64.encodeToString(
                 this.encrypt(input),
@@ -42,9 +51,9 @@ public class EncryptionProviderImp implements EncryptionProvider {
     }
 
     @Override
-    public byte[] encrypt(byte[] value) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public byte[] encrypt(byte[] value) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
         final byte[] input = value != null ? value : new byte[0];
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
         return cipher.doFinal(input);
     }
 
@@ -57,11 +66,20 @@ public class EncryptionProviderImp implements EncryptionProvider {
      * @throws InvalidKeyException
      */
     @Override
-    public void encrypt(File in, File out) throws IOException, InvalidKeyException {
+    public void encrypt(File in, File out) throws IOException, InvalidKeyException, InvalidAlgorithmParameterException {
+        fileStreamEncryptDecrypt(in, out, Cipher.ENCRYPT_MODE);
+    }
+
+    @Override
+    public void decrypt(File in, File out) throws InvalidKeyException, IOException, InvalidAlgorithmParameterException {
+        fileStreamEncryptDecrypt(in, out, Cipher.DECRYPT_MODE);
+    }
+
+    private void fileStreamEncryptDecrypt(File in, File out, int optmode) throws InvalidKeyException, IOException, InvalidAlgorithmParameterException {
         checkNotNull(in);
         checkNotNull(out);
 
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        cipher.init(optmode, secretKey, iv);
 
         FileInputStream is = new FileInputStream(in);
         CipherOutputStream os = new CipherOutputStream(new FileOutputStream(out), cipher);
@@ -71,10 +89,8 @@ public class EncryptionProviderImp implements EncryptionProvider {
         os.close();
     }
 
-    //TODO Place Decrypt For Streams / Files
-
     @Override
-    public String decrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
+    public String decrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
         checkNotNull(value);
 
         final byte[] bytes = Base64.decode(value, Base64.DEFAULT);
@@ -82,9 +98,9 @@ public class EncryptionProviderImp implements EncryptionProvider {
     }
 
     @Override
-    public byte[] decrypt(byte[] value) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+    public byte[] decrypt(byte[] value) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
         checkNotNull(value);
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
         return cipher.doFinal(value);
     }
 

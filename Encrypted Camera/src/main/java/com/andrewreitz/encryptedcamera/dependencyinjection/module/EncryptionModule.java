@@ -58,7 +58,11 @@ public class EncryptionModule {
         try {
             return new EncryptionProviderImp(
                     cipher,
-                    keyManager.getKey(EncryptedCameraApp.KEY_STORE_ALIAS)
+                    keyManager.getKey(EncryptedCameraApp.KEY_STORE_ALIAS),
+                    new byte[] {
+                            0x4,0xA,0xF,0xF,0x4,0x5,0x9,0x5,
+                            0x0,0x2,0x0,0x7,0x9,0x3,0xd,0x2
+                    }
             );
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             Timber.w(e, "Could not create EncryptionProvider");
