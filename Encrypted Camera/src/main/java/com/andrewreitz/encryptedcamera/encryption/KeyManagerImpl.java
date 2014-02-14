@@ -5,7 +5,6 @@ import android.content.Context;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -26,21 +25,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author areitz
  */
 public class KeyManagerImpl implements KeyManager {
-    private static final String KEY_STORE_FILE = "app.keystore";
-
     private final Context context;
     private final KeyStore keyStore;
+    private String keyStoreName = "app.keystore";
 
     public KeyManagerImpl(Context context) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         this.context = checkNotNull(context);
         keyStore = getKeyStore();
     }
 
+    public KeyManagerImpl(String keystoreName, Context context) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+        this.context = checkNotNull(context);
+        keyStore = getKeyStore();
+        if (keystoreName != null) this.keyStoreName = keystoreName;
+    }
+
     private KeyStore getKeyStore() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
         KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType()); //"AndroidKeyStore"
-        File file = context.getFileStreamPath(KEY_STORE_FILE);
+        File file = context.getFileStreamPath(keyStoreName);
         if (file.exists()) {
-            ks.load(context.openFileInput(KEY_STORE_FILE), null);
+            ks.load(context.openFileInput(keyStoreName), null);
         } else {
             ks.load(null, null);
         }
@@ -49,7 +53,7 @@ public class KeyManagerImpl implements KeyManager {
 
     @Override
     public void saveKeyStore() throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
-        FileOutputStream fos = context.openFileOutput(KEY_STORE_FILE, Context.MODE_PRIVATE);
+        FileOutputStream fos = context.openFileOutput(keyStoreName, Context.MODE_PRIVATE);
         keyStore.store(fos, null);
         fos.close();
     }
