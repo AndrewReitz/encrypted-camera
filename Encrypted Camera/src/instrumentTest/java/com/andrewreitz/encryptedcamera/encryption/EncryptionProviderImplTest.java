@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
 import javax.crypto.Cipher;
@@ -28,8 +30,6 @@ public class EncryptionProviderImplTest extends AndroidTestCase {
     @Inject Cipher cipher;
     @Inject KeyManager keyManager;
 
-    private EncryptionProviderImpl encryptionProvider;
-
     @SuppressWarnings("ConstantConditions")
     @Override protected void setUp() throws Exception {
         super.setUp();
@@ -40,19 +40,24 @@ public class EncryptionProviderImplTest extends AndroidTestCase {
                         (EncryptedCameraApp) getContext().getApplicationContext()
                 )
         ).inject(this);
+    }
 
-        encryptionProvider = new EncryptionProviderImpl(
-                cipher,
-                keyManager.generateKey(),
-                new byte[] {
-                        0x4,0xA,0xF,0xF,0x4,0x5,0x9,0x5,
-                        0x0,0x2,0x0,0x7,0x9,0x3,0xd,0x2
-                }
-        );
+    public void testEncryptAndDecryptStringNoPassword() throws Exception {
+        // Arrange
+        EncryptionProvider encryptionProvider = getEncryptionProviderNoPassword();
+        String expected = "testString";
+
+        // Act
+        String encrypted = encryptionProvider.encrypt(expected);
+        String actual = encryptionProvider.decrypt(encrypted);
+
+        // Assert
+        assertThat(actual).isEqualTo(expected);
     }
 
     public void testEncryptAndDecryptString() throws Exception {
         // Arrange
+        EncryptionProvider encryptionProvider = getEncryptionProviderWithPassword();
         String expected = "testString";
 
         // Act
@@ -64,8 +69,9 @@ public class EncryptionProviderImplTest extends AndroidTestCase {
     }
 
     @SuppressWarnings("ConstantConditions")
-    public void testEncyptAndDecryptFile() throws Exception {
+    public void testEncyptAndDecryptFileNoPassword() throws Exception {
         // Arrange
+        EncryptionProvider encryptionProvider = getEncryptionProviderNoPassword();
         String inFileName = "test.txt";
         String outFileName = "out";
         String actualFileName = "actual.txt";
@@ -88,6 +94,57 @@ public class EncryptionProviderImplTest extends AndroidTestCase {
 
         // Assert
         assertThat(strings.get(0)).isEqualTo(textFileContent);
+    }
+
+
+    @SuppressWarnings("ConstantConditions")
+    public void testEncyptAndDecryptFileWithPassword() throws Exception {
+        // Arrange
+        EncryptionProvider encryptionProvider = getEncryptionProviderWithPassword();
+        String inFileName = "test.txt";
+        String outFileName = "out";
+        String actualFileName = "actual.txt";
+        String textFileContent = "Test testing 1, 2, 3";
+        File in = getContext().getFileStreamPath(inFileName);
+        File out = getContext().getFileStreamPath(outFileName);
+        File acutal = getContext().getFileStreamPath(actualFileName);
+        FileWriter outFile = new FileWriter(
+                in
+        );
+        PrintWriter outWriter = new PrintWriter(outFile);
+        outWriter.write(textFileContent);
+        outWriter.close();
+
+        // Act
+        encryptionProvider.encrypt(in, out);
+        encryptionProvider.decrypt(out, acutal);
+
+        List<String> strings = Files.readLines(acutal, Charset.defaultCharset());
+
+        // Assert
+        assertThat(strings.get(0)).isEqualTo(textFileContent);
+    }
+
+    private EncryptionProvider getEncryptionProviderNoPassword() throws NoSuchAlgorithmException {
+        return new EncryptionProviderImpl(
+                cipher,
+                keyManager.generateKeyNoPassword(),
+                new byte[] {
+                        0x4,0xA,0xF,0xF,0x4,0x5,0x9,0x5,
+                        0x0,0x2,0x0,0x7,0x9,0x3,0xd,0x2
+                }
+        );
+    }
+
+    private EncryptionProvider getEncryptionProviderWithPassword() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        return new EncryptionProviderImpl(
+                cipher,
+                keyManager.generateKeyWithPassword("testpassword".toCharArray(), "ImmaSalt".getBytes()),
+                new byte[] {
+                        0x4,0xA,0xF,0xF,0x4,0x5,0x9,0x5,
+                        0x0,0x2,0x0,0x7,0x9,0x3,0xd,0x2
+                }
+        );
     }
 
     @Module(

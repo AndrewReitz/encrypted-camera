@@ -1,7 +1,6 @@
 package com.andrewreitz.encryptedcamera.encryption;
 
 import java.io.IOException;
-import java.security.Key;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
@@ -24,5 +23,7 @@ public interface KeyManager {
 
     SecretKey getKey(String alias, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException;
 
-    SecretKey generateKey() throws NoSuchAlgorithmException;
+    SecretKey generateKeyWithPassword(char[] passphraseOrPin, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException;
+
+    SecretKey generateKeyNoPassword() throws NoSuchAlgorithmException;
 }
