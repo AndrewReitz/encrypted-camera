@@ -28,7 +28,7 @@ public class EncryptionProviderImplTest extends AndroidTestCase {
     @Inject Cipher cipher;
     @Inject KeyManager keyManager;
 
-    private EncryptionProviderImp encryptionProvider;
+    private EncryptionProviderImpl encryptionProvider;
 
     @SuppressWarnings("ConstantConditions")
     @Override protected void setUp() throws Exception {
@@ -41,7 +41,7 @@ public class EncryptionProviderImplTest extends AndroidTestCase {
                 )
         ).inject(this);
 
-        encryptionProvider = new EncryptionProviderImp(
+        encryptionProvider = new EncryptionProviderImpl(
                 cipher,
                 keyManager.generateKeyNoPassword(),
                 new byte[] {

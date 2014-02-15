@@ -5,7 +5,7 @@ import android.content.Context;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
-import com.andrewreitz.encryptedcamera.encryption.EncryptionProviderImp;
+import com.andrewreitz.encryptedcamera.encryption.EncryptionProviderImpl;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.encryption.KeyManagerImpl;
 
@@ -56,7 +56,7 @@ public class EncryptionModule {
     @Singleton
     EncryptionProvider provideEncryptionProvider(Cipher cipher, KeyManager keyManager) {
         try {
-            return new EncryptionProviderImp(
+            return new EncryptionProviderImpl(
                     cipher,
                     keyManager.getKey(EncryptedCameraApp.KEY_STORE_ALIAS),
                     new byte[] {

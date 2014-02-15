@@ -28,13 +28,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author Andrew
  */
-public class EncryptionProviderImp implements EncryptionProvider {
+public class EncryptionProviderImpl implements EncryptionProvider {
 
     private final IvParameterSpec iv;
     private final SecretKey secretKey;
     private final Cipher cipher;
 
-    public EncryptionProviderImp(Cipher cipher, SecretKey secretKey, byte[] iv) {
+    public EncryptionProviderImpl(Cipher cipher, SecretKey secretKey, byte[] iv) {
         checkArgument(iv.length == 16);
         this.cipher = checkNotNull(cipher);
         this.secretKey = checkNotNull(secretKey);
