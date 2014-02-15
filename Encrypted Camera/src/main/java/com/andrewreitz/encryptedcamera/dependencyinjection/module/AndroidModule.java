@@ -14,6 +14,7 @@ import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManagerImpl;
 
 import java.io.File;
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -33,7 +34,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
         library = true,
         includes = {
                 SharedPrefsModule.class,
-                EncryptionModule.class
+                EncryptionModule.class,
+                FileSystemModule.class
         },
         injects = EncryptedCameraApp.class
 )
@@ -63,32 +65,18 @@ public class AndroidModule {
     }
 
     @Provides
+    @Singleton SecureRandom provideSecureRandom() {
+        return new SecureRandom();
+    }
+
+    @Provides
     @Singleton
     @MediaFormat DateFormat provideMediaDateFormat() {
         return new SimpleDateFormat(EncryptedCameraApp.MEDIA_OUTPUT_DATE_FORMAT);
     }
 
     @Provides
-    @Singleton
-    ExternalStorageManager provideExternalStorageManager(@MediaFormat DateFormat dateFormat) {
-        return new ExternalStorageManagerImpl(application, dateFormat);
-    }
-
-    @Provides
     @CameraIntent Intent provideCameraIntent() {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    }
-
-    @Provides
-    @Singleton
-    @EncryptedDirectory File provideEncryptedFileDirectory() {
-        File file = new File(application.getFilesDir(), EncryptedCameraApp.ENCRYPTED_DIRECTORY);
-        if (!file.exists()) {
-            if (!file.mkdirs()) {
-                Timber.w("Error creating encryption directory: %s", file.toString());
-                throw new RuntimeException("Error creating encryption directory: %");
-            }
-        }
-        return file;
     }
 }

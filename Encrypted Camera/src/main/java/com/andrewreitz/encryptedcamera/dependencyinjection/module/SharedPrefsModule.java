@@ -16,6 +16,7 @@ import dagger.Provides;
 /**
  * @author areitz
  */
+@SuppressWarnings("UnusedDeclaration")
 @Module(
         complete = false,
         library = true

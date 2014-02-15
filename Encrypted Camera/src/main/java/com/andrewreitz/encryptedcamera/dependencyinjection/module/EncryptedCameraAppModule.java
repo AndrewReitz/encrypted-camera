@@ -7,6 +7,7 @@ import dagger.Module;
  *
  * @author areitz
  */
+@SuppressWarnings("UnusedDeclaration")
 @Module(
         includes = {
                 AndroidModule.class,

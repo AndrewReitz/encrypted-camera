@@ -44,7 +44,7 @@ public class KeyManagerImplTest extends AndroidTestCase {
         String alias = "test";
 
         // Act
-        SecretKey secretKey = keyManager.generateKey();
+        SecretKey secretKey = keyManager.generateKeyNoPassword();
         keyManager.saveKey(alias, secretKey);
         SecretKey key = keyManager.getKey(alias);
 
@@ -60,7 +60,7 @@ public class KeyManagerImplTest extends AndroidTestCase {
         String alias = "test";
 
         // Act
-        SecretKey secretKey = keyManager.generateKey();
+        SecretKey secretKey = keyManager.generateKeyNoPassword();
         keyManager.saveKey(alias, secretKey, password);
         SecretKey key = keyManager.getKey(alias, password);
 

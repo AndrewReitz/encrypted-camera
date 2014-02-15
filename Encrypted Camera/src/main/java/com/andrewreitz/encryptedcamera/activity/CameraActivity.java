@@ -49,19 +49,9 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
         switch (resultCode) {
             case RESULT_OK:
-                // Image captured and saved to fileUri specified in the Intent
-                // We need to encrypt it and save to EncryptedFolder
-                File unencryptedImage = new File(fileUri.getPath());
-                // D/C about name since it's saved internally
-                File encryptedFile = new File(encryptedFileDirectory, unencryptedImage.getName());
-                try {
-                    //noinspection ResultOfMethodCallIgnored
-                    encryptedFile.createNewFile();
-                    encryptionProvider.encrypt(unencryptedImage, encryptedFile);
-                } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
-                    // TODO
-                    throw new RuntimeException(e);
-                }
+                encryptAndSaveImage();
+                // saved the image, now open the camera again
+                this.openCameraWithIntent();
                 break;
             case RESULT_CANCELED:
                 // User cancelled taking a photo close the app
@@ -73,14 +63,11 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
                         requestCode,
                         resultCode
                 );
-                if (BuildConfig.DEBUG) {
-                    throw new RuntimeException("CameraActivity onActivityResult, unknown result received");
-                } else {
-                    ErrorDialog.newInstance(
-                            getString(R.string.error),
-                            getString(R.string.error_no_image_recieved)
-                    );
-                }
+                ErrorDialog errorDialog = ErrorDialog.newInstance(
+                        getString(R.string.error),
+                        getString(R.string.error_no_image_recieved)
+                );
+                errorDialog.show(getFragmentManager(), "dialog_unknown_camera_result");
                 break;
         }
     }
@@ -89,6 +76,26 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
     public void onErrorDialogDismissed() {
         // Can't continue on close app
         finish();
+    }
+
+    private void encryptAndSaveImage() {
+        // Image captured and saved to fileUri specified in the Intent
+        // We need to encrypt it and save to EncryptedFolder
+        File unencryptedImage = new File(fileUri.getPath());
+        // D/C about name since it's saved internally
+        File encryptedFile = new File(encryptedFileDirectory, unencryptedImage.getName());
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            encryptedFile.createNewFile();
+            encryptionProvider.encrypt(unencryptedImage, encryptedFile);
+        } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+            Timber.e(e, "Error encrypting and saving image");
+            ErrorDialog errorDialog = ErrorDialog.newInstance(
+                    getString(R.string.encryption_error),
+                    getString(R.string.error_encrypting_image_message)
+            );
+            errorDialog.show(getFragmentManager(), "dialog_encrypt_image_error");
+        }
     }
 
     private void openCameraWithIntent() {

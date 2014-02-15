@@ -26,6 +26,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * @author areitz
  */
+@SuppressWarnings("UnusedDeclaration")
 @Module(
         injects = {
                 CameraActivity.class,

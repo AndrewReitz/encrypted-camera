@@ -31,5 +31,6 @@
     <string name="error_sdcard_message">There was an error trying to write to the sdcard. Please check that it is mounted and try again</string>
     <string name="error_no_camera_app_found_message">This application is build to use your default camera, but you do not seem to have on installed.  Please install a camera application and then try this app again</string>
     <string name="error_no_camera_app">No Camera App</string>
+    <string name="error_encrypting_image_message">Well this is embarrassing but there was an error saving your image!</string>
 
 </resources>
