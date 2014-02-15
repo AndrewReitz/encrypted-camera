@@ -29,10 +29,6 @@ public class KeyManagerImplTest extends AndroidTestCase {
         keyManager = new KeyManagerImpl(KEY_STORE_NAME, getContext());
     }
 
-    public void testPreconditions() {
-        assertThat(keyManager).isNotNull();
-    }
-
     public void testSaveKeyStore() throws Exception {
         keyManager.saveKeyStore();
         File file = getContext().getFileStreamPath(KEY_STORE_NAME);
