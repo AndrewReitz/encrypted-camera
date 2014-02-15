@@ -75,7 +75,7 @@ public class AndroidModule {
     }
 
     @Provides
-    @CameraIntent Intent provideCameraIntnet() {
+    @CameraIntent Intent provideCameraIntent() {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     }
 
