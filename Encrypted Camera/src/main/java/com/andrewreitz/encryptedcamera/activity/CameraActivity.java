@@ -68,7 +68,11 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
                 finish();
                 break;
             default:
-                Timber.e("CameraActivity onActivityResult, unknown result received");
+                Timber.e(
+                        "CameraActivity onActivityResult, unknown result received: requestCode %s, resultCode %s",
+                        requestCode,
+                        resultCode
+                );
                 if (BuildConfig.DEBUG) {
                     throw new RuntimeException("CameraActivity onActivityResult, unknown result received");
                 } else {
