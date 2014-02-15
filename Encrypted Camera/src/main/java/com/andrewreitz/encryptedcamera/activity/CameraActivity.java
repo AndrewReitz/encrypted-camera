@@ -88,6 +88,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
             //noinspection ResultOfMethodCallIgnored
             encryptedFile.createNewFile();
             encryptionProvider.encrypt(unencryptedImage, encryptedFile);
+            // File encrypted now delete the original
         } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             Timber.e(e, "Error encrypting and saving image");
             ErrorDialog errorDialog = ErrorDialog.newInstance(
