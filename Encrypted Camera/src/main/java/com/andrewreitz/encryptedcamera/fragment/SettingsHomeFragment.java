@@ -10,6 +10,7 @@ import android.preference.SwitchPreference;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.BaseActivity;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.dialog.SetPasswordDialog;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
@@ -48,7 +49,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     EncryptedCameraPreferenceManager preferenceManager;
 
     @Inject
-    @Named("unlock-notification")
+    @UnlockNotification
     Notification unlockNotification;
 
     @Override
@@ -73,23 +74,20 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     @Override
     public void onPasswordSet(String password) {
-        return;
-        // FIXME removed generating key with a password, instead keys should be saved to the keystore
-        // with a password
-//        byte[] salt = new byte[10];
-//        SecureRandom secureRandom = new SecureRandom();
-//        secureRandom.nextBytes(salt);
-//        try {
-//            keyManager.generateKeyWithPassword(password.toCharArray(), salt);
-//        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-//            Timber.e(e, "Error saving encryption key with password");
-//            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
-//            return;
-//        }
-//        preferenceManager.setSalt(salt);
-//        preferenceManager.setHasPassword(true);
-//        //noinspection ConstantConditions
-//        ((SwitchPreference)findPreference(getString(R.string.pref_key_use_password))).setChecked(true);
+        byte[] salt = new byte[10];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(salt);
+        try {
+            keyManager.generateKeyWithPassword(password.toCharArray(), salt);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            Timber.e(e, "Error saving encryption key with password");
+            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
+            return;
+        }
+        preferenceManager.setSalt(salt);
+        preferenceManager.setHasPassword(true);
+        //noinspection ConstantConditions
+        ((SwitchPreference)findPreference(getString(R.string.pref_key_use_password))).setChecked(true);
     }
 
     @Override

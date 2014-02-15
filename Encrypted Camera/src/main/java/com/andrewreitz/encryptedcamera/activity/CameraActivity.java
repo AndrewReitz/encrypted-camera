@@ -30,12 +30,12 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 12345;
 
-    @Inject @Named("camera-intent") Intent cameraIntent;
+    @Inject @CameraIntent Intent cameraIntent;
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptionProvider encryptionProvider;
+    @Inject File encryptedFileDirectory;
 
     private Uri fileUri;
-    private File encryptedFileDirectory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +57,8 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
                 // D/C about name since it's saved internally
                 File encryptedFile = new File(encryptedFileDirectory, unencryptedImage.getName());
                 try {
+                    //noinspection ResultOfMethodCallIgnored
+                    encryptedFile.createNewFile();
                     encryptionProvider.encrypt(unencryptedImage, encryptedFile);
                 } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
                     // TODO
@@ -107,9 +109,6 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         try {
             // create a file to save the image
             fileUri = externalStorageManager.getOutputMediaFileUri(MediaType.JPEG);
-
-            // create / get folder to be able to put encrypted files in
-            encryptedFileDirectory = new File(getFilesDir(), EncryptedCameraApp.ENCRYPTED_DIRECTORY);
         } catch (SDCardException e) {
             Timber.e(e, "Error writing to sdcard");
             ErrorDialog errorDialog = ErrorDialog.newInstance(

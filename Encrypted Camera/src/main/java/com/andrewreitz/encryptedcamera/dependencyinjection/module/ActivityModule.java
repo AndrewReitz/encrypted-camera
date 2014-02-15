@@ -12,6 +12,7 @@ import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.CameraActivity;
 import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForActivity;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.fragment.SettingsHomeFragment;
 
 import javax.inject.Named;
@@ -53,7 +54,7 @@ public class ActivityModule {
 
     @Provides
     @Singleton
-    @Named("unlock-notification")
+    @UnlockNotification
     Notification provideUnlockNotification() {
         Notification notification = new NotificationCompat.Builder(activity)
                 .setContentTitle(activity.getString(R.string.app_name))
@@ -75,11 +76,5 @@ public class ActivityModule {
         notification.flags |= Notification.FLAG_NO_CLEAR;
 
         return notification;
-    }
-
-    @Provides
-    @Named("camera-intent") // TODO Move out of ActivityModule
-    Intent provideCameraIntnet() {
-        return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     }
 }
