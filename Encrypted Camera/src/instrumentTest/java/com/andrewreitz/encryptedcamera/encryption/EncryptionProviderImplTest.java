@@ -7,12 +7,9 @@ import com.andrewreitz.encryptedcamera.dependencyinjection.module.AndroidModule;
 import com.google.common.io.Files;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
 import java.util.List;
 
 import javax.crypto.Cipher;
