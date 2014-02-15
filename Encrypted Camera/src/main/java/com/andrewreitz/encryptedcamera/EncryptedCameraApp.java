@@ -83,7 +83,7 @@ public class EncryptedCameraApp extends Application {
     private void generateKey() {
         if (!preferenceManager.hasGeneratedKey()) {
             try {
-                SecretKey secretKey = keyManager.generateKeyNoPassword();
+                SecretKey secretKey = keyManager.generateKey();
                 keyManager.saveKey(KEY_STORE_ALIAS, secretKey);
                 keyManager.saveKeyStore();
                 preferenceManager.setGeneratedKey(true);

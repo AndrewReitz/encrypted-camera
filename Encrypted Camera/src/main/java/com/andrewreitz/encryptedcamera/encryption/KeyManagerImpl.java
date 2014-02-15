@@ -2,6 +2,9 @@ package com.andrewreitz.encryptedcamera.encryption;
 
 import android.content.Context;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -27,14 +30,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class KeyManagerImpl implements KeyManager {
     private final Context context;
     private final KeyStore keyStore;
-    private String keyStoreName = "app.keystore";
+    private String keyStoreName = "app.keystore"; // default name
 
-    public KeyManagerImpl(Context context) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    public KeyManagerImpl(@NotNull Context context) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         this.context = checkNotNull(context);
         keyStore = getKeyStore();
     }
 
-    public KeyManagerImpl(String keystoreName, Context context) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    public KeyManagerImpl(@Nullable String keystoreName, @NotNull Context context) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         this.context = checkNotNull(context);
         keyStore = getKeyStore();
         if (keystoreName != null) this.keyStoreName = keystoreName;
@@ -59,38 +62,32 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public void saveKey(String alias, SecretKey key) throws KeyStoreException {
+    public void saveKey(@NotNull String alias, @NotNull SecretKey key) throws KeyStoreException {
+        this.saveKey(alias, key, null);
+    }
+
+    @Override
+    public void saveKey(@NotNull String alias, @NotNull SecretKey key, @Nullable String password) throws KeyStoreException {
         keyStore.setKeyEntry(
                 checkNotNull(alias),
                 key,
-                null,
+                password == null ? null : password.toCharArray(),
                 null
         );
     }
 
     @Override
-    public SecretKey getKey(String alias) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
-        return (SecretKey) keyStore.getKey(alias, null);
+    public SecretKey getKey(@NotNull String alias) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+        return this.getKey(alias, null);
     }
 
     @Override
-    public SecretKey generateKeyWithPassword(char[] passphraseOrPin, byte[] salt)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
-        // Number of PBKDF2 hardening rounds to use. Larger values increase
-        // computation time. You should select a value that causes computation
-        // to take >100ms.
-        final int iterations = 1000;
-
-        // Generate a 256-bit key
-        final int outputKeyLength = 256;
-
-        SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations, outputKeyLength);
-        return secretKeyFactory.generateSecret(keySpec);
+    public SecretKey getKey(@NotNull String alias, @Nullable String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+        return (SecretKey) keyStore.getKey(alias, password == null ? null : password.toCharArray());
     }
 
     @Override
-    public SecretKey generateKeyNoPassword() throws NoSuchAlgorithmException {
+    public SecretKey generateKey() throws NoSuchAlgorithmException {
         final int outputKeyLength = 256;
         SecureRandom secureRandom = new SecureRandom();
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");

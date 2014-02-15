@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
-import android.util.Base64;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
@@ -74,20 +73,23 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     @Override
     public void onPasswordSet(String password) {
-        byte[] salt = new byte[10];
-        SecureRandom secureRandom = new SecureRandom();
-        secureRandom.nextBytes(salt);
-        try {
-            keyManager.generateKeyWithPassword(password.toCharArray(), salt);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            Timber.e(e, "Error saving encryption key with password");
-            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
-            return;
-        }
-        preferenceManager.setSalt(salt);
-        preferenceManager.setHasPassword(true);
-        //noinspection ConstantConditions
-        ((SwitchPreference)findPreference(getString(R.string.pref_key_use_password))).setChecked(true);
+        return;
+        // FIXME removed generating key with a password, instead keys should be saved to the keystore
+        // with a password
+//        byte[] salt = new byte[10];
+//        SecureRandom secureRandom = new SecureRandom();
+//        secureRandom.nextBytes(salt);
+//        try {
+//            keyManager.generateKeyWithPassword(password.toCharArray(), salt);
+//        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+//            Timber.e(e, "Error saving encryption key with password");
+//            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
+//            return;
+//        }
+//        preferenceManager.setSalt(salt);
+//        preferenceManager.setHasPassword(true);
+//        //noinspection ConstantConditions
+//        ((SwitchPreference)findPreference(getString(R.string.pref_key_use_password))).setChecked(true);
     }
 
     @Override
@@ -124,7 +126,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     private void createKeyNoPassword() {
         // Create a keystore for encryption that does not require a password
         try {
-            SecretKey secretKey = keyManager.generateKeyNoPassword();
+            SecretKey secretKey = keyManager.generateKey();
             keyManager.saveKey(EncryptedCameraApp.KEY_STORE_ALIAS, secretKey);
             keyManager.saveKeyStore();
         } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {

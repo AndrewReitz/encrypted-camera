@@ -18,10 +18,11 @@ public interface KeyManager {
 
     void saveKey(String alias, SecretKey key) throws KeyStoreException;
 
+    void saveKey(String alias, SecretKey key, String password) throws KeyStoreException;
+
     SecretKey getKey(String alias) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException;
 
-    SecretKey generateKeyWithPassword(char[] passphraseOrPin, byte[] salt)
-            throws NoSuchAlgorithmException, InvalidKeySpecException;
+    SecretKey getKey(String alias, String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException;
 
-    SecretKey generateKeyNoPassword() throws NoSuchAlgorithmException;
+    SecretKey generateKey() throws NoSuchAlgorithmException;
 }

@@ -33,20 +33,18 @@ public class KeyManagerImplTest extends AndroidTestCase {
         assertThat(keyManager).isNotNull();
     }
 
-    public void testSaveKeyStore() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
+    public void testSaveKeyStore() throws Exception {
         keyManager.saveKeyStore();
         File file = getContext().getFileStreamPath(KEY_STORE_NAME);
         assertThat(file).exists();
     }
 
-    public void testShouldGenerateKeyWithPasswordSaveKeyAndGetKey() throws InvalidKeySpecException, NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+    public void testShouldGenerateKeySaveKeyAndGetKey() throws Exception {
         // Arrange
-        String password = "test";
-        String salt = "temp";
         String alias = "test";
 
         // Act
-        SecretKey secretKey = keyManager.generateKeyWithPassword(password.toCharArray(), salt.getBytes());
+        SecretKey secretKey = keyManager.generateKey();
         keyManager.saveKey(alias, secretKey);
         SecretKey key = keyManager.getKey(alias);
 
@@ -56,14 +54,15 @@ public class KeyManagerImplTest extends AndroidTestCase {
         assertThat(key.getFormat()).isEqualTo(secretKey.getFormat());
     }
 
-    public void testShouldGenerateKeySaveKeyAndGetKey() throws NoSuchAlgorithmException, KeyStoreException, UnrecoverableKeyException {
+    public void testShouldGenerateKeySaveKeyWithAPasswordAndGetKeyWithPassword() throws Exception {
         // Arrange
+        String password = "immasupersecretpassword";
         String alias = "test";
 
         // Act
-        SecretKey secretKey = keyManager.generateKeyNoPassword();
-        keyManager.saveKey(alias, secretKey);
-        SecretKey key = keyManager.getKey(alias);
+        SecretKey secretKey = keyManager.generateKey();
+        keyManager.saveKey(alias, secretKey, password);
+        SecretKey key = keyManager.getKey(alias, password);
 
         // Assert
         assertThat(key.getAlgorithm()).isEqualTo(secretKey.getAlgorithm());
