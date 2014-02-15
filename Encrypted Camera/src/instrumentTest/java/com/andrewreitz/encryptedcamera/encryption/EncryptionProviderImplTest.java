@@ -78,7 +78,7 @@ public class EncryptionProviderImplTest extends AndroidTestCase {
         String textFileContent = "Test testing 1, 2, 3";
         File in = getContext().getFileStreamPath(inFileName);
         File out = getContext().getFileStreamPath(outFileName);
-        File acutal = getContext().getFileStreamPath(actualFileName);
+        File actual = getContext().getFileStreamPath(actualFileName);
         FileWriter outFile = new FileWriter(
                 in
         );
@@ -88,9 +88,9 @@ public class EncryptionProviderImplTest extends AndroidTestCase {
 
         // Act
         encryptionProvider.encrypt(in, out);
-        encryptionProvider.decrypt(out, acutal);
+        encryptionProvider.decrypt(out, actual);
 
-        List<String> strings = Files.readLines(acutal, Charset.defaultCharset());
+        List<String> strings = Files.readLines(actual, Charset.defaultCharset());
 
         // Assert
         assertThat(strings.get(0)).isEqualTo(textFileContent);
