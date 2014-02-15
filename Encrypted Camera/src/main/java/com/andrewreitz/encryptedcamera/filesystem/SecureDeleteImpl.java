@@ -21,7 +21,7 @@ public class SecureDeleteImpl implements SecureDelete {
         this.secureRandom = checkNotNull(secureRandom);
     }
 
-    @Override public void secureDelete(@NotNull File file) throws IOException {
+    @Override public boolean secureDelete(@NotNull File file) throws IOException {
         if (file.exists()) {
             long length = file.length();
             RandomAccessFile raf = new RandomAccessFile(file, "rws");
@@ -35,7 +35,9 @@ public class SecureDeleteImpl implements SecureDelete {
                 pos += data.length;
             }
             raf.close();
-            file.delete();
+            return file.delete();
         }
+
+        return true; // didn't exist so we technically deleted...
     }
 }
