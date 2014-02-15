@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Encrypted Camera</string>
     <string name="settings_title">Encrypted Camera Settings</string>
     <string name="action_settings">Settings</string>
@@ -32,5 +31,4 @@
     <string name="error_no_camera_app_found_message">This application is build to use your default camera, but you do not seem to have on installed.  Please install a camera application and then try this app again</string>
     <string name="error_no_camera_app">No Camera App</string>
     <string name="error_encrypting_image_message">Well this is embarrassing but there was an error saving your image!</string>
-
 </resources>

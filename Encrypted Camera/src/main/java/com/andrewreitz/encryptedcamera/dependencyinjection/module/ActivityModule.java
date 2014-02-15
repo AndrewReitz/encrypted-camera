@@ -30,7 +30,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Module(
         injects = {
                 CameraActivity.class,
-                SettingsHomeFragment.class
+                SettingsHomeFragment.class,
+                SettingsActivity.class
         },
         addsTo = AndroidModule.class,
         library = true

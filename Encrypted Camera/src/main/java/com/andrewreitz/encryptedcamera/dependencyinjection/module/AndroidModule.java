@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.provider.MediaStore;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
+import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;

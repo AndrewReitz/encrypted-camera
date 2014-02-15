@@ -1,4 +1,5 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@color/black</item>
     </style>
 </resources>
