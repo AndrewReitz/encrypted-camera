@@ -126,7 +126,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     private void createKeyNoPassword() {
         // Create a keystore for encryption that does not require a password
         try {
-            SecretKey secretKey = keyManager.generateKey();
+            SecretKey secretKey = keyManager.generateKeyNoPassword();
             keyManager.saveKey(EncryptedCameraApp.KEY_STORE_ALIAS, secretKey);
             keyManager.saveKeyStore();
         } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
