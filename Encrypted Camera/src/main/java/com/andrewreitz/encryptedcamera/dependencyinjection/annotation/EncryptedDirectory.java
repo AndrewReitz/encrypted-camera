@@ -9,5 +9,5 @@ import javax.inject.Qualifier;
  * @author areitz
  */
 @Qualifier @Retention(RetentionPolicy.RUNTIME)
-public @interface EnctypedDirectory {
+public @interface EncryptedDirectory {
 }

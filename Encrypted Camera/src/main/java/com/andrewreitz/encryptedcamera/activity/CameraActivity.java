@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import com.andrewreitz.encryptedcamera.BuildConfig;
-import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
@@ -20,10 +21,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import dagger.Lazy;
-import hugo.weaving.DebugLog;
 import timber.log.Timber;
 
 public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDialogCallback {
@@ -33,7 +31,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
     @Inject @CameraIntent Intent cameraIntent;
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptionProvider encryptionProvider;
-    @Inject File encryptedFileDirectory;
+    @Inject @EncryptedDirectory File encryptedFileDirectory;
 
     private Uri fileUri;
 
