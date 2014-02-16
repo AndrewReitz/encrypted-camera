@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
-import com.andrewreitz.encryptedcamera.BuildConfig;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
@@ -13,6 +12,7 @@ import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
+import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.google.common.net.MediaType;
 
 import java.io.File;
@@ -32,6 +32,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptionProvider encryptionProvider;
     @Inject @EncryptedDirectory File encryptedFileDirectory;
+    @Inject SecureDelete secureDelete;
 
     private Uri fileUri;
 
@@ -50,8 +51,6 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         switch (resultCode) {
             case RESULT_OK:
                 encryptAndSaveImage();
-                // saved the image, now open the camera again
-                this.openCameraWithIntent();
                 break;
             case RESULT_CANCELED:
                 // User cancelled taking a photo close the app
@@ -89,6 +88,9 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
             encryptedFile.createNewFile();
             encryptionProvider.encrypt(unencryptedImage, encryptedFile);
             // File encrypted now delete the original
+            secureDelete.secureDelete(unencryptedImage);
+            // saved the image, now open the camera again
+            this.openCameraWithIntent();
         } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             Timber.e(e, "Error encrypting and saving image");
             ErrorDialog errorDialog = ErrorDialog.newInstance(
