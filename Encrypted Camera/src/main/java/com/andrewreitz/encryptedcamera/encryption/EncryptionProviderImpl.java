@@ -31,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class EncryptionProviderImpl implements EncryptionProvider {
 
     private final IvParameterSpec iv;
-    private final SecretKey secretKey;
+    private SecretKey secretKey;
     private final Cipher cipher;
 
     public EncryptionProviderImpl(Cipher cipher, SecretKey secretKey, byte[] iv) {
@@ -39,6 +39,10 @@ public class EncryptionProviderImpl implements EncryptionProvider {
         this.cipher = checkNotNull(cipher);
         this.secretKey = checkNotNull(secretKey);
         this.iv = new IvParameterSpec(iv);
+    }
+
+    @Override public void setSecretKey(SecretKey secretKey) {
+        this.secretKey = secretKey;
     }
 
     @Override

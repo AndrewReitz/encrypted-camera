@@ -10,13 +10,20 @@ import android.preference.SwitchPreference;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.BaseActivity;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.dialog.SetPasswordDialog;
+import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
+import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
+import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 
+import java.io.File;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -39,18 +46,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     private static final int NOTIFICATION_ID = 1337;
 
-    @Inject
-    NotificationManager notificationManager;
-
-    @Inject
-    KeyManager keyManager;
-
-    @Inject
-    EncryptedCameraPreferenceManager preferenceManager;
-
-    @Inject
-    @UnlockNotification
-    Notification unlockNotification;
+    @Inject NotificationManager notificationManager;
+    @Inject KeyManager keyManager;
+    @Inject EncryptedCameraPreferenceManager preferenceManager;
+    @Inject @UnlockNotification Notification unlockNotification;
+    @Inject @EncryptedDirectory File encrtypedDirectory;
+    @Inject ExternalStorageManager externalStorageManager;
+    @Inject EncryptionProvider encryptionProvider;
+    @Inject SecureDelete secureDelete;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -87,7 +90,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         preferenceManager.setSalt(salt);
         preferenceManager.setHasPassword(true);
         //noinspection ConstantConditions
-        ((SwitchPreference)findPreference(getString(R.string.pref_key_use_password))).setChecked(true);
+        ((SwitchPreference) findPreference(getString(R.string.pref_key_use_password))).setChecked(true);
     }
 
     @Override
@@ -135,17 +138,73 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     private void handleDecrypt(boolean decrypt) {
+        File appExternalDirectory = externalStorageManager.getAppExternalDirectory();
+
+        if (appExternalDirectory == null || externalStorageManager.checkSdCardIsInReadAndWriteState()) {
+            //noinspection ConstantConditions
+            ErrorDialog.newInstance(
+                    getString(R.string.error),
+                    getString(R.string.error_sdcard_message)
+            ).show(getFragmentManager(), "error_dialog_sdcard");
+            return;
+        }
+
         if (decrypt) {
-            this.notificationManager.notify(
-                    NOTIFICATION_ID,
-                    unlockNotification
-            );
-
-            // TODO Decrypt
+            decryptToSdDirectory(appExternalDirectory);
         } else {
-            this.notificationManager.cancel(NOTIFICATION_ID);
+            encryptSdDirectory(appExternalDirectory);
+        }
+    }
 
-            // TODO Encrypt
+    private void decryptToSdDirectory(File appExternalDirectory) {
+
+        if(preferenceManager.hasPassword()) {
+
+        }
+
+        this.notificationManager.notify(
+                NOTIFICATION_ID,
+                unlockNotification
+        );
+        //noinspection ConstantConditions
+        for (File encrypted : encrtypedDirectory.listFiles()) {
+            File unencrypted = new File(appExternalDirectory, encrypted.getName());
+            try {
+                encryptionProvider.decrypt(encrypted, unencrypted);
+                //noinspection ResultOfMethodCallIgnored
+                encrypted.delete();
+            } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
+                Timber.w(e, "unable to decrypt and move file to sdcard");
+                ErrorDialog errorDialog = ErrorDialog.newInstance(
+                        getString(R.string.error),
+                        getString(R.string.error_unable_to_decrypt_to_sd)
+
+                );
+                //noinspection ConstantConditions
+                errorDialog.show(getFragmentManager(), "error_dialog_encrypt");
+            }
+        }
+    }
+
+    private void encryptSdDirectory(File appExternalDirectory) {
+        this.notificationManager.cancel(NOTIFICATION_ID);
+        // FIX ME check if we need a password
+        //noinspection ConstantConditions
+        for (File unencrypted : appExternalDirectory.listFiles()) {
+            File encrypted = new File(encrtypedDirectory, unencrypted.getName());
+            try {
+                encryptionProvider.encrypt(unencrypted, encrypted);
+                secureDelete.secureDelete(unencrypted);
+            } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+                Timber.w(e, "unable to encrypt and move file to internal storage");
+                ErrorDialog errorDialog = ErrorDialog.newInstance(
+                        getString(R.string.error),
+                        String.format(getString(R.string.error_reencrypting), unencrypted.getPath())
+
+                );
+                //noinspection ConstantConditions
+                errorDialog.show(getFragmentManager(), "error_dialog_reencrypt");
+            }
         }
     }
 }

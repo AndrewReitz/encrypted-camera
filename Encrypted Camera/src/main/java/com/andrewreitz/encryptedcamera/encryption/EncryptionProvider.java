@@ -7,6 +7,7 @@ import java.security.InvalidKeyException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
 
 /**
  * @author Andrew
@@ -14,8 +15,9 @@ import javax.crypto.IllegalBlockSizeException;
 public interface EncryptionProvider {
     void encrypt(File in, File out) throws IOException, InvalidKeyException, InvalidAlgorithmParameterException;
     void decrypt(File in, File out) throws InvalidKeyException, IOException, InvalidAlgorithmParameterException;
-    public String encrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, InvalidAlgorithmParameterException;
-    public String decrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, InvalidAlgorithmParameterException;
-    public byte[] encrypt(byte[] value) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException;
-    public byte[] decrypt(byte[] value) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException;
+    String encrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, InvalidAlgorithmParameterException;
+    String decrypt(String value) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, InvalidAlgorithmParameterException;
+    byte[] encrypt(byte[] value) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException;
+    byte[] decrypt(byte[] value) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException;
+    void setSecretKey(SecretKey secretKey);
 }

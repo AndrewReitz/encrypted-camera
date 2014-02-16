@@ -31,4 +31,6 @@
     <string name="error_no_camera_app_found_message">This application is build to use your default camera, but you do not seem to have on installed.  Please install a camera application and then try this app again</string>
     <string name="error_no_camera_app">No Camera App</string>
     <string name="error_encrypting_image_message">Well this is embarrassing but there was an error saving your image!</string>
+    <string name="error_reencrypting">There was a problem encrypting the file %s! To ensure security you should delete it off your sdcard immediately</string>
+    <string name="error_unable_to_decrypt_to_sd">Unable to write the encrypted files to your sdcard</string>
 </resources>
