@@ -11,7 +11,7 @@
     <string name="passwords_do_not_match">Passwords do not match</string>
     <string name="pref_key_decrypt">pref_key_decrypt</string>
     <string name="pref_key_use_password">pref_key_use_password</string>
-    <string name="require_password_to_access_files">Require a password to access files</string>
+    <string name="require_password_to_access_files">Require a password</string>
     <string name="use_password">Use Password</string>
     <string name="photos_storage">Photos Storage</string>
     <string name="show_photos_in_sd_card">Show photos in SD Card</string>
