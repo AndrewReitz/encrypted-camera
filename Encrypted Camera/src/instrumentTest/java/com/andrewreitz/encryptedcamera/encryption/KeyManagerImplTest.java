@@ -65,4 +65,17 @@ public class KeyManagerImplTest extends AndroidTestCase {
         assertThat(key.getEncoded()).isEqualTo(secretKey.getEncoded());
         assertThat(key.getFormat()).isEqualTo(secretKey.getFormat());
     }
+
+    public void testShouldCreateSameKeysForEncryptionAndDecryption() throws Exception {
+        // Arrange
+        String password = "immasupersecretpassword";
+        String salt = "immasalt";
+
+        // Act
+        SecretKey secretKey1 = keyManager.generateKeyWithPassword(password.toCharArray(), salt.getBytes());
+        SecretKey secretKey2 = keyManager.generateKeyWithPassword(password.toCharArray(), salt.getBytes());
+
+        // Assert
+        assertThat(secretKey1).isEqualsToByComparingFields(secretKey2);
+    }
 }

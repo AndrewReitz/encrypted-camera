@@ -11,6 +11,8 @@ import android.widget.EditText;
 
 import com.andrewreitz.encryptedcamera.R;
 
+import java.security.spec.InvalidKeySpecException;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -20,6 +22,14 @@ import butterknife.InjectView;
 public class PasswordDialog extends DialogFragment implements AlertDialog.OnClickListener, DialogInterface.OnShowListener {
 
     @InjectView(R.id.dialog_editText_password) EditText passwordEditText;
+
+    private PasswordDialogListener listener;
+
+    public static PasswordDialog newInstance(PasswordDialogListener passwordDialogListener) {
+        PasswordDialog passwordDialog = new PasswordDialog();
+        passwordDialog.listener = passwordDialogListener;
+        return passwordDialog;
+    }
 
     @Override public Dialog onCreateDialog(Bundle savedInstanceState) {
         @SuppressWarnings("ConstantConditions")
@@ -42,8 +52,11 @@ public class PasswordDialog extends DialogFragment implements AlertDialog.OnClic
     @Override public void onClick(DialogInterface dialog, int which) {
         switch (which) {
             case DialogInterface.BUTTON_POSITIVE:
+                //noinspection ConstantConditions
+                listener.onPasswordEntered(passwordEditText.getText().toString());
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
+                listener.onPasswordCancel();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown button pressed, which == " + which);

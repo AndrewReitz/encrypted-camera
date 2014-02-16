@@ -68,10 +68,10 @@ public class SetPasswordDialog extends DialogFragment implements DialogInterface
     }
 
     private void handleNegetiveButtonPress() {
-        this.listener.onPasswordCancel();
+        this.listener.onPasswordSetCancel();
         //noinspection ConstantConditions
         SetPasswordDialog.this.getDialog().cancel();
-        this.listener.onPasswordCancel();
+        this.listener.onPasswordSetCancel();
     }
 
     private boolean handlePostitiveButtonPress() {
@@ -109,6 +109,6 @@ public class SetPasswordDialog extends DialogFragment implements DialogInterface
     public interface SetPasswordDialogListener {
         void onPasswordSet(String password);
 
-        void onPasswordCancel();
+        void onPasswordSetCancel();
     }
 }

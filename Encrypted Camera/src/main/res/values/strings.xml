@@ -33,4 +33,5 @@
     <string name="error_encrypting_image_message">Well this is embarrassing but there was an error saving your image!</string>
     <string name="error_reencrypting">There was a problem encrypting the file %s! To ensure security you should delete it off your sdcard immediately</string>
     <string name="error_unable_to_decrypt_to_sd">Unable to write the encrypted files to your sdcard</string>
+    <string name="error_incorrect_password">Incorrect Password</string>
 </resources>

@@ -100,16 +100,19 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public SecretKey getKey(@NotNull String alias, @Nullable String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
-        return (SecretKey) keyStore.getKey(alias, password == null ? null : password.toCharArray());
-    }
-
-    @Override
     public SecretKey generateKeyNoPassword() throws NoSuchAlgorithmException {
         final int outputKeyLength = 256;
         SecureRandom secureRandom = new SecureRandom();
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(outputKeyLength, secureRandom);
         return keyGenerator.generateKey();
+    }
+
+    /**
+     * Get key from a password protected keymanager
+     */
+    @Override
+    public SecretKey getKey(@NotNull String alias, @Nullable String password) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
+        return (SecretKey) keyStore.getKey(alias, password == null ? null : password.toCharArray());
     }
 }
