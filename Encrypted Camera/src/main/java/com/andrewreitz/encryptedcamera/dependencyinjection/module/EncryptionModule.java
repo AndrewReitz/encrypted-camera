@@ -59,7 +59,7 @@ public class EncryptionModule {
             return new EncryptionProviderImpl(
                     cipher,
                     keyManager.getKey(EncryptedCameraApp.KEY_STORE_ALIAS),
-                    new byte[] {
+                    new byte[] { // TODO MOVE TO SHARED PREFS
                             0x4,0xA,0xF,0xF,0x4,0x5,0x9,0x5,
                             0x0,0x2,0x0,0x7,0x9,0x3,0xd,0x2
                     }
