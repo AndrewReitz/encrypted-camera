@@ -1,8 +1,4 @@
 <resources>
-    <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen">
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
-
     <style name="ActionBar.Solid.Encryptedcamera" parent="@android:style/Widget.Holo.ActionBar.Solid">
         <item name="android:background">@drawable/ab_background_textured_encryptedcamera</item>
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_encryptedcamera</item>
