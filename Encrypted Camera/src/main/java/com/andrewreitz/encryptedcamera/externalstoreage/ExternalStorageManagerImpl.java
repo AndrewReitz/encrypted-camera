@@ -23,7 +23,6 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
     private static final String FILE_NAME_FORMAT = "%s%s%s_%s.%s";
     private static final String DEFAULT_DATE_FORMAT = "yyyyMMdd_HHmmss";
 
-    // TODO Probably add constructors to override these
     private static final String IMAGE_FILENAME_PREFIX = "IMG";
     private static final String VIDEO_FILENAME_PREFIX = "VID";
 
