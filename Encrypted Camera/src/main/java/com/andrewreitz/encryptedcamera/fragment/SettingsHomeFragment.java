@@ -56,6 +56,9 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Inject SecureDelete secureDelete;
     @Inject FragmentManager fragmentManager;
 
+    private SwitchPreference switchPreferenceDecrypt;
+    private SwitchPreference switchPreferencePassword;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -72,8 +75,10 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @SuppressWarnings("ConstantConditions")
     public void onResume() {
         super.onResume();
-        findPreference(getString(R.string.pref_key_decrypt)).setOnPreferenceChangeListener(this);
-        findPreference(getString(R.string.pref_key_use_password)).setOnPreferenceChangeListener(this);
+        switchPreferenceDecrypt = (SwitchPreference) findPreference(getString(R.string.pref_key_decrypt));
+        switchPreferenceDecrypt.setOnPreferenceChangeListener(this);
+        switchPreferencePassword = (SwitchPreference) findPreference(getString(R.string.pref_key_use_password));
+        switchPreferencePassword.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -93,8 +98,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         }
         preferenceManager.setSalt(salt);
         preferenceManager.setHasPassword(true);
-        //noinspection ConstantConditions
-        ((SwitchPreference) findPreference(getString(R.string.pref_key_use_password))).setChecked(true);
+        switchPreferencePassword.setChecked(true);
     }
 
     @Override public void onPasswordEntered(String password) {
@@ -114,8 +118,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     @Override public void onPasswordCancel() {
-        //noinspection ConstantConditions
-        ((SwitchPreference) findPreference(getString(R.string.pref_key_decrypt))).setChecked(false);
+        switchPreferenceDecrypt.setChecked(false);
     }
 
     @Override public void onPasswordSetCancel() {
@@ -134,14 +137,23 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         if (preference.getKey().equals(getString(R.string.pref_key_use_password))) {
             if (preferenceManager.getDecrypted()) {
                 // don't allow changing password while photos are decrypted
+                ErrorDialog.newInstance(
+                        getString(R.string.error),
+                        getString(R.string.error_change_password_while_decrypted)
+                ).show(fragmentManager, "error_change_password_while_decrypted");
+                return false;
             } else if (value && !preferenceManager.hasPassword()) { // check if a password has already been set do to the filtering done for passwords
-                SetPasswordDialog setPasswordDialog = SetPasswordDialog.newInstance(this);
-                setPasswordDialog.show(fragmentManager, "password_dialog");
+                SetPasswordDialog.newInstance(this)
+                        .show(fragmentManager, "password_dialog");
                 return false;
             } else {
                 // TODO: Get password to unencrypt files that were already there
-                createKeyNoPassword();
-                return true;
+                if (preferenceManager.hasPassword()) {
+
+                } else {
+                    createKeyNoPassword();
+                    return true;
+                }
             }
         } else if (preference.getKey().equals(getString(R.string.pref_key_decrypt))) {
             handleDecrypt(value);
@@ -232,12 +244,10 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                     NOTIFICATION_ID,
                     unlockNotification
             );
-            //noinspection ConstantConditions
-            ((SwitchPreference) findPreference(getString(R.string.pref_key_decrypt))).setChecked(true);
+            switchPreferenceDecrypt.setChecked(true);
         } else {
             // there was an error reset the switch preferences
-            //noinspection ConstantConditions
-            ((SwitchPreference) findPreference(getString(R.string.pref_key_decrypt))).setChecked(false);
+            switchPreferenceDecrypt.setChecked(false);
         }
     }
 
@@ -261,7 +271,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             }
         }
 
-        //noinspection ConstantConditions
-        ((SwitchPreference) findPreference(getString(R.string.pref_key_decrypt))).setChecked(false);
+        switchPreferenceDecrypt.setChecked(false);
+    }
+
+    // TODO Replace All Error Dialogs with this
+    private void showErrorDialog(String error, String message) {
+        ErrorDialog.newInstance(
+                error,
+                message
+        ).show(fragmentManager, "error_change_password_while_decrypted");
     }
 }

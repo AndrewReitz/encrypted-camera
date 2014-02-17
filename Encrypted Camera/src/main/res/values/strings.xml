@@ -35,4 +35,5 @@
     <string name="error_unable_to_decrypt_to_sd">Unable to write the encrypted files to your sdcard</string>
     <string name="error_incorrect_password">Incorrect Password</string>
     <string name="error_terrible">A terrible error occurred, please try again</string>
+    <string name="error_change_password_while_decrypted">Can not change password while images are decrypted</string>
 </resources>
