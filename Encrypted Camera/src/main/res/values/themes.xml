@@ -24,5 +24,7 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_encryptedcamera</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_encryptedcamera</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Encryptedcamera</item>
+        <item name="switchStyle">@style/SwitchEncryptedcamera</item>
+        <item name="switchPreferenceStyle">@style/Preference.SwitchPreference</item>
     </style>
 </resources>
