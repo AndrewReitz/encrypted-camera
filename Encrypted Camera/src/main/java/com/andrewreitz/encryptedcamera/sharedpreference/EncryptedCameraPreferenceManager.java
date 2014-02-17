@@ -44,6 +44,13 @@ public class EncryptedCameraPreferenceManager {
         );
     }
 
+    public boolean getDecrypted() {
+        return sharedPreferenceService.getBoolean(
+                context.getString(R.string.pref_key_decrypt),
+                false
+        );
+    }
+
     public void setSalt(byte[] salt) {
         sharedPreferenceService.saveString(SALT, Base64.encodeToString(salt, Base64.DEFAULT));
     }

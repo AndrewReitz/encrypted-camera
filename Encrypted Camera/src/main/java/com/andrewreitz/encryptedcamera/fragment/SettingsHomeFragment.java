@@ -1,5 +1,6 @@
 package com.andrewreitz.encryptedcamera.fragment;
 
+import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.os.Bundle;
@@ -53,6 +54,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptionProvider encryptionProvider;
     @Inject SecureDelete secureDelete;
+    @Inject FragmentManager fragmentManager;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -80,8 +82,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(salt);
         try {
-            keyManager.generateKeyWithPassword(password.toCharArray(), salt);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            SecretKey secretKey = keyManager.generateKeyWithPassword(password.toCharArray(), salt);
+            encryptionProvider.setSecretKey(secretKey);
+            keyManager.saveKey(EncryptedCameraApp.KEY_STORE_ALIAS, secretKey);
+            keyManager.saveKeyStore();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | CertificateException | KeyStoreException | IOException e) {
             Timber.e(e, "Error saving encryption key with password");
             ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
             return;
@@ -98,12 +103,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             SecretKey key = keyManager.generateKeyWithPassword(password.toCharArray(), preferenceManager.getSalt());
             encryptionProvider.setSecretKey(key);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            // TODO
+            Timber.w(e, "Error recreating secret key.  This probably should never happen");
+            ErrorDialog.newInstance(
+                    getString(R.string.error),
+                    getString(R.string.error_terrible)
+            ).show(fragmentManager, "error_dialog_recreate_key");
         }
 
         decryptToSdDirectory(externalStorageManager.getAppExternalDirectory());
-        //noinspection ConstantConditions
-        ((SwitchPreference) findPreference(getString(R.string.pref_key_decrypt))).setChecked(true);
     }
 
     @Override public void onPasswordCancel() {
@@ -125,11 +132,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
         //noinspection ConstantConditions
         if (preference.getKey().equals(getString(R.string.pref_key_use_password))) {
-            // check if a password has already been set do to the filtering done for passwords
-            if (value && !preferenceManager.hasPassword()) {
+            if (preferenceManager.getDecrypted()) {
+                // don't allow changing password while photos are decrypted
+            } else if (value && !preferenceManager.hasPassword()) { // check if a password has already been set do to the filtering done for passwords
                 SetPasswordDialog setPasswordDialog = SetPasswordDialog.newInstance(this);
-                //noinspection ConstantConditions
-                setPasswordDialog.show(getFragmentManager(), "password_dialog");
+                setPasswordDialog.show(fragmentManager, "password_dialog");
                 return false;
             } else {
                 // TODO: Get password to unencrypt files that were already there
@@ -148,6 +155,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         // Create a keystore for encryption that does not require a password
         try {
             SecretKey secretKey = keyManager.generateKeyNoPassword();
+            encryptionProvider.setSecretKey(secretKey);
             keyManager.saveKey(EncryptedCameraApp.KEY_STORE_ALIAS, secretKey);
             keyManager.saveKeyStore();
         } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
@@ -165,7 +173,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             ErrorDialog.newInstance(
                     getString(R.string.error),
                     getString(R.string.error_sdcard_message)
-            ).show(getFragmentManager(), "error_dialog_sdcard");
+            ).show(fragmentManager, "error_dialog_sdcard");
             return;
         }
 
@@ -173,7 +181,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             if (preferenceManager.hasPassword()) {
                 PasswordDialog passwordDialog = PasswordDialog.newInstance(this);
                 //noinspection ConstantConditions
-                passwordDialog.show(getFragmentManager(), "dialog_get_password");
+                passwordDialog.show(fragmentManager, "dialog_get_password");
             } else {
                 decryptToSdDirectory(appExternalDirectory);
             }
@@ -194,7 +202,10 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 encrypted.delete();
             } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
                 Timber.d(e, "unable to decrypt and move file %s to sdcard", encrypted.getPath());
-                if (!errorShown) {
+                // Deleted the file that was put on the sdcard and was not the full file
+                //noinspection ResultOfMethodCallIgnored
+                unencrypted.delete();
+                if (!errorShown) { // stop the error from being show multiple times
                     errorShown = true;
                     if (preferenceManager.hasPassword()) {
                         ErrorDialog errorDialog = ErrorDialog.newInstance(
@@ -202,16 +213,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                                 getString(R.string.error_incorrect_password)
 
                         );
-                        //noinspection ConstantConditions
-                        errorDialog.show(getFragmentManager(), "error_dialog_encrypt_pw");
+                        errorDialog.show(fragmentManager, "error_dialog_encrypt_pw");
                     } else {
                         ErrorDialog errorDialog = ErrorDialog.newInstance(
                                 getString(R.string.error),
                                 getString(R.string.error_unable_to_decrypt_to_sd)
 
                         );
-                        //noinspection ConstantConditions
-                        errorDialog.show(getFragmentManager(), "error_dialog_encrypt");
+                        errorDialog.show(fragmentManager, "error_dialog_encrypt");
                     }
                 }
             }
@@ -223,6 +232,12 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                     NOTIFICATION_ID,
                     unlockNotification
             );
+            //noinspection ConstantConditions
+            ((SwitchPreference) findPreference(getString(R.string.pref_key_decrypt))).setChecked(true);
+        } else {
+            // there was an error reset the switch preferences
+            //noinspection ConstantConditions
+            ((SwitchPreference) findPreference(getString(R.string.pref_key_decrypt))).setChecked(false);
         }
     }
 
@@ -242,8 +257,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                         String.format(getString(R.string.error_reencrypting), unencrypted.getPath())
 
                 );
-                //noinspection ConstantConditions
-                errorDialog.show(getFragmentManager(), "error_dialog_reencrypt");
+                errorDialog.show(fragmentManager, "error_dialog_re_encrypt");
             }
         }
 

@@ -34,4 +34,5 @@
     <string name="error_reencrypting">There was a problem encrypting the file %s! To ensure security you should delete it off your sdcard immediately</string>
     <string name="error_unable_to_decrypt_to_sd">Unable to write the encrypted files to your sdcard</string>
     <string name="error_incorrect_password">Incorrect Password</string>
+    <string name="error_terrible">A terrible error occurred, please try again</string>
 </resources>

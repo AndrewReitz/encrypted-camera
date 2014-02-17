@@ -1,6 +1,7 @@
 package com.andrewreitz.encryptedcamera.dependencyinjection.module;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -78,5 +79,11 @@ public class ActivityModule {
         notification.flags |= Notification.FLAG_NO_CLEAR;
 
         return notification;
+    }
+
+    @Provides
+    @Singleton
+    FragmentManager provideFragmentManager() {
+        return activity.getFragmentManager();
     }
 }
