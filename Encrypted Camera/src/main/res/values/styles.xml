@@ -1,5 +1,72 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen">
-        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="ActionBar.Solid.Encryptedcamera" parent="@android:style/Widget.Holo.ActionBar.Solid">
+        <item name="android:background">@drawable/ab_background_textured_encryptedcamera</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_encryptedcamera</item>
+        <item name="android:backgroundSplit">@drawable/ab_background_textured_encryptedcamera</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Encryptedcamera</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Encryptedcamera" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@drawable/ab_transparent_encryptedcamera</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Encryptedcamera</item>
+    </style>
+
+    <style name="PopupMenu.Encryptedcamera" parent="@android:style/Widget.Holo.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_encryptedcamera</item>
+    </style>
+
+    <style name="DropDownListView.Encryptedcamera" parent="@android:style/Widget.Holo.ListView.DropDown">
+        <item name="android:listSelector">@drawable/selectable_background_encryptedcamera</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Encryptedcamera" parent="@android:style/Widget.Holo.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_encryptedcamera</item>
+    </style>
+
+    <style name="DropDownNav.Encryptedcamera" parent="@android:style/Widget.Holo.Spinner">
+        <item name="android:background">@drawable/spinner_background_ab_encryptedcamera</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_encryptedcamera</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_encryptedcamera</item>
+    </style>
+
+    <style name="ProgressBar.Encryptedcamera" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_encryptedcamera</item>
+    </style>
+
+    <style name="ActionButton.CloseMode.Encryptedcamera" parent="@android:style/Widget.Holo.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_encryptedcamera</item>
+    </style>
+
+    <style name="AutoCompleteTextViewEncryptedcamera" parent="android:Widget.Holo.AutoCompleteTextView">
+        <item name="android:dropDownSelector">@drawable/encryptedcamera_list_selector_holo_dark</item>
+        <item name="android:background">@drawable/encryptedcamera_edit_text_holo_dark</item>
+    </style>
+
+    <style name="ButtonEncryptedcamera" parent="android:Widget.Holo.Button">
+        <item name="android:background">@drawable/encryptedcamera_btn_default_holo_dark</item>
+    </style>
+
+    <style name="ImageButtonEncryptedcamera" parent="android:Widget.Holo.ImageButton">
+        <item name="android:background">@drawable/encryptedcamera_btn_default_holo_dark</item>
+    </style>
+
+    <style name="SpinnerEncryptedcamera" parent="android:Widget.Holo.Spinner">
+        <item name="android:background">@drawable/encryptedcamera_spinner_background_holo_dark</item>
+        <item name="android:dropDownSelector">@drawable/encryptedcamera_list_selector_holo_dark</item>
+    </style>
+
+    <style name="SwitchEncryptedcamera">
+        <item name="track">@drawable/encryptedcamera_switch_track_holo_dark</item>
+        <item name="thumb">@drawable/encryptedcamera_switch_inner_holo_dark</item>
+        <item name="android:textOn">ON</item>
+        <item name="android:textOff">OFF</item>
+        <item name="thumbTextPadding">5dip</item>
+        <item name="switchMinWidth">75dip</item>
+        <item name="switchPadding">5dip</item>
+        <item name="switchTextAppearance">@style/TextAppearance.Holo.Light.Widget.Switch</item>
     </style>
 </resources>
