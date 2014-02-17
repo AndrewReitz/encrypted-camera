@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.SwitchPreference;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
@@ -21,6 +20,8 @@ import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 
+import org.jraf.android.backport.switchwidget.SwitchPreference;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
@@ -28,7 +29,6 @@ import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 
@@ -228,7 +228,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     private void encryptSdDirectory(File appExternalDirectory) {
         this.notificationManager.cancel(NOTIFICATION_ID);
-        // FIX ME check if we need a password
+        // FIXME check if we need a password
         //noinspection ConstantConditions
         for (File unencrypted : appExternalDirectory.listFiles()) {
             File encrypted = new File(encrtypedDirectory, unencrypted.getName());
@@ -246,5 +246,8 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 errorDialog.show(getFragmentManager(), "error_dialog_reencrypt");
             }
         }
+
+        //noinspection ConstantConditions
+        ((SwitchPreference) findPreference(getString(R.string.pref_key_decrypt))).setChecked(false);
     }
 }
