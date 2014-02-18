@@ -124,71 +124,93 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
         //noinspection ConstantConditions
         if (preference.getKey().equals(getString(R.string.pref_key_use_password))) {
-            if (preferenceManager.getDecrypted()) {
-                // don't allow changing password while photos are decrypted
-                ErrorDialog.newInstance(
-                        getString(R.string.error),
-                        getString(R.string.error_change_password_while_decrypted)
-                ).show(fragmentManager, "error_change_password_while_decrypted");
-                return false;
-            } else if (value && !preferenceManager.hasPassword()) { // check if a password has already been set do to the filtering done for passwords
-                SetPasswordDialog.newInstance(this)
-                        .show(fragmentManager, "password_dialog");
-                return false;
-            } else {
-                // TODO: Get password to unencrypt files that were already there
-                if (preferenceManager.hasPassword()) {
-                    PasswordDialog.newInstance(new PasswordDialog.PasswordDialogListener() {
-                        // Create custom because one in activity does not meet our needs
-                        @Override public void onPasswordEntered(String password) {
-                            if (!setSecretKey(password)) return;
-
-                            try {
-                                //noinspection ConstantConditions
-                                for (File in : encryptedDirectory.listFiles()) {
-                                    File out = new File(encryptedDirectory, in.getName() + ".tmp");
-                                    encryptionProvider.decrypt(in, out);
-                                    //noinspection ResultOfMethodCallIgnored
-                                    in.delete();
-                                }
-                            } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
-                                // TODO
-                                // Password Error
-                                throw new RuntimeException(e);
-                            }
-
-                            try {
-                                //noinspection ConstantConditions
-                                for (File in : encryptedDirectory.listFiles()) {
-                                    File out = new File(in.getPath().replace(".tmp", ""));
-                                    encryptionProvider.encrypt(in, out);
-                                    //noinspection ResultOfMethodCallIgnored
-                                    in.delete();
-                                    switchPreferencePassword.setChecked(false);
-                                }
-                            } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
-                                // TODO
-                                // Password Error
-                                throw new RuntimeException(e);
-                            }
-                        }
-
-                        @Override public void onPasswordCancel() {
-                            // D/C
-                        }
-                    }).show(fragmentManager, "get_password_dialog");
-                    return false;
-                } else {
-                    createKeyNoPassword();
-                    return true;
-                }
-            }
+            return handleUsePasswordPreference(value);
         } else if (preference.getKey().equals(getString(R.string.pref_key_decrypt))) {
-            handleDecrypt(value);
-            return false;
+            return handleDecryptedPreference(value);
         }
 
         throw new RuntimeException("Unknown preference passed in preference == " + preference.getKey());
+    }
+
+    private boolean handleDecryptedPreference(boolean value) {
+        handleDecrypt(value);
+        return false;
+    }
+
+    private boolean handleUsePasswordPreference(boolean checked) {
+        if (preferenceManager.getDecrypted()) {
+            // don't allow changing password while photos are decrypted
+            showErrorDialog(
+                    getString(R.string.error),
+                    getString(R.string.error_change_password_while_decrypted),
+                    "error_change_password_while_decrypted"
+            );
+            return false;
+        } else if (checked && !preferenceManager.hasPassword()) { // check if a password has already been set do to the filtering done for passwords
+            SetPasswordDialog.newInstance(this).show(fragmentManager, "password_dialog");
+            return false;
+        } else {
+            if (preferenceManager.hasPassword()) {
+                turnOffPassword();
+                return false;
+            } else {
+                createKeyNoPassword();
+                return true;
+            }
+        }
+    }
+
+    private void turnOffPassword() {
+        PasswordDialog.newInstance(new PasswordDialog.PasswordDialogListener() {
+            // Create custom because one in activity does not meet our needs
+            @Override public void onPasswordEntered(String password) {
+                if (!setSecretKey(password)) return;
+                if (decryptFilesInternally()) return;
+                reEncryptFilesInternally();
+            }
+
+            @Override public void onPasswordCancel() {
+            }
+        }).show(fragmentManager, "get_password_dialog");
+    }
+
+    private void reEncryptFilesInternally() {
+        try {
+            //noinspection ConstantConditions
+            for (File in : encryptedDirectory.listFiles()) {
+                File out = new File(in.getPath().replace(".tmp", ""));
+                encryptionProvider.encrypt(in, out);
+                //noinspection ResultOfMethodCallIgnored
+                in.delete();
+                switchPreferencePassword.setChecked(false);
+            }
+        } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
+            Timber.w(e, "Error encrypting files without a password");
+            // if this exception really happens the application won't work
+            // We should really crash.
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean decryptFilesInternally() {
+        try {
+            //noinspection ConstantConditions
+            for (File in : encryptedDirectory.listFiles()) {
+                File out = new File(encryptedDirectory, in.getName() + ".tmp");
+                encryptionProvider.decrypt(in, out);
+                //noinspection ResultOfMethodCallIgnored
+                in.delete();
+            }
+        } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
+            Timber.w(e, "error unencrypting internally");
+            showErrorDialog(
+                    getString(R.string.error),
+                    getString(R.string.error_incorrect_password),
+                    "error_dialog_removing_password"
+            );
+            return true;
+        }
+        return false;
     }
 
     private boolean createKeyNoPassword() {
@@ -202,7 +224,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
             // The app really wouldn't work at this point
             Timber.e(e, "Error saving encryption key, no password");
-            ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
+            showErrorDialog(
+                    getString(R.string.encryption_error),
+                    getString(R.string.error_saving_encryption_key),
+                    "error_dialog_generate_key_no_password"
+            );
         }
 
         return false;
@@ -213,10 +239,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
         if (appExternalDirectory == null || !externalStorageManager.checkSdCardIsInReadAndWriteState()) {
             //noinspection ConstantConditions
-            ErrorDialog.newInstance(
+            showErrorDialog(
                     getString(R.string.error),
-                    getString(R.string.error_sdcard_message)
-            ).show(fragmentManager, "error_dialog_sdcard");
+                    getString(R.string.error_sdcard_message),
+                    "error_dialog_sdcard"
+            );
             return;
         }
 
@@ -251,19 +278,17 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 if (!errorShown) { // stop the error from being show multiple times
                     errorShown = true;
                     if (preferenceManager.hasPassword()) {
-                        ErrorDialog errorDialog = ErrorDialog.newInstance(
+                        showErrorDialog(
                                 getString(R.string.error),
-                                getString(R.string.error_incorrect_password)
-
+                                getString(R.string.error_incorrect_password),
+                                "error_dialog_encrypt_pw"
                         );
-                        errorDialog.show(fragmentManager, "error_dialog_encrypt_pw");
                     } else {
-                        ErrorDialog errorDialog = ErrorDialog.newInstance(
+                        showErrorDialog(
                                 getString(R.string.error),
-                                getString(R.string.error_unable_to_decrypt_to_sd)
-
+                                getString(R.string.error_unable_to_decrypt_to_sd),
+                                "error_dialog_encrypt"
                         );
-                        errorDialog.show(fragmentManager, "error_dialog_encrypt");
                     }
                 }
             }
@@ -293,12 +318,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 secureDelete.secureDelete(unencrypted);
             } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
                 Timber.d(e, "unable to encrypt and move file to internal storage");
-                ErrorDialog errorDialog = ErrorDialog.newInstance(
+                showErrorDialog(
                         getString(R.string.error),
-                        String.format(getString(R.string.error_reencrypting), unencrypted.getPath())
-
+                        String.format(getString(R.string.error_reencrypting), unencrypted.getPath()),
+                        "error_dialog_re_encrypt"
                 );
-                errorDialog.show(fragmentManager, "error_dialog_re_encrypt");
             }
         }
 
@@ -313,20 +337,20 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             return true;
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             Timber.w(e, "Error recreating secret key.  This probably should never happen");
-            ErrorDialog.newInstance(
+            showErrorDialog(
                     getString(R.string.error),
-                    getString(R.string.error_terrible)
-            ).show(fragmentManager, "error_dialog_recreate_key");
+                    getString(R.string.error_terrible),
+                    "error_dialog_recreate_key"
+            );
         }
 
         return false;
     }
 
-    // TODO Replace All Error Dialogs with this
-    private void showErrorDialog(String error, String message) {
+    private void showErrorDialog(String error, String message, String tag) {
         ErrorDialog.newInstance(
                 error,
                 message
-        ).show(fragmentManager, "error_change_password_while_decrypted");
+        ).show(fragmentManager, tag);
     }
 }
