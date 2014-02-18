@@ -309,7 +309,6 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     private void encryptSdDirectory(File appExternalDirectory) {
         this.notificationManager.cancel(NOTIFICATION_ID);
-        // FIXME check if we need a password
         //noinspection ConstantConditions
         for (File unencrypted : appExternalDirectory.listFiles()) {
             File encrypted = new File(encryptedDirectory, unencrypted.getName());
