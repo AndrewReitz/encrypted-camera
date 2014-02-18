@@ -50,7 +50,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Inject KeyManager keyManager;
     @Inject EncryptedCameraPreferenceManager preferenceManager;
     @Inject @UnlockNotification Notification unlockNotification;
-    @Inject @EncryptedDirectory File encrtypedDirectory;
+    @Inject @EncryptedDirectory File encryptedDirectory;
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptionProvider encryptionProvider;
     @Inject SecureDelete secureDelete;
@@ -102,18 +102,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     @Override public void onPasswordEntered(String password) {
-        try {
-            // recreate the secret key and give it to the encryption provider
-            SecretKey key = keyManager.generateKeyWithPassword(password.toCharArray(), preferenceManager.getSalt());
-            encryptionProvider.setSecretKey(key);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            Timber.w(e, "Error recreating secret key.  This probably should never happen");
-            ErrorDialog.newInstance(
-                    getString(R.string.error),
-                    getString(R.string.error_terrible)
-            ).show(fragmentManager, "error_dialog_recreate_key");
-        }
-
+        if (!setSecretKey(password)) return;
         decryptToSdDirectory(externalStorageManager.getAppExternalDirectory());
     }
 
@@ -149,7 +138,46 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             } else {
                 // TODO: Get password to unencrypt files that were already there
                 if (preferenceManager.hasPassword()) {
+                    PasswordDialog.newInstance(new PasswordDialog.PasswordDialogListener() {
+                        // Create custom because one in activity does not meet our needs
+                        @Override public void onPasswordEntered(String password) {
+                            if (!setSecretKey(password)) return;
 
+                            try {
+                                //noinspection ConstantConditions
+                                for (File in : encryptedDirectory.listFiles()) {
+                                    File out = new File(encryptedDirectory, in.getName() + ".tmp");
+                                    encryptionProvider.decrypt(in, out);
+                                    //noinspection ResultOfMethodCallIgnored
+                                    in.delete();
+                                }
+                            } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
+                                // TODO
+                                // Password Error
+                                throw new RuntimeException(e);
+                            }
+
+                            try {
+                                //noinspection ConstantConditions
+                                for (File in : encryptedDirectory.listFiles()) {
+                                    File out = new File(in.getPath().replace(".tmp", ""));
+                                    encryptionProvider.encrypt(in, out);
+                                    //noinspection ResultOfMethodCallIgnored
+                                    in.delete();
+                                    switchPreferencePassword.setChecked(false);
+                                }
+                            } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
+                                // TODO
+                                // Password Error
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        @Override public void onPasswordCancel() {
+                            // D/C
+                        }
+                    }).show(fragmentManager, "get_password_dialog");
+                    return false;
                 } else {
                     createKeyNoPassword();
                     return true;
@@ -163,18 +191,21 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         throw new RuntimeException("Unknown preference passed in preference == " + preference.getKey());
     }
 
-    private void createKeyNoPassword() {
+    private boolean createKeyNoPassword() {
         // Create a keystore for encryption that does not require a password
         try {
             SecretKey secretKey = keyManager.generateKeyNoPassword();
             encryptionProvider.setSecretKey(secretKey);
             keyManager.saveKey(EncryptedCameraApp.KEY_STORE_ALIAS, secretKey);
             keyManager.saveKeyStore();
+            return true;
         } catch (NoSuchAlgorithmException | KeyStoreException | IOException | CertificateException e) {
             // The app really wouldn't work at this point
             Timber.e(e, "Error saving encryption key, no password");
             ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
         }
+
+        return false;
     }
 
     private void handleDecrypt(boolean decrypt) {
@@ -206,7 +237,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
         boolean errorShown = false;
         //noinspection ConstantConditions
-        for (File encrypted : encrtypedDirectory.listFiles()) {
+        for (File encrypted : encryptedDirectory.listFiles()) {
             File unencrypted = new File(appExternalDirectory, encrypted.getName());
             try {
                 encryptionProvider.decrypt(encrypted, unencrypted);
@@ -256,7 +287,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         // FIXME check if we need a password
         //noinspection ConstantConditions
         for (File unencrypted : appExternalDirectory.listFiles()) {
-            File encrypted = new File(encrtypedDirectory, unencrypted.getName());
+            File encrypted = new File(encryptedDirectory, unencrypted.getName());
             try {
                 encryptionProvider.encrypt(unencrypted, encrypted);
                 secureDelete.secureDelete(unencrypted);
@@ -272,6 +303,23 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         }
 
         switchPreferenceDecrypt.setChecked(false);
+    }
+
+    private boolean setSecretKey(String password) {
+        try {
+            // recreate the secret key and give it to the encryption provider
+            SecretKey key = keyManager.generateKeyWithPassword(password.toCharArray(), preferenceManager.getSalt());
+            encryptionProvider.setSecretKey(key);
+            return true;
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            Timber.w(e, "Error recreating secret key.  This probably should never happen");
+            ErrorDialog.newInstance(
+                    getString(R.string.error),
+                    getString(R.string.error_terrible)
+            ).show(fragmentManager, "error_dialog_recreate_key");
+        }
+
+        return false;
     }
 
     // TODO Replace All Error Dialogs with this
