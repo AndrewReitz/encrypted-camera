@@ -14,7 +14,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven {
-            url "http://JRAF.org/static/maven/2"
+            url "http://JRAF.org/static/maven/2" // for android-switch-backport
         }
     }
 }

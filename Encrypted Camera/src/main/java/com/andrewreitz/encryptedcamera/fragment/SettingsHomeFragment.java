@@ -21,7 +21,10 @@ import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jraf.android.backport.switchwidget.SwitchPreference;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,14 +99,27 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
             return;
         }
+        preferenceManager.setPassword(password);
         preferenceManager.setSalt(salt);
         preferenceManager.setHasPassword(true);
         switchPreferencePassword.setChecked(true);
     }
 
     @Override public void onPasswordEntered(String password) {
+        if (doPasswordCheck(password)) {
+            showIncorrectPasswordDialog();
+            return;
+        }
         if (!setSecretKey(password)) return;
         decryptToSdDirectory(externalStorageManager.getAppExternalDirectory());
+    }
+
+    private void showIncorrectPasswordDialog() {
+        showErrorDialog(
+                getString(R.string.error),
+                getString(R.string.error_incorrect_password),
+                "error_dialog_encrypt_pw"
+        );
     }
 
     @Override public void onPasswordCancel() {
@@ -165,7 +181,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             // Create custom because one in activity does not meet our needs
             @Override public void onPasswordEntered(String password) {
                 if (!setSecretKey(password)) return;
-                if (decryptFilesInternally()) return;
+                if (decryptFilesInternally(password)) return;
                 reEncryptFilesInternally();
             }
 
@@ -192,7 +208,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         }
     }
 
-    private boolean decryptFilesInternally() {
+    private boolean decryptFilesInternally(@NotNull String password) {
+        if (!doPasswordCheck(password)) {
+            if (!doPasswordCheck(password)) {
+                showIncorrectPasswordDialog();
+                return false;
+            }
+        }
+
         try {
             //noinspection ConstantConditions
             for (File in : encryptedDirectory.listFiles()) {
@@ -210,6 +233,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             );
             return true;
         }
+
         return false;
     }
 
@@ -260,7 +284,15 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         }
     }
 
-    private void decryptToSdDirectory(File appExternalDirectory) {
+    private void decryptToSdDirectory(@NotNull File appExternalDirectory) {
+        this.decryptToSdDirectory(appExternalDirectory, null);
+    }
+
+    private void decryptToSdDirectory(@NotNull File appExternalDirectory, @Nullable String password) {
+        if (password != null && !doPasswordCheck(password)) {
+            showIncorrectPasswordDialog();
+            return;
+        }
 
         boolean errorShown = false;
         //noinspection ConstantConditions
@@ -277,19 +309,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 unencrypted.delete();
                 if (!errorShown) { // stop the error from being show multiple times
                     errorShown = true;
-                    if (preferenceManager.hasPassword()) {
-                        showErrorDialog(
-                                getString(R.string.error),
-                                getString(R.string.error_incorrect_password),
-                                "error_dialog_encrypt_pw"
-                        );
-                    } else {
-                        showErrorDialog(
-                                getString(R.string.error),
-                                getString(R.string.error_unable_to_decrypt_to_sd),
-                                "error_dialog_encrypt"
-                        );
-                    }
+                    showErrorDialog(
+                            getString(R.string.error),
+                            getString(R.string.error_unable_to_decrypt_to_sd),
+                            "error_dialog_encrypt"
+                    );
                 }
             }
         }
@@ -351,5 +375,10 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 error,
                 message
         ).show(fragmentManager, tag);
+    }
+
+    private boolean doPasswordCheck(@NotNull String password) {
+        String passwordHash = preferenceManager.getPasswordHash();
+        return BCrypt.checkpw(password, passwordHash);
     }
 }

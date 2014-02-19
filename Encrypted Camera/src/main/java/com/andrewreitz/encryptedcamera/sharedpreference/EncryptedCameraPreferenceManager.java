@@ -6,6 +6,9 @@ import android.util.Base64;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
 
+import org.jetbrains.annotations.NotNull;
+import org.mindrot.jbcrypt.BCrypt;
+
 import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -17,6 +20,7 @@ public class EncryptedCameraPreferenceManager {
 
     private static final String SALT = "salt";
     private static final String GENERATED_KEY = "generated_key";
+    private static final String PASSWORD_HASH = "password_hash";
 
     private final Context context;
     private final SharedPreferenceService sharedPreferenceService;
@@ -73,5 +77,26 @@ public class EncryptedCameraPreferenceManager {
 
     public void setGeneratedKey(boolean generated) {
         sharedPreferenceService.saveBoolean(GENERATED_KEY, generated);
+    }
+
+    /**
+     * Stores the password as a hash. Using BCrypt!
+     *
+     * @param password the password to store
+     */
+    public void setPassword(@NotNull String password) {
+        String hashed = BCrypt.hashpw(password, BCrypt.gensalt(4)); // opting for speed here
+        sharedPreferenceService.saveString(PASSWORD_HASH, hashed);
+    }
+
+    /**
+     * return BCrypt hash password
+     */
+    public String getPasswordHash() {
+        String hash = sharedPreferenceService.getString(PASSWORD_HASH, null);
+        if (hash == null) {
+            throw new RuntimeException("Password hash was never set.  Call setPassword first");
+        }
+        return hash;
     }
 }
