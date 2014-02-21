@@ -198,8 +198,8 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 encryptionProvider.encrypt(in, out);
                 //noinspection ResultOfMethodCallIgnored
                 in.delete();
-                switchPreferencePassword.setChecked(false);
             }
+            switchPreferencePassword.setChecked(false);
         } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
             Timber.w(e, "Error encrypting files without a password");
             // if this exception really happens the application won't work
