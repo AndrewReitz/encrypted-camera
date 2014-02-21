@@ -106,7 +106,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     @Override public void onPasswordEntered(String password) {
-        if (doPasswordCheck(password)) {
+        if (!doPasswordCheck(password)) {
             showIncorrectPasswordDialog();
             return;
         }
@@ -180,6 +180,10 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         PasswordDialog.newInstance(new PasswordDialog.PasswordDialogListener() {
             // Create custom because one in activity does not meet our needs
             @Override public void onPasswordEntered(String password) {
+                if (!doPasswordCheck(password)) {
+                    showIncorrectPasswordDialog();
+                    return;
+                }
                 if (!setSecretKey(password)) return;
                 if (decryptFilesInternally(password)) return;
                 reEncryptFilesInternally();
