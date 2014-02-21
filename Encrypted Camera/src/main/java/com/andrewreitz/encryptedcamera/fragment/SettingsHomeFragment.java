@@ -86,6 +86,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     @Override
     public void onPasswordSet(String password) {
+        // TODO Re-Encrypt all files that were encrypted with the original key
         byte[] salt = new byte[10];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(salt);
@@ -112,14 +113,6 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         }
         if (!setSecretKey(password)) return;
         decryptToSdDirectory(externalStorageManager.getAppExternalDirectory());
-    }
-
-    private void showIncorrectPasswordDialog() {
-        showErrorDialog(
-                getString(R.string.error),
-                getString(R.string.error_incorrect_password),
-                "error_dialog_encrypt_pw"
-        );
     }
 
     @Override public void onPasswordCancel() {
@@ -333,6 +326,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             // there was an error reset the switch preferences
             switchPreferenceDecrypt.setChecked(false);
         }
+    }
+
+    private void showIncorrectPasswordDialog() {
+        showErrorDialog(
+                getString(R.string.error),
+                getString(R.string.error_incorrect_password),
+                "error_dialog_encrypt_pw"
+        );
     }
 
     private void encryptSdDirectory(File appExternalDirectory) {
