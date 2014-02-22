@@ -19,6 +19,7 @@ import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.MediaForma
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManagerImpl;
+import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 
 import java.io.File;
 import java.security.SecureRandom;
@@ -44,7 +45,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
                 EncryptionModule.class,
                 FileSystemModule.class
         },
-        injects = EncryptedCameraApp.class
+        injects = {
+                EncryptedCameraApp.class,
+                EncryptionIntentService.class
+        }
 )
 public class AndroidModule {
 
@@ -62,18 +66,21 @@ public class AndroidModule {
      */
     @Provides
     @Singleton
-    @ForApplication Context provideApplicationContext() {
+    @ForApplication
+    Context provideApplicationContext() {
         return application;
     }
 
     @Provides
-    @Singleton NotificationManager provideNotificationManager() {
+    @Singleton
+    NotificationManager provideNotificationManager() {
         return (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Provides
     @Singleton
-    @EncryptionErrorNotification Notification provideEncryptionErrorNotification() {
+    @EncryptionErrorNotification
+    Notification provideEncryptionErrorNotification() {
         return new NotificationCompat.Builder(application)
                 .setContentTitle(application.getString(R.string.error_encrypting))
                 .setContentText(application.getString(R.string.error_encrypting_photo))
@@ -83,7 +90,8 @@ public class AndroidModule {
 
     @Provides
     @Singleton
-    @UnlockNotification Notification provideUnlockNotification() {
+    @UnlockNotification
+    Notification provideUnlockNotification() {
         Notification notification = new NotificationCompat.Builder(application)
                 .setContentTitle(application.getString(R.string.app_name))
                 .setContentText(application.getString(R.string.images_unencryped_message))
@@ -107,18 +115,21 @@ public class AndroidModule {
     }
 
     @Provides
-    @Singleton SecureRandom provideSecureRandom() {
+    @Singleton
+    SecureRandom provideSecureRandom() {
         return new SecureRandom();
     }
 
     @Provides
     @Singleton
-    @MediaFormat DateFormat provideMediaDateFormat() {
+    @MediaFormat
+    DateFormat provideMediaDateFormat() {
         return new SimpleDateFormat(EncryptedCameraApp.MEDIA_OUTPUT_DATE_FORMAT);
     }
 
     @Provides
-    @CameraIntent Intent provideCameraIntent() {
+    @CameraIntent
+    Intent provideCameraIntent() {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     }
 }
