@@ -9,8 +9,11 @@ import android.content.Intent;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionErrorNotification;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
+import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.google.common.io.Files;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -41,6 +44,8 @@ public class EncryptionIntentService extends IntentService {
     @Inject SecureDelete secureDelete;
     @Inject NotificationManager notificationManager;
     @Inject @EncryptionErrorNotification Notification errorNotification;
+    @Inject EncryptedCameraPreferenceManager preferenceManager;
+    @Inject @InternalDecryptedDirectory File internalDecryptedDirectory;
 
     public EncryptionIntentService() {
         super(EncryptionIntentService.class.getName());
@@ -58,15 +63,28 @@ public class EncryptionIntentService extends IntentService {
         }
     }
 
+    @Override public void onDestroy() {
+        super.onDestroy();
+        preferenceManager.setIsDecrypting(false);
+    }
+
     private void handleUnencrypt(Intent intent) {
         Serializable serializableExtra = checkNotNull(intent.getSerializableExtra(UNENCRYPTED_FILE_PATH));
         if (!(serializableExtra instanceof File)) {
             throw new IllegalArgumentException("intent must pass in a file");
         }
 
+        preferenceManager.setIsDecrypting(true);
+
         File unencryptedFile = (File) serializableExtra;
         File encryptedFile = new File(encryptedFileDirectory, unencryptedFile.getName());
+        File unencryptedInternal = new File(internalDecryptedDirectory, encryptedFile.getName());
+
         try {
+            // Copy the file internally so the user can't mess with it
+            Files.copy(unencryptedFile, unencryptedInternal);
+            secureDelete.secureDelete(encryptedFile);
+
             //noinspection ResultOfMethodCallIgnored
             encryptedFile.createNewFile();
             encryptionProvider.encrypt(unencryptedFile, encryptedFile);

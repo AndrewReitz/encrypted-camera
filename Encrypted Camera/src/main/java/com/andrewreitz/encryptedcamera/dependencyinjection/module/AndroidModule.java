@@ -12,16 +12,12 @@ import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionErrorNotification;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.MediaFormat;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
-import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
-import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManagerImpl;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 
-import java.io.File;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,7 +26,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import timber.log.Timber;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

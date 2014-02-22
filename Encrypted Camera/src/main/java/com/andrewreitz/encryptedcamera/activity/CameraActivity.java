@@ -7,14 +7,18 @@ import android.provider.MediaStore;
 
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
+import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.google.common.io.Files;
 import com.google.common.net.MediaType;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -27,6 +31,8 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
     @Inject @CameraIntent Intent cameraIntent;
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptedCameraPreferenceManager preferenceManager;
+    @Inject SecureDelete secureDelete;
+    @Inject @InternalDecryptedDirectory File internalDecryptedDirectory;
 
     private Uri fileUri;
 
@@ -45,8 +51,11 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
         switch (resultCode) {
             case RESULT_OK:
-                if (!preferenceManager.isDecrypted()) {
-                    encryptAndSaveImage();
+                try {
+                    handleResultOk();
+                } catch (IOException e) {
+                    Timber.e(e, "Error handling response from camera");
+                    showSdCardError();
                 }
                 break;
             case RESULT_CANCELED:
@@ -68,17 +77,21 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         }
     }
 
+    private void handleResultOk() throws IOException {
+        if (!preferenceManager.isDecrypted()) {
+            File unencrypted = new File(fileUri.getPath());
+            encryptAndSaveImage(unencrypted);
+        }
+    }
+
     @Override
     public void onErrorDialogDismissed() {
         // Can't continue on close app
         finish();
     }
 
-    private void encryptAndSaveImage() {
-        // Image captured and saved to fileUri specified in the Intent
-        // We need to encrypt it and save to EncryptedFolder
-        File unencryptedImage = new File(fileUri.getPath());
-        EncryptionIntentService.startEncryptAction(this, unencryptedImage);
+    private void encryptAndSaveImage(File unencryptedFile) {
+        EncryptionIntentService.startEncryptAction(this, unencryptedFile);
         openCameraWithIntent();
     }
 
@@ -100,16 +113,20 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
             fileUri = externalStorageManager.getOutputMediaFileUri(MediaType.JPEG);
         } catch (SDCardException e) {
             Timber.e(e, "Error writing to sdcard");
-            ErrorDialog errorDialog = ErrorDialog.newInstance(
-                    getString(R.string.error_sdcard_title),
-                    getString(R.string.error_sdcard_message)
-            );
-            errorDialog.setCallback(this);
-            errorDialog.show(getFragmentManager(), "dialog_sdcard_error");
+            showSdCardError();
             return;
         }
 
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
         startActivityForResult(cameraIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+    }
+
+    private void showSdCardError() {
+        ErrorDialog errorDialog = ErrorDialog.newInstance(
+                getString(R.string.error_sdcard_title),
+                getString(R.string.error_sdcard_message)
+        );
+        errorDialog.setCallback(this);
+        errorDialog.show(getFragmentManager(), "dialog_sdcard_error");
     }
 }
