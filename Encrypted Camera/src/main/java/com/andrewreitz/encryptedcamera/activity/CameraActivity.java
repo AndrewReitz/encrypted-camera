@@ -31,8 +31,6 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
     @Inject @CameraIntent Intent cameraIntent;
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptedCameraPreferenceManager preferenceManager;
-    @Inject SecureDelete secureDelete;
-    @Inject @InternalDecryptedDirectory File internalDecryptedDirectory;
 
     private Uri fileUri;
 
@@ -79,8 +77,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
     private void handleResultOk() throws IOException {
         if (!preferenceManager.isDecrypted()) {
-            File unencrypted = new File(fileUri.getPath());
-            encryptAndSaveImage(unencrypted);
+            encryptAndSaveImage(fileUri.getPath());
         }
     }
 
@@ -90,8 +87,8 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         finish();
     }
 
-    private void encryptAndSaveImage(File unencryptedFile) {
-        EncryptionIntentService.startEncryptAction(this, unencryptedFile);
+    private void encryptAndSaveImage(final String unencryptedFilePath) {
+        EncryptionIntentService.startEncryptAction(this, unencryptedFilePath);
         openCameraWithIntent();
     }
 

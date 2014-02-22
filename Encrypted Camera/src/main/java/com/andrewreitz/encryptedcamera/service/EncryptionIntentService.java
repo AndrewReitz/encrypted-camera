@@ -69,14 +69,10 @@ public class EncryptionIntentService extends IntentService {
     }
 
     private void handleUnencrypt(Intent intent) {
-        Serializable serializableExtra = checkNotNull(intent.getSerializableExtra(UNENCRYPTED_FILE_PATH));
-        if (!(serializableExtra instanceof File)) {
-            throw new IllegalArgumentException("intent must pass in a file");
-        }
-
+        String serializableExtra = checkNotNull(intent.getStringExtra(UNENCRYPTED_FILE_PATH));
         preferenceManager.setIsDecrypting(true);
 
-        File unencryptedFile = (File) serializableExtra;
+        File unencryptedFile = new File(serializableExtra);
         File encryptedFile = new File(encryptedFileDirectory, unencryptedFile.getName());
         File unencryptedInternal = new File(internalDecryptedDirectory, encryptedFile.getName());
 
@@ -103,12 +99,12 @@ public class EncryptionIntentService extends IntentService {
      * Creates an intent and queues it up to the intent service
      *
      * @param context     the applications context
-     * @param unencrypted unencrypted file
+     * @param unencryptedFilePath unencrypted file path
      */
-    public static void startEncryptAction(@NotNull Context context, @NotNull File unencrypted) {
+    public static void startEncryptAction(@NotNull Context context, @NotNull final String unencryptedFilePath) {
         Intent intent = new Intent(context.getApplicationContext(), EncryptionIntentService.class);
         intent.setAction(ENCRYPT_ACTION);
-        intent.putExtra(UNENCRYPTED_FILE_PATH, checkNotNull(unencrypted));
+        intent.putExtra(UNENCRYPTED_FILE_PATH, checkNotNull(unencryptedFilePath));
         context.startService(intent);
     }
 }
