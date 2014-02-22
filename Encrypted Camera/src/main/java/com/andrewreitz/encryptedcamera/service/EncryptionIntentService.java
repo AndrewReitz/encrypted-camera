@@ -31,7 +31,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EncryptionIntentService extends IntentService {
 
-    public static final String UNENCRYPTED_FILE_PATH = "unencrypted_file_path";
+    private static final String UNENCRYPTED_FILE_PATH = "unencrypted_file_path";
+    private static final String ENCRYPT_ACTION = "action_encrypt";
 
     private static final int NOTIFICATION_ERROR_ID = 1337;
 
@@ -48,6 +49,16 @@ public class EncryptionIntentService extends IntentService {
     @Override protected void onHandleIntent(Intent intent) {
         EncryptedCameraApp.get(getApplicationContext()).inject(this);
 
+        switch (intent.getAction()) {
+            case ENCRYPT_ACTION:
+                handleUnencrypt(intent);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown action == " + intent.getAction());
+        }
+    }
+
+    private void handleUnencrypt(Intent intent) {
         Serializable serializableExtra = checkNotNull(intent.getSerializableExtra(UNENCRYPTED_FILE_PATH));
         if (!(serializableExtra instanceof File)) {
             throw new IllegalArgumentException("intent must pass in a file");
@@ -73,11 +84,12 @@ public class EncryptionIntentService extends IntentService {
     /**
      * Creates an intent and queues it up to the intent service
      *
-     * @param context the applications context
+     * @param context     the applications context
      * @param unencrypted unencrypted file
      */
-    public static void queue(@NotNull Context context, @NotNull File unencrypted) {
+    public static void startEncryptAction(@NotNull Context context, @NotNull File unencrypted) {
         Intent intent = new Intent(context.getApplicationContext(), EncryptionIntentService.class);
+        intent.setAction(ENCRYPT_ACTION);
         intent.putExtra(UNENCRYPTED_FILE_PATH, checkNotNull(unencrypted));
         context.startService(intent);
     }

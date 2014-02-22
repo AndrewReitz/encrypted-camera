@@ -78,7 +78,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         // Image captured and saved to fileUri specified in the Intent
         // We need to encrypt it and save to EncryptedFolder
         File unencryptedImage = new File(fileUri.getPath());
-        EncryptionIntentService.queue(this, unencryptedImage);
+        EncryptionIntentService.startEncryptAction(this, unencryptedImage);
         openCameraWithIntent();
     }
 
