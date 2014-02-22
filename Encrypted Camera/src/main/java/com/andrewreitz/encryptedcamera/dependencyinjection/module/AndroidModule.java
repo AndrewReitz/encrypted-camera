@@ -1,16 +1,22 @@
 package com.andrewreitz.encryptedcamera.dependencyinjection.module;
 
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.MediaStore;
+import android.support.v4.app.NotificationCompat;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
+import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionErrorNotification;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.MediaFormat;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManagerImpl;
 
@@ -63,6 +69,41 @@ public class AndroidModule {
     @Provides
     @Singleton NotificationManager provideNotificationManager() {
         return (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    @EncryptionErrorNotification Notification provideEncryptionErrorNotification() {
+        return new NotificationCompat.Builder(application)
+                .setContentTitle(application.getString(R.string.error_encrypting))
+                .setContentText(application.getString(R.string.error_encrypting_photo))
+                .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
+                .build();
+    }
+
+    @Provides
+    @Singleton
+    @UnlockNotification Notification provideUnlockNotification() {
+        Notification notification = new NotificationCompat.Builder(application)
+                .setContentTitle(application.getString(R.string.app_name))
+                .setContentText(application.getString(R.string.images_unencryped_message))
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                application,
+                                0,
+                                new Intent(
+                                        application,
+                                        SettingsActivity.class
+                                ),
+                                0
+                        )
+                )
+                .setSmallIcon(R.drawable.ic_unlocked)
+                .build();
+
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+
+        return notification;
     }
 
     @Provides

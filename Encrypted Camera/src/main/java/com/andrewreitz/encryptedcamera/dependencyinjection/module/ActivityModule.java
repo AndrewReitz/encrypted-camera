@@ -57,32 +57,6 @@ public class ActivityModule {
 
     @Provides
     @Singleton
-    @UnlockNotification
-    Notification provideUnlockNotification() {
-        Notification notification = new NotificationCompat.Builder(activity)
-                .setContentTitle(activity.getString(R.string.app_name))
-                .setContentText(activity.getString(R.string.images_unencryped_message))
-                .setContentIntent(
-                        PendingIntent.getActivity(
-                                activity,
-                                0,
-                                new Intent(
-                                        activity,
-                                        SettingsActivity.class
-                                ),
-                                0
-                        )
-                )
-                .setSmallIcon(R.drawable.ic_unlocked)
-                .build();
-
-        notification.flags |= Notification.FLAG_NO_CLEAR;
-
-        return notification;
-    }
-
-    @Provides
-    @Singleton
     FragmentManager provideFragmentManager() {
         return activity.getFragmentManager();
     }

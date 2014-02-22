@@ -36,4 +36,6 @@
     <string name="error_incorrect_password">Incorrect Password</string>
     <string name="error_terrible">A terrible error occurred, please try again</string>
     <string name="error_change_password_while_decrypted">Can not change password while images are decrypted</string>
+    <string name="error_encrypting">Error Encrypting</string>
+    <string name="error_encrypting_photo">There was an error encrypting your photo</string>
 </resources>
