@@ -11,6 +11,7 @@ import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
+import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 import com.google.common.net.MediaType;
 
 import java.io.File;
@@ -25,6 +26,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
     @Inject @CameraIntent Intent cameraIntent;
     @Inject ExternalStorageManager externalStorageManager;
+    @Inject EncryptedCameraPreferenceManager preferenceManager;
 
     private Uri fileUri;
 
@@ -43,7 +45,9 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
         switch (resultCode) {
             case RESULT_OK:
-                encryptAndSaveImage();
+                if (!preferenceManager.isDecrypted()) {
+                    encryptAndSaveImage();
+                }
                 break;
             case RESULT_CANCELED:
                 // User cancelled taking a photo close the app

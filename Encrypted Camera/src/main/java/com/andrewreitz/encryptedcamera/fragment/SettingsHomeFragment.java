@@ -147,7 +147,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     private boolean handleUsePasswordPreference(boolean checked) {
-        if (preferenceManager.getDecrypted()) {
+        if (preferenceManager.isDecrypted()) {
             // don't allow changing password while photos are decrypted
             showErrorDialog(
                     getString(R.string.error),

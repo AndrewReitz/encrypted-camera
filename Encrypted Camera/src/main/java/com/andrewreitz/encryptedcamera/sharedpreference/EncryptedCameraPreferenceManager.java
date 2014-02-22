@@ -48,7 +48,7 @@ public class EncryptedCameraPreferenceManager {
         );
     }
 
-    public boolean getDecrypted() {
+    public boolean isDecrypted() {
         return sharedPreferenceService.getBoolean(
                 context.getString(R.string.pref_key_decrypt),
                 false
