@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger>
+
+    <dataSet config="main" >
+        <source path="/home/areitz/Projects/EncryptedCamera/Encrypted Camera/src/instrumentTest/res" >
+            <file
+                name="img1"
+                path="/home/areitz/Projects/EncryptedCamera/Encrypted Camera/src/instrumentTest/res/raw/img1.jpeg"
+                qualifiers=""
+                type="raw" />
+            <file
+                name="img3"
+                path="/home/areitz/Projects/EncryptedCamera/Encrypted Camera/src/instrumentTest/res/raw/img3.jpeg"
+                qualifiers=""
+                type="raw" />
+            <file
+                name="img2"
+                path="/home/areitz/Projects/EncryptedCamera/Encrypted Camera/src/instrumentTest/res/raw/img2.jpeg"
+                qualifiers=""
+                type="raw" />
+        </source>
+        <source path="/home/areitz/Projects/EncryptedCamera/Encrypted Camera/build/res/rs/test/debug" />
+        <source path="/home/areitz/Projects/EncryptedCamera/Encrypted Camera/build/res/generated/test/debug" />
+    </dataSet>
+
+</merger>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/color.xml -->
+    <eat-comment />
+
+    <color name="app_green">#009444</color>
+    <color name="app_grey">#424042</color>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/build/exploded-bundles/OrgJrafAndroidSwitchBackport13.aar/res/values/values.xml -->
+    <eat-comment />
+
+    <color name="background_holo_light">#fff3f3f3</color>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/color.xml -->
+    <eat-comment />
+
+    <color name="black">@android:color/black</color>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/build/exploded-bundles/OrgJrafAndroidSwitchBackport13.aar/res/values/values.xml -->
+    <eat-comment />
+
+    <color name="bright_foreground_disabled_holo_dark">#ff4c4c4c</color>
+    <color name="bright_foreground_holo_dark">@color/background_holo_light</color>
+    <color name="dim_foreground_disabled_holo_dark">#80bebebe</color>
+    <color name="dim_foreground_holo_dark">#bebebe</color>
+
+    <declare-styleable name="Android">
+
+        <!-- Text color. -->
+        <attr name="android:textColor" />
+        <!-- Size of the text. Recommended dimension type for text is "sp" for scaled-pixels (example: 15sp). -->
+        <attr name="android:textSize" />
+        <!-- Style (bold, italic, bolditalic) for the text. -->
+        <attr name="android:textStyle" />
+        <!-- Typeface (normal, sans, serif, monospace) for the text. -->
+        <attr name="android:typeface" />
+        <!-- Color of the text selection highlight. -->
+        <attr name="android:textColorHighlight" />
+        <!-- Color of the hint text. -->
+        <attr name="android:textColorHint" />
+        <!-- Color of the links. -->
+        <attr name="android:textColorLink" />
+    </declare-styleable>
+    <declare-styleable name="Switch">
+
+        <!-- Drawable to use as the "thumb" that switches back and forth. -->
+        <attr name="thumb" format="reference" />
+        <!-- Drawable to use as the "track" that the switch thumb slides within. -->
+        <attr name="track" format="reference" />
+        <!-- Text to use when the switch is in the checked/"on" state. -->
+        <attr name="textOn" format="reference" />
+        <!-- Text to use when the switch is in the unchecked/"off" state. -->
+        <attr name="textOff" format="reference" />
+        <!-- Amount of padding on either side of text within the switch thumb. -->
+        <attr name="thumbTextPadding" format="dimension" />
+        <!-- TextAppearance style for text displayed on the switch thumb. -->
+        <attr name="switchTextAppearance" format="reference" />
+        <!-- Minimum width for the switch component -->
+        <attr name="switchMinWidth" format="dimension" />
+        <!-- Minimum space between the switch and caption text -->
+        <attr name="switchPadding" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="SwitchPreference">
+
+        <!--
+             The summary for the Preference in a PreferenceActivity screen when the
+             SwitchPreference is checked. If separate on/off summaries are not
+             needed, the summary attribute can be used instead.
+        -->
+        <attr name="summaryOn" format="reference" />
+        <!--
+             The summary for the Preference in a PreferenceActivity screen when the
+             SwitchPreference is unchecked. If separate on/off summaries are not
+             needed, the summary attribute can be used instead.
+        -->
+        <attr name="summaryOff" format="reference" />
+        <!--
+             The text used on the switch itself when in the "on" state.
+             This should be a very SHORT string, as it appears in a small space.
+        -->
+        <attr name="switchTextOn" format="reference" />
+        <!--
+             The text used on the switch itself when in the "off" state.
+             This should be a very SHORT string, as it appears in a small space.
+        -->
+        <attr name="switchTextOff" format="reference" />
+        <!--
+             The state (true for on, or false for off) that causes dependents to be disabled. By default,
+             dependents will be disabled when this is unchecked, so the value of this preference is false.
+        -->
+        <attr name="disableDependentsState" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="Theme">
+        <attr name="switchStyle" format="reference" />
+        <attr name="switchPreferenceStyle" format="reference" />
+    </declare-styleable>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/dimens.xml -->
+    <eat-comment />
+
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/build/exploded-bundles/OrgJrafAndroidSwitchBackport13.aar/res/values/values.xml -->
+    <eat-comment />
+
+    <dimen name="preference_icon_minWidth">0dp</dimen>
+    <dimen name="preference_item_padding_inner">8dip</dimen>
+    <dimen name="preference_item_padding_side">8dip</dimen>
+    <dimen name="preference_widget_width">48dp</dimen>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/strings.xml -->
+    <eat-comment />
+
+    <string name="action_settings">Settings</string>
+    <string name="app_name">Encrypted Camera</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="decrypt_photos">Decrypt Photos</string>
+    <string name="do_not_loose_password">Do not loose this password!</string>
+    <string name="encryption_error">Encryption Error</string>
+    <string name="error">Error</string>
+    <string name="error_change_password_while_decrypted">Can not change password while images are decrypted</string>
+    <string name="error_encrypting">Error Encrypting</string>
+    <string name="error_encrypting_image_message">Well this is embarrassing but there was an error saving your image!</string>
+    <string name="error_encrypting_photo">There was an error encrypting your photo</string>
+    <string name="error_incorrect_password">Incorrect Password</string>
+    <string name="error_no_camera_app">No Camera App</string>
+    <string name="error_no_camera_app_found_message">This application is build to use your default camera, but you do not seem to have on installed.  Please install a camera application and then try this app again</string>
+    <string name="error_no_image_recieved">I\'m sorry, but there was an issue receiving the image from the camera</string>
+    <string name="error_reencrypting">There was a problem encrypting the file %s! To ensure security you should delete it off your sdcard immediately</string>
+    <string name="error_saving_encryption_key">There was an error saving the encryption key.  Your phone does not appear to support the encryption algorithm used</string>
+    <string name="error_sdcard_message">There was an error trying to write to the sdcard. Please check that it is mounted and try again</string>
+    <string name="error_sdcard_title">SDCard Error</string>
+    <string name="error_terrible">A terrible error occurred, please try again</string>
+    <string name="error_unable_to_decrypt_to_sd">Unable to write the encrypted files to your sdcard</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="images_unencryped_message">Your images are unencrypted</string>
+    <string name="password">Password</string>
+    <string name="password_can_not_be_empty">Password can not be empty</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="passwords_not_match">Passwords did not match</string>
+    <string name="photo_retrieval">Photo Retrieval</string>
+    <string name="photos_storage">Photos Storage</string>
+    <string name="pref_key_decrypt">pref_key_decrypt</string>
+    <string name="pref_key_use_password">pref_key_use_password</string>
+    <string name="require_password_to_access_files">Require a password</string>
+    <string name="set_password">Set Password</string>
+    <string name="settings_title">Encrypted Camera Settings</string>
+    <string name="show_photos_in_sd_card">Show photos in SD Card</string>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/build/exploded-bundles/OrgJrafAndroidSwitchBackport13.aar/res/values/values.xml -->
+    <eat-comment />
+
+    <string name="switch_off">OFF</string>
+    <string name="switch_on">ON</string>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/strings.xml -->
+    <eat-comment />
+
+    <string name="title_activity_camera">Camera</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="use_password">Use Password</string>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/styles.xml -->
+    <eat-comment />
+
+    <style name="ActionBar.Solid.Encryptedcamera" parent="@android:style/Widget.Holo.ActionBar.Solid">
+        <item name="android:background">@drawable/ab_background_textured_encryptedcamera</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_encryptedcamera</item>
+        <item name="android:backgroundSplit">@drawable/ab_background_textured_encryptedcamera</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Encryptedcamera</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Encryptedcamera" parent="@android:style/Widget.Holo.ActionBar">
+        <item name="android:background">@drawable/ab_transparent_encryptedcamera</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Encryptedcamera</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Encryptedcamera" parent="@android:style/Widget.Holo.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_encryptedcamera</item>
+    </style>
+
+    <style name="ActionButton.CloseMode.Encryptedcamera" parent="@android:style/Widget.Holo.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_encryptedcamera</item>
+    </style>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/themes.xml -->
+    <eat-comment />
+
+    <style name="AppTheme" parent="android:Theme.Holo.Light.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/styles.xml -->
+    <eat-comment />
+
+    <style name="AutoCompleteTextViewEncryptedcamera" parent="android:Widget.Holo.AutoCompleteTextView">
+        <item name="android:dropDownSelector">@drawable/encryptedcamera_list_selector_holo_dark</item>
+        <item name="android:background">@drawable/encryptedcamera_edit_text_holo_dark</item>
+    </style>
+
+    <style name="ButtonEncryptedcamera" parent="android:Widget.Holo.Button">
+        <item name="android:background">@drawable/encryptedcamera_btn_default_holo_dark</item>
+    </style>
+
+    <style name="DropDownListView.Encryptedcamera" parent="@android:style/Widget.Holo.ListView.DropDown">
+        <item name="android:listSelector">@drawable/selectable_background_encryptedcamera</item>
+    </style>
+
+    <style name="DropDownNav.Encryptedcamera" parent="@android:style/Widget.Holo.Spinner">
+        <item name="android:background">@drawable/spinner_background_ab_encryptedcamera</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_encryptedcamera</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_encryptedcamera</item>
+    </style>
+
+    <style name="ImageButtonEncryptedcamera" parent="android:Widget.Holo.ImageButton">
+        <item name="android:background">@drawable/encryptedcamera_btn_default_holo_dark</item>
+    </style>
+
+    <style name="PopupMenu.Encryptedcamera" parent="@android:style/Widget.Holo.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_encryptedcamera</item>
+    </style>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/build/exploded-bundles/OrgJrafAndroidSwitchBackport13.aar/res/values/values.xml -->
+    <eat-comment />
+
+    <style name="Preference.SwitchPreference" parent="">
+        <item name="android:layout">@layout/preference</item>
+        <item name="android:widgetLayout">@layout/preference_widget_switch</item>
+        <item name="switchTextOn">@string/switch_on</item>
+        <item name="switchTextOff">@string/switch_off</item>
+    </style>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/styles.xml -->
+    <eat-comment />
+
+    <style name="ProgressBar.Encryptedcamera" parent="@android:style/Widget.Holo.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_encryptedcamera</item>
+    </style>
+
+    <style name="SpinnerEncryptedcamera" parent="android:Widget.Holo.Spinner">
+        <item name="android:background">@drawable/encryptedcamera_spinner_background_holo_dark</item>
+        <item name="android:dropDownSelector">@drawable/encryptedcamera_list_selector_holo_dark</item>
+    </style>
+
+    <style name="SwitchEncryptedcamera">
+        <item name="track">@drawable/encryptedcamera_switch_track_holo_dark</item>
+        <item name="thumb">@drawable/encryptedcamera_switch_inner_holo_dark</item>
+        <item name="android:textOn">ON</item>
+        <item name="android:textOff">OFF</item>
+        <item name="thumbTextPadding">5dip</item>
+        <item name="switchMinWidth">75dip</item>
+        <item name="switchPadding">5dip</item>
+        <item name="switchTextAppearance">@style/TextAppearance.Holo.Light.Widget.Switch</item>
+    </style>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/build/exploded-bundles/OrgJrafAndroidSwitchBackport13.aar/res/values/values.xml -->
+    <eat-comment />
+
+    <style name="TextAppearance.Holo.Light.Widget.Switch" parent="android:TextAppearance.Small">
+
+        <!-- Switch thumb asset presents a dark background. -->
+        <item name="android:textColor">@color/primary_text_holo_dark</item>
+    </style>
+
+    <style name="TextAppearance.Holo.Widget.Switch" parent="android:TextAppearance.Small">
+
+        <!-- Switch thumb asset presents a dark background. -->
+        <item name="android:textColor">@color/secondary_text_holo_dark</item>
+    </style>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/src/main/res/values/themes.xml -->
+    <eat-comment />
+
+    <style name="Theme.Encryptedcamera" parent="android:Theme.Holo">
+        <item name="android:editTextBackground">@drawable/encryptedcamera_edit_text_holo_dark</item>
+        <item name="android:textColorHighlight">#99009444</item>
+        <item name="android:textSelectHandleLeft">@drawable/encryptedcamera_text_select_handle_left</item>
+        <item name="android:textSelectHandleRight">@drawable/encryptedcamera_text_select_handle_right</item>
+        <item name="android:textSelectHandle">@drawable/encryptedcamera_text_select_handle_middle</item>
+        <item name="android:autoCompleteTextViewStyle">@style/AutoCompleteTextViewEncryptedcamera</item>
+        <item name="android:listChoiceIndicatorMultiple">@drawable/encryptedcamera_btn_check_holo_dark</item>
+        <item name="android:listChoiceIndicatorSingle">@drawable/encryptedcamera_btn_radio_holo_dark</item>
+        <item name="android:buttonStyle">@style/ButtonEncryptedcamera</item>
+        <item name="android:imageButtonStyle">@style/ImageButtonEncryptedcamera</item>
+        <item name="android:dropDownSpinnerStyle">@style/SpinnerEncryptedcamera</item>
+        <item name="android:listChoiceBackgroundIndicator">@drawable/encryptedcamera_list_selector_holo_dark</item>
+        <item name="android:activatedBackgroundIndicator">@drawable/encryptedcamera_activated_background_holo_dark</item>
+        <item name="android:fastScrollThumbDrawable">@drawable/encryptedcamera_fastscroll_thumb_holo</item>
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_encryptedcamera</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Encryptedcamera</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Encryptedcamera</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Encryptedcamera</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Encryptedcamera</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.Encryptedcamera</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_encryptedcamera</item>
+        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_encryptedcamera</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Encryptedcamera</item>
+        <item name="switchStyle">@style/SwitchEncryptedcamera</item>
+        <item name="switchPreferenceStyle">@style/Preference.SwitchPreference</item>
+    </style>
+    <!-- From: file:/home/areitz/Projects/EncryptedCamera/build/exploded-bundles/OrgJrafAndroidSwitchBackport13.aar/res/values/values.xml -->
+    <eat-comment />
+
+    <style name="Widget.Holo.CompoundButton.Switch" parent="android:Widget.CompoundButton">
+        <item name="track">@drawable/switch_track_holo_dark</item>
+        <item name="thumb">@drawable/switch_inner_holo_dark</item>
+        <item name="switchTextAppearance">@style/TextAppearance.Holo.Widget.Switch</item>
+        <item name="textOn">@string/switch_on</item>
+        <item name="textOff">@string/switch_off</item>
+        <item name="thumbTextPadding">12dip</item>
+        <item name="switchMinWidth">96dip</item>
+        <item name="switchPadding">16dip</item>
+    </style>
+
+    <style name="Widget.Holo.Light.CompoundButton.Switch" parent="android:Widget.CompoundButton">
+        <item name="track">@drawable/switch_track_holo_light</item>
+        <item name="thumb">@drawable/switch_inner_holo_light</item>
+        <item name="switchTextAppearance">@style/TextAppearance.Holo.Light.Widget.Switch</item>
+        <item name="textOn">@string/switch_on</item>
+        <item name="textOff">@string/switch_off</item>
+        <item name="thumbTextPadding">12dip</item>
+        <item name="switchMinWidth">96dip</item>
+        <item name="switchPadding">16dip</item>
+    </style>
+
+</resources>

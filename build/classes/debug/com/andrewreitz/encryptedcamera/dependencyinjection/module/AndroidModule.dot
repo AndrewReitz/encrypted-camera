@@ -1,0 +1,19 @@
+digraph G1 {
+  concentrate = true;
+  n2 [label="@EncryptedDirectory File"];
+  n3 [label="@ForApplication Context"];
+  n2 -> n3;
+  EncryptedCameraApp -> KeyManager;
+  EncryptedCameraApp -> EncryptedCameraPreferenceManager;
+  EncryptedCameraPreferenceManager -> n3;
+  EncryptedCameraPreferenceManager -> SharedPreferenceService;
+  EncryptionProvider -> KeyManager;
+  EncryptionProvider -> Cipher;
+  ExternalStorageManager -> n3;
+  n4 [label="@MediaFormat DateFormat"];
+  ExternalStorageManager -> n4;
+  KeyManager -> n3;
+  SecureDelete -> SecureRandom;
+  SharedPreferenceService -> SharedPreferences;
+  SharedPreferences -> n3;
+}
