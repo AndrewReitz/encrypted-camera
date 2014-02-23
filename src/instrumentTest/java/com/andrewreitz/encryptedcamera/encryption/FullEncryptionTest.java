@@ -1,13 +1,12 @@
 package com.andrewreitz.encryptedcamera.encryption;
 
-import android.content.Context;
 import android.test.AndroidTestCase;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.dependencyinjection.module.AndroidModule;
+import com.andrewreitz.encryptedcamera.dev.test.R;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
-import com.andrewreitz.encryptedcamera.test.R;
 import com.google.common.collect.Lists;
 import com.google.common.net.MediaType;
 
@@ -80,7 +79,7 @@ import dagger.ObjectGraph;
             File outUnecrypted = new File(file.getParentFile(), file.getName());
             encryptionProvider.decrypt(out, outUnecrypted);
 
-            File outUnecrypted2 = new File(file.getParentFile(), file.getName()+"2");
+            File outUnecrypted2 = new File(file.getParentFile(), file.getName() + "2");
             encryptionProvider.setSecretKey(keyAgain);
             encryptionProvider.decrypt(out, outUnecrypted2);
         }

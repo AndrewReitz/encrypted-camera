@@ -7,17 +7,13 @@ import android.provider.MediaStore;
 
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
-import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
-import com.google.common.io.Files;
 import com.google.common.net.MediaType;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.inject.Inject;
