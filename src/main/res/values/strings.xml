@@ -38,4 +38,5 @@
     <string name="error_change_password_while_decrypted">Can not change password while images are decrypted</string>
     <string name="error_encrypting">Error Encrypting</string>
     <string name="error_encrypting_photo">There was an error encrypting your photo</string>
+    <string name="error_currently_encrypting">Settings can not be applied or changed at this time as I am currently encrypting your files</string>
 </resources>

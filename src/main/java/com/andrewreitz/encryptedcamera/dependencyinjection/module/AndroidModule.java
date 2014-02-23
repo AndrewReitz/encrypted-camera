@@ -13,6 +13,7 @@ import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionErrorNotification;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionNotification;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.MediaFormat;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
@@ -61,32 +62,43 @@ public class AndroidModule {
      */
     @Provides
     @Singleton
-    @ForApplication
-    Context provideApplicationContext() {
+    @ForApplication Context provideApplicationContext() {
         return application;
     }
 
     @Provides
-    @Singleton
-    NotificationManager provideNotificationManager() {
+    @Singleton NotificationManager provideNotificationManager() {
         return (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Provides
     @Singleton
-    @EncryptionErrorNotification
-    Notification provideEncryptionErrorNotification() {
+    @EncryptionNotification Notification provideEncryptionNotification() {
         return new NotificationCompat.Builder(application)
-                .setContentTitle(application.getString(R.string.error_encrypting))
-                .setContentText(application.getString(R.string.error_encrypting_photo))
+                .setContentTitle("Encrypted Camera") // TODO ... you know what
+                .setContentText("Encrypting your photos")
                 .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
                 .build();
     }
 
     @Provides
     @Singleton
-    @UnlockNotification
-    Notification provideUnlockNotification() {
+    @EncryptionErrorNotification Notification provideEncryptionErrorNotification() {
+        Notification notification = new NotificationCompat.Builder(application)
+                .setProgress(0, 0, true)
+                .setContentTitle(application.getString(R.string.error_encrypting))
+                .setContentText(application.getString(R.string.error_encrypting_photo))
+                .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
+                .build();
+
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+
+        return notification;
+    }
+
+    @Provides
+    @Singleton
+    @UnlockNotification Notification provideUnlockNotification() {
         Notification notification = new NotificationCompat.Builder(application)
                 .setContentTitle(application.getString(R.string.app_name))
                 .setContentText(application.getString(R.string.images_unencryped_message))
@@ -110,21 +122,18 @@ public class AndroidModule {
     }
 
     @Provides
-    @Singleton
-    SecureRandom provideSecureRandom() {
+    @Singleton SecureRandom provideSecureRandom() {
         return new SecureRandom();
     }
 
     @Provides
     @Singleton
-    @MediaFormat
-    DateFormat provideMediaDateFormat() {
+    @MediaFormat DateFormat provideMediaDateFormat() {
         return new SimpleDateFormat(EncryptedCameraApp.MEDIA_OUTPUT_DATE_FORMAT);
     }
 
     @Provides
-    @CameraIntent
-    Intent provideCameraIntent() {
+    @CameraIntent Intent provideCameraIntent() {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     }
 }

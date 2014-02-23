@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Error Dialog for displaying error messages easily in the application
  *
@@ -28,7 +30,7 @@ public class ErrorDialog extends DialogFragment implements DialogInterface.OnCli
      * @param message message to display
      * @return newly created ErrorDialog
      */
-    public static ErrorDialog newInstance(final String title, final String message) {
+    public static ErrorDialog newInstance(@Nullable final String title, @Nullable final String message) {
         final ErrorDialog errorDialog = new ErrorDialog();
 
         Bundle args = new Bundle();

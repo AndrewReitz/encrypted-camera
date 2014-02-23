@@ -3,6 +3,9 @@ package com.andrewreitz.encryptedcamera.fragment;
 import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -20,6 +23,8 @@ import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,17 +40,20 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * @author Andrew
  */
 public class SettingsHomeFragment extends PreferenceFragment implements
-        SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener {
+        SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener, ErrorDialog.ErrorDialogCallback {
 
     private static final int NOTIFICATION_ID = 1337;
 
@@ -61,11 +69,21 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     private SwitchPreference switchPreferenceDecrypt;
     private SwitchPreference switchPreferencePassword;
+    private AsyncTask<Void, Void, Boolean> runningTask;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         BaseActivity.get(this).inject(this);
+
+        if (preferenceManager.isDecrypting()) {
+            showErrorDialog(
+                    getString(R.string.error),
+                    getString(R.string.error_currently_encrypting),
+                    "error_decrypting_in_progress",
+                    this
+            );
+        }
     }
 
     @Override
@@ -82,6 +100,10 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         switchPreferenceDecrypt.setOnPreferenceChangeListener(this);
         switchPreferencePassword = (SwitchPreference) findPreference(getString(R.string.pref_key_use_password));
         switchPreferencePassword.setOnPreferenceChangeListener(this);
+    }
+
+    @Override public void setRetainInstance(boolean retain) {
+        super.setRetainInstance(true);
     }
 
     @Override
@@ -120,6 +142,12 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     @Override public void onPasswordSetCancel() {
+    }
+
+    @Override public void onErrorDialogDismissed() {
+        // TODO Remove All Get Activities and make a manager
+        //noinspection ConstantConditions
+        getActivity().finish();
     }
 
     @Override
@@ -291,41 +319,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
             return;
         }
 
-        boolean errorShown = false;
         //noinspection ConstantConditions
-        for (File encrypted : encryptedDirectory.listFiles()) {
-            File unencrypted = new File(appExternalDirectory, encrypted.getName());
-            try {
-                encryptionProvider.decrypt(encrypted, unencrypted);
-                //noinspection ResultOfMethodCallIgnored
-                encrypted.delete();
-            } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
-                Timber.d(e, "unable to decrypt and move file %s to sdcard", encrypted.getPath());
-                // Deleted the file that was put on the sdcard and was not the full file
-                //noinspection ResultOfMethodCallIgnored
-                unencrypted.delete();
-                if (!errorShown) { // stop the error from being show multiple times
-                    errorShown = true;
-                    showErrorDialog(
-                            getString(R.string.error),
-                            getString(R.string.error_unable_to_decrypt_to_sd),
-                            "error_dialog_encrypt"
-                    );
-                }
-            }
-        }
-
-        // Error not shown display the notification
-        if (!errorShown) {
-            this.notificationManager.notify(
-                    NOTIFICATION_ID,
-                    unlockNotification
-            );
-            switchPreferenceDecrypt.setChecked(true);
-        } else {
-            // there was an error reset the switch preferences
-            switchPreferenceDecrypt.setChecked(false);
-        }
+        runningTask = new DecryptFilesTask(
+                appExternalDirectory,
+                getActivity(),
+                ImmutableList.copyOf(encryptedDirectory.listFiles())
+        );
+        //noinspection unchecked
+        runningTask.execute();
     }
 
     private void showIncorrectPasswordDialog() {
@@ -376,14 +377,120 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     private void showErrorDialog(String error, String message, String tag) {
-        ErrorDialog.newInstance(
+        showErrorDialog(error, message, tag, null);
+    }
+
+    private void showErrorDialog(
+            @Nullable String error,
+            @Nullable String message,
+            @Nullable String tag,
+            @Nullable ErrorDialog.ErrorDialogCallback callback
+    ) {
+        ErrorDialog errorDialog = ErrorDialog.newInstance(
                 error,
                 message
-        ).show(fragmentManager, tag);
+        );
+
+        if (callback != null) {
+            errorDialog.setCallback(callback);
+        }
+
+        errorDialog.show(fragmentManager, tag);
     }
 
     private boolean doPasswordCheck(@NotNull String password) {
         String passwordHash = preferenceManager.getPasswordHash();
         return BCrypt.checkpw(password, passwordHash);
+    }
+
+    private static abstract class AbstractFilesTask extends AsyncTask<Void, Void, Boolean> {
+
+        private final Context context;
+        private final List<File> files;
+
+        private ProgressDialog progressDialog;
+
+        AbstractFilesTask(@NotNull Context context, @NotNull List<File> files) {
+            this.context = checkNotNull(context);
+            this.files = checkNotNull(files);
+        }
+
+        @Override final protected void onPreExecute() {
+            progressDialog = new ProgressDialog(context);
+            getProgressDialog().setCancelable(true);
+            getProgressDialog().setMessage("Decrypting Files");
+            getProgressDialog().setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            getProgressDialog().setProgress(0);
+            getProgressDialog().setMax(getFiles().size());
+            getProgressDialog().show();
+        }
+
+        @Override final protected void onProgressUpdate(Void... values) {
+            getProgressDialog().setProgress(1 + getProgressDialog().getProgress());
+        }
+
+        public Context getContext() {
+            return context;
+        }
+
+        public List<File> getFiles() {
+            return files;
+        }
+
+        public ProgressDialog getProgressDialog() {
+            return progressDialog;
+        }
+    }
+
+    private final class DecryptFilesTask extends AbstractFilesTask {
+
+        private final File appExternalDirectory;
+
+        DecryptFilesTask(@NotNull File appExternalDirectory, @NotNull Context context, @NotNull List<File> files) {
+            super(context, files);
+            this.appExternalDirectory = checkNotNull(appExternalDirectory);
+        }
+
+        @Override protected Boolean doInBackground(Void... params) {
+
+            boolean errorShown = false;
+            //noinspection ConstantConditions
+            for (File encrypted : getFiles()) {
+                File unencrypted = new File(appExternalDirectory, encrypted.getName());
+                try {
+                    encryptionProvider.decrypt(encrypted, unencrypted);
+                    //noinspection ResultOfMethodCallIgnored
+                    encrypted.delete();
+                } catch (InvalidKeyException | IOException | InvalidAlgorithmParameterException e) {
+                    Timber.d(e, "unable to decrypt and move file %s to sdcard", encrypted.getPath());
+                    // Deleted the file that was put on the sdcard and was not the full file
+                    //noinspection ResultOfMethodCallIgnored
+                    unencrypted.delete();
+                    errorShown = true;
+                }
+            }
+
+            return errorShown;
+        }
+
+        @Override protected void onPostExecute(Boolean errorShown) {
+            getProgressDialog().dismiss();
+
+            if (isCancelled()) {
+                return;
+            }
+
+            // Error not shown display the notification
+            if (!errorShown) {
+                notificationManager.notify(
+                        NOTIFICATION_ID,
+                        unlockNotification
+                );
+                switchPreferenceDecrypt.setChecked(true);
+            } else {
+                // there was an error reset the switch preferences
+                switchPreferenceDecrypt.setChecked(false);
+            }
+        }
     }
 }

@@ -15,7 +15,13 @@ public interface ExternalStorageManager {
 
     File getOutputMediaFile(MediaType type) throws SDCardException;
 
+    Uri getHiddenOutputMediaFileUri(MediaType type) throws SDCardException;
+
+    File getHiddenOutputMediaFile(MediaType type) throws SDCardException;
+
     File getAppExternalDirectory();
+
+    File getHiddenAppExternalDirectory();
 
     boolean checkSdCardIsInReadAndWriteState();
 }

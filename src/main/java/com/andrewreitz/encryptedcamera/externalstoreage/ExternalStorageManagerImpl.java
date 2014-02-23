@@ -73,6 +73,34 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
         return getMediaFile(type, mediaStorageDir);
     }
 
+    @Override public Uri getHiddenOutputMediaFileUri(MediaType type) throws SDCardException {
+        return Uri.fromFile(getHiddenOutputMediaFile(type));
+    }
+
+    @Override public File getHiddenOutputMediaFile(MediaType type) throws SDCardException {
+        checkNotNull(type);
+
+        // Check that the SDCard is mounted if not throw exception to be handled at UI
+        if (!checkSdCardIsInReadAndWriteState()) {
+            throw new SDCardException(
+                    String.format(
+                            "SDCard is not in a valid state, currently in %s", Environment.getExternalStorageState()
+                    )
+            );
+        }
+
+        // TODO generalize this more if pulling into a library
+        File mediaStorageDir = getHiddenAppExternalDirectory();
+        if (mediaStorageDir == null) {
+            throw new SDCardException(
+                    "Unable to create directory on sdcard"
+            );
+        }
+
+        // Create a media file name
+        return getMediaFile(type, mediaStorageDir);
+    }
+
     /**
      * Create / Check that the application directory is available.  This is done based off your application's name
      * saved in String.app_name @see getApplicationNameNoSpaces
@@ -96,7 +124,30 @@ public class ExternalStorageManagerImpl implements ExternalStorageManager {
     }
 
     /**
-     * Get's the applications directory based on the app's name in strings "app_name".  If you want to
+     * Create / Check that the application directory is available.  This is done based off your application's name
+     * saved in String.app_name @see getApplicationNameNoSpaces with a . in front of it so it's hidden
+     * TODO If ever moving this out to a library should probably generalize this call
+     *
+     * @return null if unable to create folder otherwise returns the directory
+     */
+    @Override
+    public File getHiddenAppExternalDirectory() {
+        File mediaStorageDir = new File(
+                Environment.getExternalStorageDirectory(),
+                String.format(".%s", getApplicationNameNoSpaces())
+        );
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        return mediaStorageDir;
+    }
+
+    /**
+     * Gets the applications directory based on the app's name in strings "app_name".  If you want to
      * need a different directory override this
      *
      * @return Applications name stripping out all spaces
