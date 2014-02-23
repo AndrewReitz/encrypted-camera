@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <!-- From: file:/home/areitz/Projects/EncryptedCamera/build/exploded-bundles/OrgJrafAndroidSwitchBackport13.aar/res/values-land/values.xml -->
-    <eat-comment />
-
-    <dimen name="preference_widget_width">72dp</dimen>
-
-</resources>
