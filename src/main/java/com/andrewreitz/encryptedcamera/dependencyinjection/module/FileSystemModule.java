@@ -5,6 +5,7 @@ import android.content.Context;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.MediaFormat;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManagerImpl;
@@ -43,8 +44,25 @@ public class FileSystemModule {
         File file = new File(context.getFilesDir(), EncryptedCameraApp.ENCRYPTED_DIRECTORY);
         if (!file.exists()) {
             if (!file.mkdirs()) {
-                Timber.w("Error creating encryption directory: %s", file.toString());
-                throw new RuntimeException("Error creating encryption directory: %");
+                throw new RuntimeException("Error creating encryption directory: " + file.getAbsolutePath());
+            }
+        }
+        return file;
+    }
+
+    /**
+     * Placeholder directory for files to be placed in while they are being decrypted. This is due to
+     * encryption and decryption being pretty slow on most phones.  This directory is for all decypted
+     * files to be written to before moved to the SD card to ensure that the user does not mess with
+     * them.
+     */
+    @Provides
+    @Singleton
+    @InternalDecryptedDirectory File provideTempInternalFileDirectory(@ForApplication Context context) {
+        File file = new File(context.getFilesDir(), EncryptedCameraApp.DECRYPTED_DIRECTORY);
+        if (!file.exists()) {
+            if (!file.mkdirs()) {
+                throw new RuntimeException("Error creating decrypted directory: " + file.getAbsolutePath());
             }
         }
         return file;

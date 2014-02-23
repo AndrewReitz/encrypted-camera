@@ -6,10 +6,14 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 
+import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionErrorNotification;
+import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
+import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.google.common.io.Files;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +34,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class EncryptionIntentService extends IntentService {
 
-    public static final String UNENCRYPTED_FILE_PATH = "unencrypted_file_path";
+    private static final String UNENCRYPTED_FILE_PATH = "unencrypted_file_path";
+    private static final String ENCRYPT_ACTION = "action_encrypt";
 
     private static final int NOTIFICATION_ERROR_ID = 1337;
 
@@ -39,20 +44,43 @@ public class EncryptionIntentService extends IntentService {
     @Inject SecureDelete secureDelete;
     @Inject NotificationManager notificationManager;
     @Inject @EncryptionErrorNotification Notification errorNotification;
+    @Inject EncryptedCameraPreferenceManager preferenceManager;
+    @Inject @InternalDecryptedDirectory File internalDecryptedDirectory;
 
     public EncryptionIntentService() {
         super(EncryptionIntentService.class.getName());
     }
 
     @Override protected void onHandleIntent(Intent intent) {
-        Serializable serializableExtra = checkNotNull(intent.getSerializableExtra(UNENCRYPTED_FILE_PATH));
-        if (!(serializableExtra instanceof File)) {
-            throw new IllegalArgumentException("intent must pass in a file");
-        }
+        EncryptedCameraApp.get(getApplicationContext()).inject(this);
 
-        File unencryptedFile = (File) serializableExtra;
+        switch (intent.getAction()) {
+            case ENCRYPT_ACTION:
+                handleUnencrypt(intent);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown action == " + intent.getAction());
+        }
+    }
+
+    @Override public void onDestroy() {
+        super.onDestroy();
+        preferenceManager.setIsDecrypting(false);
+    }
+
+    private void handleUnencrypt(Intent intent) {
+        String serializableExtra = checkNotNull(intent.getStringExtra(UNENCRYPTED_FILE_PATH));
+        preferenceManager.setIsDecrypting(true);
+
+        File unencryptedFile = new File(serializableExtra);
         File encryptedFile = new File(encryptedFileDirectory, unencryptedFile.getName());
+        File unencryptedInternal = new File(internalDecryptedDirectory, encryptedFile.getName());
+
         try {
+            // Copy the file internally so the user can't mess with it
+            Files.copy(unencryptedFile, unencryptedInternal);
+            secureDelete.secureDelete(encryptedFile);
+
             //noinspection ResultOfMethodCallIgnored
             encryptedFile.createNewFile();
             encryptionProvider.encrypt(unencryptedFile, encryptedFile);
@@ -67,9 +95,16 @@ public class EncryptionIntentService extends IntentService {
         }
     }
 
-    public static Intent create(@NotNull Context context, @NotNull File unencrypted) {
+    /**
+     * Creates an intent and queues it up to the intent service
+     *
+     * @param context     the applications context
+     * @param unencryptedFilePath unencrypted file path
+     */
+    public static void startEncryptAction(@NotNull Context context, @NotNull final String unencryptedFilePath) {
         Intent intent = new Intent(context.getApplicationContext(), EncryptionIntentService.class);
-        intent.putExtra(UNENCRYPTED_FILE_PATH, checkNotNull(unencrypted));
-        return intent;
+        intent.setAction(ENCRYPT_ACTION);
+        intent.putExtra(UNENCRYPTED_FILE_PATH, checkNotNull(unencryptedFilePath));
+        context.startService(intent);
     }
 }
