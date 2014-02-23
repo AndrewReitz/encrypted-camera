@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Encrypted Camera</string>
+    <string name="settings_title">Encrypted Camera Settings</string>
+    <string name="action_settings">Settings</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="set_password">Set Password</string>
+    <string name="do_not_loose_password">Do not loose this password!</string>
+    <string name="images_unencryped_message">Your images are unencrypted</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="pref_key_decrypt">pref_key_decrypt</string>
+    <string name="pref_key_use_password">pref_key_use_password</string>
+    <string name="require_password_to_access_files">Require a password</string>
+    <string name="use_password">Use Password</string>
+    <string name="photos_storage">Photos Storage</string>
+    <string name="show_photos_in_sd_card">Show photos in SD Card</string>
+    <string name="decrypt_photos">Decrypt Photos</string>
+    <string name="photo_retrieval">Photo Retrieval</string>
+    <string name="passwords_not_match">Passwords did not match</string>
+    <string name="password_can_not_be_empty">Password can not be empty</string>
+    <string name="error_saving_encryption_key">There was an error saving the encryption key.  Your phone does not appear to support the encryption algorithm used</string>
+    <string name="encryption_error">Encryption Error</string>
+    <string name="title_activity_camera">Camera</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="error">Error</string>
+    <string name="error_no_image_recieved">I\'m sorry, but there was an issue receiving the image from the camera</string>
+    <string name="error_sdcard_title">SDCard Error</string>
+    <string name="error_sdcard_message">There was an error trying to write to the sdcard. Please check that it is mounted and try again</string>
+    <string name="error_no_camera_app_found_message">This application is build to use your default camera, but you do not seem to have on installed.  Please install a camera application and then try this app again</string>
+    <string name="error_no_camera_app">No Camera App</string>
+    <string name="error_encrypting_image_message">Well this is embarrassing but there was an error saving your image!</string>
+    <string name="error_reencrypting">There was a problem encrypting the file %s! To ensure security you should delete it off your sdcard immediately</string>
+    <string name="error_unable_to_decrypt_to_sd">Unable to write the encrypted files to your sdcard</string>
+    <string name="error_incorrect_password">Incorrect Password</string>
+    <string name="error_terrible">A terrible error occurred, please try again</string>
+    <string name="error_change_password_while_decrypted">Can not change password while images are decrypted</string>
+    <string name="error_encrypting">Error Encrypting</string>
+    <string name="error_encrypting_photo">There was an error encrypting your photo</string>
+    <string name="error_currently_encrypting">Settings can not be applied or changed at this time as I am currently encrypting your files</string>
+</resources>
