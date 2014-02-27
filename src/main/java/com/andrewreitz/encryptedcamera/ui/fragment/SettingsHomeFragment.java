@@ -19,6 +19,7 @@ import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
+import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
@@ -63,15 +64,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Inject @EncryptedDirectory File encryptedDirectory;
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptionProvider encryptionProvider;
-    @Inject SecureDelete secureDelete;
     @Inject FragmentManager fragmentManager;
     @Inject Bus bus;
 
     private SwitchPreference switchPreferenceDecrypt;
     private SwitchPreference switchPreferencePassword;
     private AsyncTask<Void, Void, Boolean> runningTask;
+    private EncryptionEvent.EncryptionState encryptionState = EncryptionEvent.EncryptionState.NONE;
 
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         BaseActivity.get(this).inject(this);
@@ -97,10 +97,6 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Override public void onPause() {
         super.onPause();
         bus.unregister(this);
-    }
-
-    @Override public void setRetainInstance(boolean retain) {
-        super.setRetainInstance(true);
     }
 
     @Override
@@ -149,6 +145,8 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (checkNotCurrentlyEncrypting()) return false;
+
         //newValue should always be a boolean but just to be sure
         if (!Boolean.class.isInstance(newValue)) {
             throw new IllegalArgumentException("newValue is not a boolean");
@@ -166,15 +164,20 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         throw new RuntimeException("Unknown preference passed in preference == " + preference.getKey());
     }
 
-    @Subscribe public void handleEncryptionEvent(EncryptionEvent event) {
-        if (event.state == EncryptionEvent.EncryptionState.ENCRYPTING) {
+    private boolean checkNotCurrentlyEncrypting() {
+        if (encryptionState == EncryptionEvent.EncryptionState.ENCRYPTING) {
             showErrorDialog(
                     getString(R.string.error),
                     getString(R.string.error_currently_encrypting),
-                    "error_decrypting_in_progress",
-                    this
+                    "error_decrypting_in_progress"
             );
+            return true;
         }
+        return false;
+    }
+
+    @Subscribe public void handleEncryptionEvent(EncryptionEvent event) {
+        encryptionState = event.state;
     }
 
     private boolean handleDecryptedPreference(boolean value) {
@@ -349,18 +352,9 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         this.notificationManager.cancel(NOTIFICATION_ID);
         //noinspection ConstantConditions
         for (File unencrypted : appExternalDirectory.listFiles()) {
-            File encrypted = new File(encryptedDirectory, unencrypted.getName());
-            try {
-                encryptionProvider.encrypt(unencrypted, encrypted);
-                secureDelete.secureDelete(unencrypted);
-            } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
-                Timber.d(e, "unable to encrypt and move file to internal storage");
-                showErrorDialog(
-                        getString(R.string.error),
-                        String.format(getString(R.string.error_reencrypting), unencrypted.getPath()),
-                        "error_dialog_re_encrypt"
-                );
-            }
+            //TODO Move Activity out
+            //noinspection ConstantConditions
+            EncryptionIntentService.startEncryptAction(getActivity(), unencrypted.getPath());
         }
 
         switchPreferenceDecrypt.setChecked(false);
@@ -476,6 +470,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                     unencrypted.delete();
                     errorShown = true;
                 }
+                publishProgress();
             }
 
             return errorShown;
