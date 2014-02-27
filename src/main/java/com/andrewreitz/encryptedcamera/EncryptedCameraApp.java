@@ -3,7 +3,7 @@ package com.andrewreitz.encryptedcamera;
 import android.app.Application;
 import android.content.Context;
 
-import com.andrewreitz.encryptedcamera.dependencyinjection.module.AndroidModule;
+import com.andrewreitz.encryptedcamera.di.module.AndroidModule;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;

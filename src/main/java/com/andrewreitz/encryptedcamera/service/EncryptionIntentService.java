@@ -7,10 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionErrorNotification;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionNotification;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.InternalDecryptedDirectory;
+import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
+import com.andrewreitz.encryptedcamera.di.annotation.EncryptionErrorNotification;
+import com.andrewreitz.encryptedcamera.di.annotation.EncryptionNotification;
+import com.andrewreitz.encryptedcamera.di.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;

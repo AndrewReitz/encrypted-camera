@@ -1,9 +1,9 @@
-package com.andrewreitz.encryptedcamera.dependencyinjection.module;
+package com.andrewreitz.encryptedcamera.di.module;
 
 import android.content.Context;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
+import com.andrewreitz.encryptedcamera.di.annotation.ForApplication;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProviderImpl;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;

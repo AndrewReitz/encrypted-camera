@@ -1,10 +1,10 @@
-package com.andrewreitz.encryptedcamera.dependencyinjection.module;
+package com.andrewreitz.encryptedcamera.di.module;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
+import com.andrewreitz.encryptedcamera.di.annotation.ForApplication;
 import com.andrewreitz.encryptedcamera.sharedpreference.DefaultSharedPreferenceService;
 import com.andrewreitz.encryptedcamera.sharedpreference.SharedPreferenceService;
 

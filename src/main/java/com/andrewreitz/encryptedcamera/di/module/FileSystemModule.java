@@ -1,12 +1,12 @@
-package com.andrewreitz.encryptedcamera.dependencyinjection.module;
+package com.andrewreitz.encryptedcamera.di.module;
 
 import android.content.Context;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.InternalDecryptedDirectory;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.MediaFormat;
+import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
+import com.andrewreitz.encryptedcamera.di.annotation.ForApplication;
+import com.andrewreitz.encryptedcamera.di.annotation.InternalDecryptedDirectory;
+import com.andrewreitz.encryptedcamera.di.annotation.MediaFormat;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManagerImpl;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
@@ -20,7 +20,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import timber.log.Timber;
 
 /**
  * @author areitz

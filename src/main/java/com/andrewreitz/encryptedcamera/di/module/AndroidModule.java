@@ -1,4 +1,4 @@
-package com.andrewreitz.encryptedcamera.dependencyinjection.module;
+package com.andrewreitz.encryptedcamera.di.module;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -11,12 +11,12 @@ import android.support.v4.app.NotificationCompat;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionErrorNotification;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptionNotification;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.MediaFormat;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
+import com.andrewreitz.encryptedcamera.di.annotation.CameraIntent;
+import com.andrewreitz.encryptedcamera.di.annotation.EncryptionErrorNotification;
+import com.andrewreitz.encryptedcamera.di.annotation.EncryptionNotification;
+import com.andrewreitz.encryptedcamera.di.annotation.ForApplication;
+import com.andrewreitz.encryptedcamera.di.annotation.MediaFormat;
+import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 
 import java.security.SecureRandom;
@@ -56,7 +56,7 @@ public class AndroidModule {
 
     /**
      * Allow the application context to be injected but require that it be annotated with
-     * {@link com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication
+     * {@link com.andrewreitz.encryptedcamera.di.annotation.ForApplication
      *
      * @ForApplication} to explicitly differentiate it from an activity context.
      */

@@ -3,7 +3,7 @@ package com.andrewreitz.encryptedcamera.encryption;
 import android.test.AndroidTestCase;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
-import com.andrewreitz.encryptedcamera.dependencyinjection.module.AndroidModule;
+import com.andrewreitz.encryptedcamera.di.module.AndroidModule;
 import com.google.common.io.Files;
 
 import java.io.File;

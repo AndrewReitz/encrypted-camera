@@ -1,4 +1,4 @@
-package com.andrewreitz.encryptedcamera.dependencyinjection.module;
+package com.andrewreitz.encryptedcamera.di.module;
 
 import dagger.Module;
 

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.CameraIntent;
+import com.andrewreitz.encryptedcamera.di.annotation.CameraIntent;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;

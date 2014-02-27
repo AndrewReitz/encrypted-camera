@@ -13,8 +13,8 @@ import android.preference.PreferenceFragment;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.BaseActivity;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.EncryptedDirectory;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
+import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
+import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.dialog.PasswordDialog;
 import com.andrewreitz.encryptedcamera.dialog.SetPasswordDialog;
@@ -24,7 +24,6 @@ import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,9 +48,6 @@ import timber.log.Timber;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * @author Andrew
- */
 public class SettingsHomeFragment extends PreferenceFragment implements
         SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener, ErrorDialog.ErrorDialogCallback {
 

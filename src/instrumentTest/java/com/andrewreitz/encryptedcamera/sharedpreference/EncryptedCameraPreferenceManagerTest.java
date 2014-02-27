@@ -4,7 +4,7 @@ import android.content.Context;
 import android.test.AndroidTestCase;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
-import com.andrewreitz.encryptedcamera.dependencyinjection.module.AndroidModule;
+import com.andrewreitz.encryptedcamera.di.module.AndroidModule;
 
 import javax.inject.Inject;
 

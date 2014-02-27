@@ -5,7 +5,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
-import com.andrewreitz.encryptedcamera.dependencyinjection.module.ActivityModule;
+import com.andrewreitz.encryptedcamera.di.module.ActivityModule;
 
 import java.util.Arrays;
 import java.util.List;

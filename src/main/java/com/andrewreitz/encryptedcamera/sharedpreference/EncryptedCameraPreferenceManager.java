@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Base64;
 
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForApplication;
+import com.andrewreitz.encryptedcamera.di.annotation.ForApplication;
 
 import org.jetbrains.annotations.NotNull;
 import org.mindrot.jbcrypt.BCrypt;

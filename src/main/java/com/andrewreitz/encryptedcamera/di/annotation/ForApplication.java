@@ -1,4 +1,4 @@
-package com.andrewreitz.encryptedcamera.dependencyinjection.annotation;
+package com.andrewreitz.encryptedcamera.di.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

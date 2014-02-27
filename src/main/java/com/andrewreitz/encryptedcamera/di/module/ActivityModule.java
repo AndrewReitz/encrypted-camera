@@ -1,22 +1,14 @@
-package com.andrewreitz.encryptedcamera.dependencyinjection.module;
+package com.andrewreitz.encryptedcamera.di.module;
 
 import android.app.Activity;
 import android.app.FragmentManager;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.provider.MediaStore;
-import android.support.v4.app.NotificationCompat;
 
-import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.activity.CameraActivity;
 import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.ForActivity;
-import com.andrewreitz.encryptedcamera.dependencyinjection.annotation.UnlockNotification;
+import com.andrewreitz.encryptedcamera.di.annotation.ForActivity;
 import com.andrewreitz.encryptedcamera.fragment.SettingsHomeFragment;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
