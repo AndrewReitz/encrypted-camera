@@ -16,7 +16,6 @@ import com.andrewreitz.encryptedcamera.di.annotation.EncryptionNotification;
 import com.andrewreitz.encryptedcamera.di.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
-import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 import com.google.common.io.Files;
 import com.squareup.otto.Bus;
 
@@ -33,9 +32,6 @@ import timber.log.Timber;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * @author areitz
- */
 public class EncryptionIntentService extends IntentService {
 
     private static final String UNENCRYPTED_FILE_PATH = "unencrypted_file_path";
@@ -51,7 +47,6 @@ public class EncryptionIntentService extends IntentService {
     @Inject SecureDelete secureDelete;
     @Inject NotificationManager notificationManager;
     @Inject @EncryptionErrorNotification Notification errorNotification;
-    @Inject EncryptedCameraPreferenceManager preferenceManager;
     @Inject @InternalDecryptedDirectory File internalDecryptedDirectory;
     @Inject @EncryptionNotification Notification encryptingNotification;
     @Inject Bus bus;
@@ -107,11 +102,6 @@ public class EncryptionIntentService extends IntentService {
         try {
             // Copy the file internally so the user can't mess with it while we are encrypting
             Files.copy(unencryptedFile, unencryptedInternal);
-            secureDelete.secureDelete(encryptedFile);
-
-            //noinspection ResultOfMethodCallIgnored
-            encryptedFile.createNewFile();
-            encryptionProvider.encrypt(unencryptedFile, encryptedFile);
 
             // File encrypted now delete the original
             // Do this on a separate thread to hopefully speed this process up.
@@ -124,6 +114,13 @@ public class EncryptionIntentService extends IntentService {
                     }
                 }
             }).run();
+
+            //noinspection ResultOfMethodCallIgnored
+            encryptedFile.createNewFile();
+            encryptionProvider.encrypt(unencryptedInternal, encryptedFile);
+
+            //noinspection ResultOfMethodCallIgnored
+            unencryptedInternal.delete();
         } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             Timber.e(e, "Error encrypting and saving image");
             notificationManager.notify(
@@ -132,6 +129,7 @@ public class EncryptionIntentService extends IntentService {
             );
         }
 
+        notificationManager.cancel(NOTIFICATION_ENCRYPTING_ID);
         mainThreadHandler.post(new Runnable() {
             @Override public void run() {
                 bus.post(new EncryptionEvent(EncryptionEvent.EncryptionState.NONE));

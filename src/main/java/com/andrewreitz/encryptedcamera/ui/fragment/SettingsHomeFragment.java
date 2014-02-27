@@ -25,8 +25,8 @@ import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

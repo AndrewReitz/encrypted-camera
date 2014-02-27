@@ -76,6 +76,7 @@ public class AndroidModule {
     @Singleton
     @EncryptionNotification Notification provideEncryptionNotification() {
         return new NotificationCompat.Builder(application)
+                .setProgress(0, 0, true)
                 .setContentTitle("Encrypted Camera") // TODO ... you know what
                 .setContentText("Encrypting your photos")
                 .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
@@ -138,7 +139,7 @@ public class AndroidModule {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     }
 
-    @Provides Bus provideBus() {
+    @Provides @Singleton Bus provideBus() {
         return new Bus();
     }
 }

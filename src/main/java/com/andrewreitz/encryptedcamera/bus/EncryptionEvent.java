@@ -8,7 +8,7 @@ public class EncryptionEvent {
     public final EncryptionState state;
 
     public EncryptionEvent(@NotNull EncryptionState state) {
-        this.state = EncryptionState.NONE;
+        this.state = state;
     }
 
     public enum EncryptionState {

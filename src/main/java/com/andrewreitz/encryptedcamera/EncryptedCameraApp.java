@@ -8,9 +8,9 @@ import com.andrewreitz.encryptedcamera.di.module.AndroidModule;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
-import com.google.common.eventbus.Subscribe;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.security.KeyStoreException;
