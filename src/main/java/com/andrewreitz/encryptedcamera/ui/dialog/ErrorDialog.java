@@ -1,4 +1,4 @@
-package com.andrewreitz.encryptedcamera.dialog;
+package com.andrewreitz.encryptedcamera.ui.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

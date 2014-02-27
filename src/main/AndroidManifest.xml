@@ -11,7 +11,7 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.andrewreitz.encryptedcamera.activity.SettingsActivity"
+            android:name=".ui.activity.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.Encryptedcamera" >
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.andrewreitz.encryptedcamera.activity.CameraActivity"
+            android:name=".ui.activity.CameraActivity"
             android:label="@string/title_activity_camera" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

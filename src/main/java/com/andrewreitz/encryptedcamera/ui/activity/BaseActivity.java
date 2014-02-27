@@ -1,4 +1,4 @@
-package com.andrewreitz.encryptedcamera.activity;
+package com.andrewreitz.encryptedcamera.ui.activity;
 
 import android.app.Activity;
 import android.app.Fragment;

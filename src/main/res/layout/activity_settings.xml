@@ -3,13 +3,13 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.andrewreitz.encryptedcamera.activity.MainActivity"
+    tools:context="com.andrewreitz.encryptedcamera.ui.activity.MainActivity"
     tools:ignore="MergeRootFrame">
 
     <fragment
         android:id="@+id/settings_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.andrewreitz.encryptedcamera.fragment.SettingsHomeFragment" />
+        android:name="com.andrewreitz.encryptedcamera.ui.fragment.SettingsHomeFragment" />
 
 </FrameLayout>

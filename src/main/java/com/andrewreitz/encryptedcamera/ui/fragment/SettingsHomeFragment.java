@@ -1,4 +1,4 @@
-package com.andrewreitz.encryptedcamera.fragment;
+package com.andrewreitz.encryptedcamera.ui.fragment;
 
 import android.app.FragmentManager;
 import android.app.Notification;
@@ -12,12 +12,12 @@ import android.preference.PreferenceFragment;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.activity.BaseActivity;
+import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
-import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
-import com.andrewreitz.encryptedcamera.dialog.PasswordDialog;
-import com.andrewreitz.encryptedcamera.dialog.SetPasswordDialog;
+import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
+import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
+import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;

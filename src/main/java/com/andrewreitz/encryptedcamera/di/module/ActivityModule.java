@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 
-import com.andrewreitz.encryptedcamera.activity.CameraActivity;
-import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
+import com.andrewreitz.encryptedcamera.ui.activity.CameraActivity;
+import com.andrewreitz.encryptedcamera.ui.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.di.annotation.ForActivity;
-import com.andrewreitz.encryptedcamera.fragment.SettingsHomeFragment;
+import com.andrewreitz.encryptedcamera.ui.fragment.SettingsHomeFragment;
 
 import javax.inject.Singleton;
 

@@ -1,4 +1,4 @@
-package com.andrewreitz.encryptedcamera.activity;
+package com.andrewreitz.encryptedcamera.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -7,7 +7,7 @@ import android.provider.MediaStore;
 
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.di.annotation.CameraIntent;
-import com.andrewreitz.encryptedcamera.dialog.ErrorDialog;
+import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;

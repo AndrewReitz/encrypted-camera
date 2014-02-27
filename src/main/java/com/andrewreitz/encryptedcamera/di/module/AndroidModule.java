@@ -10,7 +10,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.activity.SettingsActivity;
+import com.andrewreitz.encryptedcamera.ui.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.di.annotation.CameraIntent;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptionErrorNotification;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptionNotification;

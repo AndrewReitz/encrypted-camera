@@ -1,4 +1,4 @@
-package com.andrewreitz.encryptedcamera.dialog;
+package com.andrewreitz.encryptedcamera.ui.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -10,8 +10,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.andrewreitz.encryptedcamera.R;
-
-import java.security.spec.InvalidKeySpecException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
