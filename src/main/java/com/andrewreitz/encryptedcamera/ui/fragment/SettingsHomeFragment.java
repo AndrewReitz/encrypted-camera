@@ -12,18 +12,21 @@ import android.preference.PreferenceFragment;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
+import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
-import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
-import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
-import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
+import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
+import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
+import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
 import com.google.common.collect.ImmutableList;
+import com.google.common.eventbus.Subscribe;
+import com.squareup.otto.Bus;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,6 +65,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Inject EncryptionProvider encryptionProvider;
     @Inject SecureDelete secureDelete;
     @Inject FragmentManager fragmentManager;
+    @Inject Bus bus;
 
     private SwitchPreference switchPreferenceDecrypt;
     private SwitchPreference switchPreferencePassword;
@@ -71,15 +75,6 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         BaseActivity.get(this).inject(this);
-
-        if (preferenceManager.isDecrypting()) {
-            showErrorDialog(
-                    getString(R.string.error),
-                    getString(R.string.error_currently_encrypting),
-                    "error_decrypting_in_progress",
-                    this
-            );
-        }
     }
 
     @Override
@@ -92,10 +87,16 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @SuppressWarnings("ConstantConditions")
     public void onResume() {
         super.onResume();
+        bus.register(this);
         switchPreferenceDecrypt = (SwitchPreference) findPreference(getString(R.string.pref_key_decrypt));
         switchPreferenceDecrypt.setOnPreferenceChangeListener(this);
         switchPreferencePassword = (SwitchPreference) findPreference(getString(R.string.pref_key_use_password));
         switchPreferencePassword.setOnPreferenceChangeListener(this);
+    }
+
+    @Override public void onPause() {
+        super.onPause();
+        bus.unregister(this);
     }
 
     @Override public void setRetainInstance(boolean retain) {
@@ -163,6 +164,17 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         }
 
         throw new RuntimeException("Unknown preference passed in preference == " + preference.getKey());
+    }
+
+    @Subscribe public void handleEncryptionEvent(EncryptionEvent event) {
+        if (event.state == EncryptionEvent.EncryptionState.ENCRYPTING) {
+            showErrorDialog(
+                    getString(R.string.error),
+                    getString(R.string.error_currently_encrypting),
+                    "error_decrypting_in_progress",
+                    this
+            );
+        }
     }
 
     private boolean handleDecryptedPreference(boolean value) {

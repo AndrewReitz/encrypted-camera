@@ -5,8 +5,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
+import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptionErrorNotification;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptionNotification;
@@ -15,6 +18,7 @@ import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 import com.google.common.io.Files;
+import com.squareup.otto.Bus;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +44,8 @@ public class EncryptionIntentService extends IntentService {
     private static final int NOTIFICATION_ERROR_ID = 1337;
     private static final int NOTIFICATION_ENCRYPTING_ID = 1338;
 
+    private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+
     @Inject EncryptionProvider encryptionProvider;
     @Inject @EncryptedDirectory File encryptedFileDirectory;
     @Inject SecureDelete secureDelete;
@@ -48,6 +54,7 @@ public class EncryptionIntentService extends IntentService {
     @Inject EncryptedCameraPreferenceManager preferenceManager;
     @Inject @InternalDecryptedDirectory File internalDecryptedDirectory;
     @Inject @EncryptionNotification Notification encryptingNotification;
+    @Inject Bus bus;
 
     public EncryptionIntentService() {
         super(EncryptionIntentService.class.getName());
@@ -80,27 +87,32 @@ public class EncryptionIntentService extends IntentService {
 
     @Override public void onDestroy() {
         super.onDestroy();
-        preferenceManager.setIsDecrypting(false);
         notificationManager.cancel(NOTIFICATION_ENCRYPTING_ID);
     }
 
     private void handleEncrypt(Intent intent) {
+        mainThreadHandler.post(new Runnable() {
+            @Override public void run() {
+                bus.post(new EncryptionEvent(EncryptionEvent.EncryptionState.ENCRYPTING));
+            }
+        });
+
         notificationManager.notify(NOTIFICATION_ENCRYPTING_ID, encryptingNotification);
         String serializableExtra = checkNotNull(intent.getStringExtra(UNENCRYPTED_FILE_PATH));
-        preferenceManager.setIsDecrypting(true);
 
         final File unencryptedFile = new File(serializableExtra);
         File encryptedFile = new File(encryptedFileDirectory, unencryptedFile.getName());
         File unencryptedInternal = new File(internalDecryptedDirectory, encryptedFile.getName());
 
         try {
-            // Copy the file internally so the user can't mess with it
+            // Copy the file internally so the user can't mess with it while we are encrypting
             Files.copy(unencryptedFile, unencryptedInternal);
             secureDelete.secureDelete(encryptedFile);
 
             //noinspection ResultOfMethodCallIgnored
             encryptedFile.createNewFile();
             encryptionProvider.encrypt(unencryptedFile, encryptedFile);
+
             // File encrypted now delete the original
             // Do this on a separate thread to hopefully speed this process up.
             new Thread(new Runnable() {
@@ -119,5 +131,11 @@ public class EncryptionIntentService extends IntentService {
                     errorNotification
             );
         }
+
+        mainThreadHandler.post(new Runnable() {
+            @Override public void run() {
+                bus.post(new EncryptionEvent(EncryptionEvent.EncryptionState.NONE));
+            }
+        });
     }
 }

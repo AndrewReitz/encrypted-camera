@@ -18,6 +18,7 @@ import com.andrewreitz.encryptedcamera.di.annotation.ForApplication;
 import com.andrewreitz.encryptedcamera.di.annotation.MediaFormat;
 import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
+import com.squareup.otto.Bus;
 
 import java.security.SecureRandom;
 import java.text.DateFormat;
@@ -135,5 +136,9 @@ public class AndroidModule {
     @Provides
     @CameraIntent Intent provideCameraIntent() {
         return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    }
+
+    @Provides Bus provideBus() {
+        return new Bus();
     }
 }

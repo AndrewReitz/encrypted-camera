@@ -3,10 +3,14 @@ package com.andrewreitz.encryptedcamera;
 import android.app.Application;
 import android.content.Context;
 
+import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
 import com.andrewreitz.encryptedcamera.di.module.AndroidModule;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.google.common.eventbus.Subscribe;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Produce;
 
 import java.io.IOException;
 import java.security.KeyStoreException;
@@ -32,15 +36,13 @@ public class EncryptedCameraApp extends Application {
     public static final String MEDIA_OUTPUT_DATE_FORMAT = "yyyyMMdd_HHmmss";
     public static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
-    @Inject
-    EncryptedCameraPreferenceManager preferenceManager;
-
-    @Inject
-    KeyManager keyManager;
+    @Inject EncryptedCameraPreferenceManager preferenceManager;
+    @Inject KeyManager keyManager;
+    @Inject Bus bus;
 
     private ObjectGraph applicationGraph;
+    private EncryptionEvent.EncryptionState lastSate = EncryptionEvent.EncryptionState.NONE;
 
-    @Override
     public void onCreate() {
         super.onCreate();
 
@@ -55,6 +57,9 @@ public class EncryptedCameraApp extends Application {
         // Setup DI
         applicationGraph = ObjectGraph.create(getModules().toArray());
         applicationGraph.inject(this);
+
+        // Get on the bus!
+        bus.register(this);
 
         // Generate an encryption key if there isn't one already
         generateKey();
@@ -92,5 +97,13 @@ public class EncryptedCameraApp extends Application {
                 ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
             }
         }
+    }
+
+    @Subscribe public void answerEncryptionEvent(EncryptionEvent event) {
+        lastSate = event.state;
+    }
+
+    @Produce public EncryptionEvent produceEncryptionEvent() {
+        return new EncryptionEvent(lastSate);
     }
 }

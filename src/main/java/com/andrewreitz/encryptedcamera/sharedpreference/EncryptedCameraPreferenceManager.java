@@ -80,14 +80,6 @@ public class EncryptedCameraPreferenceManager {
         sharedPreferenceService.saveBoolean(GENERATED_KEY, generated);
     }
 
-    public void setIsDecrypting(boolean isDecrypting) {
-        sharedPreferenceService.saveBoolean(IS_DECRYPTING, isDecrypting);
-    }
-
-    public boolean isDecrypting() {
-        return sharedPreferenceService.getBoolean(IS_DECRYPTING, false);
-    }
-
     /**
      * Stores the password as a hash. Using BCrypt!
      *
