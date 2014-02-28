@@ -55,6 +55,8 @@ public class EncryptionIntentService extends IntentService {
         super(EncryptionIntentService.class.getName());
     }
 
+    private static volatile int queueCount = 0;
+
     /**
      * Creates an intent and queues it up to the intent service
      *
@@ -62,6 +64,9 @@ public class EncryptionIntentService extends IntentService {
      * @param unencryptedFilePath unencrypted file path
      */
     public static void startEncryptAction(@NotNull Context context, @NotNull final String unencryptedFilePath) {
+        queueCount++;
+        File unencryptedFile = new File(unencryptedFilePath);
+        File unencryptedInternal = new File(internalDecryptedDirectory, unencryptedFile.getName());
         Intent intent = new Intent(context.getApplicationContext(), EncryptionIntentService.class);
         intent.setAction(ENCRYPT_ACTION);
         intent.putExtra(UNENCRYPTED_FILE_PATH, checkNotNull(unencryptedFilePath));
@@ -82,6 +87,7 @@ public class EncryptionIntentService extends IntentService {
 
     @Override public void onDestroy() {
         super.onDestroy();
+        queueCount = 0;
         notificationManager.cancel(NOTIFICATION_ENCRYPTING_ID);
     }
 
@@ -103,7 +109,7 @@ public class EncryptionIntentService extends IntentService {
             // Copy the file internally so the user can't mess with it while we are encrypting
             Files.copy(unencryptedFile, unencryptedInternal);
 
-            // File encrypted now delete the original
+            // File moved internally now delete the original
             // Do this on a separate thread to hopefully speed this process up.
             new Thread(new Runnable() {
                 @Override public void run() {
@@ -135,5 +141,6 @@ public class EncryptionIntentService extends IntentService {
                 bus.post(new EncryptionEvent(EncryptionEvent.EncryptionState.NONE));
             }
         });
+        queueCount--;
     }
 }
