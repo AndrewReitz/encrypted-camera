@@ -13,6 +13,7 @@ import android.preference.PreferenceFragment;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
+import com.andrewreitz.encryptedcamera.bus.FileEncryptedEvent;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
 import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
@@ -66,13 +67,14 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Inject EncryptionProvider encryptionProvider;
     @Inject FragmentManager fragmentManager;
     @Inject Bus bus;
+    @Inject SecureRandom secureRandom;
 
     private SwitchPreference switchPreferenceDecrypt;
     private SwitchPreference switchPreferencePassword;
     private AsyncTask<Void, Void, Boolean> runningTask;
     private EncryptionEvent.EncryptionState encryptionState = EncryptionEvent.EncryptionState.NONE;
 
-    public void onActivityCreated(Bundle savedInstanceState) {
+    @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         BaseActivity.get(this).inject(this);
     }
@@ -99,11 +101,9 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         bus.unregister(this);
     }
 
-    @Override
-    public void onPasswordSet(String password) {
+    @Override public void onPasswordSet(String password) {
         // TODO Re-Encrypt all files that were encrypted with the original key
         byte[] salt = new byte[10];
-        SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(salt);
         try {
             SecretKey secretKey = keyManager.generateKeyWithPassword(password.toCharArray(), salt);
@@ -143,8 +143,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         getActivity().finish();
     }
 
-    @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
+    @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (checkNotCurrentlyEncrypting()) return false;
 
         //newValue should always be a boolean but just to be sure
@@ -494,6 +493,39 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                 // there was an error reset the switch preferences
                 switchPreferenceDecrypt.setChecked(false);
             }
+        }
+    }
+
+    private final class EncryptFilesTask extends AbstractFilesTask {
+        private volatile boolean done = false;
+
+        EncryptFilesTask(@NotNull Context context, @NotNull List<File> files) {
+            super(context, files);
+        }
+
+        @Override protected Boolean doInBackground(Void... params) {
+            while (!done) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    // I just don't care
+                }
+            }
+            return null;
+        }
+
+        @Subscribe public void handleEncryptionFinishedEvent(FileEncryptedEvent event) {
+
+        }
+
+        @Subscribe public void handleEncryptionEvent(EncryptionEvent event) {
+            if (event.state == EncryptionEvent.EncryptionState.NONE) {
+                done = true;
+            }
+        }
+
+        @Override protected void onPostExecute(Boolean errorShown) {
+            getProgressDialog().dismiss();
         }
     }
 }
