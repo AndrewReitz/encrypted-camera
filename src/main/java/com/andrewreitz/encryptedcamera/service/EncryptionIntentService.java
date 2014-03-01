@@ -51,12 +51,6 @@ public class EncryptionIntentService extends IntentService {
     @Inject @EncryptionNotification Notification encryptingNotification;
     @Inject Bus bus;
 
-    public EncryptionIntentService() {
-        super(EncryptionIntentService.class.getName());
-    }
-
-    private static volatile int queueCount = 0;
-
     /**
      * Creates an intent and queues it up to the intent service
      *
@@ -64,13 +58,14 @@ public class EncryptionIntentService extends IntentService {
      * @param unencryptedFilePath unencrypted file path
      */
     public static void startEncryptAction(@NotNull Context context, @NotNull final String unencryptedFilePath) {
-        queueCount++;
-        File unencryptedFile = new File(unencryptedFilePath);
-        File unencryptedInternal = new File(internalDecryptedDirectory, unencryptedFile.getName());
         Intent intent = new Intent(context.getApplicationContext(), EncryptionIntentService.class);
         intent.setAction(ENCRYPT_ACTION);
         intent.putExtra(UNENCRYPTED_FILE_PATH, checkNotNull(unencryptedFilePath));
         context.startService(intent);
+    }
+
+    public EncryptionIntentService() {
+        super(EncryptionIntentService.class.getName());
     }
 
     @Override protected void onHandleIntent(Intent intent) {
@@ -87,7 +82,6 @@ public class EncryptionIntentService extends IntentService {
 
     @Override public void onDestroy() {
         super.onDestroy();
-        queueCount = 0;
         notificationManager.cancel(NOTIFICATION_ENCRYPTING_ID);
     }
 
@@ -110,16 +104,7 @@ public class EncryptionIntentService extends IntentService {
             Files.copy(unencryptedFile, unencryptedInternal);
 
             // File moved internally now delete the original
-            // Do this on a separate thread to hopefully speed this process up.
-            new Thread(new Runnable() {
-                @Override public void run() {
-                    try {
-                        secureDelete.secureDelete(unencryptedFile);
-                    } catch (IOException e) {
-                        // TODO
-                    }
-                }
-            }).run();
+            secureDelete.secureDelete(unencryptedFile);
 
             //noinspection ResultOfMethodCallIgnored
             encryptedFile.createNewFile();
@@ -141,6 +126,5 @@ public class EncryptionIntentService extends IntentService {
                 bus.post(new EncryptionEvent(EncryptionEvent.EncryptionState.NONE));
             }
         });
-        queueCount--;
     }
 }

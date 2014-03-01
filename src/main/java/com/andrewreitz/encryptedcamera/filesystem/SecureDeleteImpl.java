@@ -10,9 +10,6 @@ import java.security.SecureRandom;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * @author areitz
- */
 public class SecureDeleteImpl implements SecureDelete {
 
     private final SecureRandom secureRandom;
@@ -27,7 +24,7 @@ public class SecureDeleteImpl implements SecureDelete {
             RandomAccessFile raf = new RandomAccessFile(file, "rws");
             raf.seek(0);
             raf.getFilePointer();
-            byte[] data = new byte[64];
+            byte[] data = new byte[1024];
             int pos = 0;
             while (pos < length) {
                 secureRandom.nextBytes(data);
