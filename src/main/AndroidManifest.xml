@@ -1,40 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.andrewreitz.encryptedcamera"
-    android:installLocation="auto" >
+          package="com.andrewreitz.encryptedcamera"
+          android:installLocation="auto">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name="com.andrewreitz.encryptedcamera.EncryptedCameraApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.activity.CameraActivity"
+            android:label="@string/title_activity_camera">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.Encryptedcamera" >
+            android:theme="@style/Theme.Encryptedcamera">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.activity.CameraActivity"
-            android:label="@string/title_activity_camera" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <service
             android:name="com.andrewreitz.encryptedcamera.service.EncryptionIntentService"
-            android:exported="false" >
+            android:exported="false">
         </service>
     </application>
-
 </manifest>
