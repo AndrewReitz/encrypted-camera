@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/photo_retrieval"
-        android:key="pref_key_storage_settings">
+        android:title="@string/photo_retrieval">
         <org.jraf.android.backport.switchwidget.SwitchPreference
             android:title="@string/decrypt_photos"
             android:key="@string/pref_key_decrypt"
             android:summary="@string/show_photos_in_sd_card"/>
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="@string/photos_storage"
-        android:key="pref_key_storage_settings">
+        android:title="@string/photos_storage">
         <org.jraf.android.backport.switchwidget.SwitchPreference
             android:title="@string/use_password"
             android:summary="@string/require_password_to_access_files"
             android:key="@string/pref_key_use_password"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Other">
+        <Preference
+            android:title="Donate">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=aj%2ereitz%40gmail%2ecom&amp;lc=US&amp;item_name=Encrypted%20Camera&amp;item_number=encrypted%2dcamera&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"/>
+        </Preference>
+        <Preference
+            android:title="About">
+            <intent
+                android:action="com.andrewreitz.encryptedcamera.AboutActivity"/>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

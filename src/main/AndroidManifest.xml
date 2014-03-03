@@ -15,7 +15,6 @@
             android:label="@string/title_activity_camera">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
@@ -26,8 +25,16 @@
             android:theme="@style/Theme.Encryptedcamera">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.activity.AboutActivity"
+            android:label="@string/about"
+            android:theme="@style/Theme.Encryptedcamera">
+            <intent-filter>
+                <action android:name="com.andrewreitz.encryptedcamera.AboutActivity"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 

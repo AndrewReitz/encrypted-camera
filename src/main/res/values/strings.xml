@@ -40,4 +40,6 @@
     <string name="error_encrypting_photo">There was an error encrypting your photo</string>
     <string name="error_currently_encrypting">Settings can not be changed at this time. Images are currently being encrypting</string>
     <string name="error_currently_decrypting">Settings can not be changed at this time. Images are currently being decrypted</string>
+    <string name="donate">Donate</string>
+    <string name="about">About</string>
 </resources>

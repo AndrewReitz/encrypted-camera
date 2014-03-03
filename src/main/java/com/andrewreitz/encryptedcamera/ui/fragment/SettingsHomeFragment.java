@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -55,6 +56,10 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener, ErrorDialog.ErrorDialogCallback {
 
     private static final int NOTIFICATION_ID = 1337;
+    private static final Uri DONATION_URL = Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=" +
+            "_donations&business=aj%2ereitz%40gmail%2ecom&lc=US&item_name=Encrypted%20Camera&item" +
+            "_number=encrypted%2dcamera&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2" +
+            "egif%3aNonHosted");
 
     @Inject NotificationManager notificationManager;
     @Inject KeyManager keyManager;
