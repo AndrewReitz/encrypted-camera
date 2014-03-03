@@ -13,20 +13,20 @@ import android.preference.PreferenceFragment;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
-import com.andrewreitz.encryptedcamera.bus.FileEncryptedEvent;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
+import com.andrewreitz.encryptedcamera.di.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
-import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.Files;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -51,8 +51,6 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class SettingsHomeFragment extends PreferenceFragment implements
         SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener, ErrorDialog.ErrorDialogCallback {
 
@@ -63,15 +61,17 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Inject EncryptedCameraPreferenceManager preferenceManager;
     @Inject @UnlockNotification Notification unlockNotification;
     @Inject @EncryptedDirectory File encryptedDirectory;
+    @Inject @InternalDecryptedDirectory File unencryptedInternalDirectory;
     @Inject ExternalStorageManager externalStorageManager;
     @Inject EncryptionProvider encryptionProvider;
     @Inject FragmentManager fragmentManager;
     @Inject Bus bus;
+    @Inject SecureDelete secureDelete;
     @Inject SecureRandom secureRandom;
 
     private SwitchPreference switchPreferenceDecrypt;
     private SwitchPreference switchPreferencePassword;
-    private AsyncTask<Void, Void, Boolean> runningTask;
+    private FileCryptographyTask runningTask;
     private EncryptionEvent.EncryptionState encryptionState = EncryptionEvent.EncryptionState.NONE;
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
@@ -98,6 +98,10 @@ public class SettingsHomeFragment extends PreferenceFragment implements
 
     @Override public void onPause() {
         super.onPause();
+        if (runningTask != null) {
+            runningTask.getProgressDialog().dismiss();
+            runningTask.cancel(false);
+        }
         bus.unregister(this);
     }
 
@@ -164,10 +168,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     private boolean checkNotCurrentlyEncrypting() {
-        if (encryptionState == EncryptionEvent.EncryptionState.ENCRYPTING) {
+        if (!encryptionState.equals(EncryptionEvent.EncryptionState.NONE)) {
             showErrorDialog(
                     getString(R.string.error),
-                    getString(R.string.error_currently_encrypting),
+                    EncryptionEvent.EncryptionState.DECRYPTING == encryptionState ?
+                            getString(R.string.error_currently_decrypting) : getString(R.string.error_currently_encrypting),
                     "error_decrypting_in_progress"
             );
             return true;
@@ -176,6 +181,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     @Subscribe public void handleEncryptionEvent(EncryptionEvent event) {
+        if (event.state.equals(EncryptionEvent.EncryptionState.NONE)) {
+            getActivity().setProgressBarIndeterminateVisibility(false);
+        } else {
+            getActivity().setProgressBarIndeterminateVisibility(true);
+        }
         encryptionState = event.state;
     }
 
@@ -332,8 +342,25 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         //noinspection ConstantConditions
         runningTask = new DecryptFilesTask(
                 appExternalDirectory,
+                encryptionProvider,
                 getActivity(),
-                ImmutableList.copyOf(encryptedDirectory.listFiles())
+                ImmutableList.copyOf(encryptedDirectory.listFiles()),
+                new FileCryptographyTask.TaskFinishedCallback() {
+                    @Override public void onSuccess() {
+                        notificationManager.notify(
+                                NOTIFICATION_ID,
+                                unlockNotification
+                        );
+                        switchPreferenceDecrypt.setChecked(true);
+                    }
+
+                    @Override public void onError() {
+                        // there was an error reset the switch preferences
+                        switchPreferenceDecrypt.setChecked(false);
+                    }
+                },
+                "Decrypting Files", // TODO
+                bus
         );
         //noinspection unchecked
         runningTask.execute();
@@ -348,15 +375,28 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     private void encryptSdDirectory(File appExternalDirectory) {
-        this.notificationManager.cancel(NOTIFICATION_ID);
-        //noinspection ConstantConditions
-        for (File unencrypted : appExternalDirectory.listFiles()) {
-            //TODO Move Activity out
-            //noinspection ConstantConditions
-            EncryptionIntentService.startEncryptAction(getActivity(), unencrypted.getPath());
-        }
+        runningTask = new EncryptFilesTask(
+                unencryptedInternalDirectory,
+                encryptedDirectory,
+                secureDelete,
+                getActivity(), // TODO
+                ImmutableList.copyOf(appExternalDirectory.listFiles()),
+                encryptionProvider,
+                new FileCryptographyTask.TaskFinishedCallback() {
+                    @Override public void onSuccess() {
+                        notificationManager.cancel(NOTIFICATION_ID);
+                        switchPreferenceDecrypt.setChecked(false);
+                    }
 
-        switchPreferenceDecrypt.setChecked(false);
+                    @Override public void onError() {
+                        switchPreferenceDecrypt.setChecked(true);
+                    }
+                },
+                "Encrypting Files", // TODO
+                bus
+        );
+
+        runningTask.execute();
     }
 
     private boolean setSecretKey(String password) {
@@ -404,30 +444,54 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         return BCrypt.checkpw(password, passwordHash);
     }
 
-    private static abstract class AbstractFilesTask extends AsyncTask<Void, Void, Boolean> {
+    private static abstract class FileCryptographyTask extends AsyncTask<Void, Void, Boolean> {
 
         private final Context context;
         private final List<File> files;
+        private final TaskFinishedCallback callback;
+        private final String progressMessage;
+        private final Bus bus;
 
         private ProgressDialog progressDialog;
 
-        AbstractFilesTask(@NotNull Context context, @NotNull List<File> files) {
-            this.context = checkNotNull(context);
-            this.files = checkNotNull(files);
+        FileCryptographyTask(
+                @NotNull Context context,
+                @NotNull List<File> files,
+                @NotNull TaskFinishedCallback callback,
+                @NotNull String progressMessage,
+                @NotNull Bus bus
+        ) {
+            this.context = context;
+            this.files = files;
+            this.callback = callback;
+            this.progressMessage = progressMessage;
+            this.bus = bus;
         }
 
         @Override final protected void onPreExecute() {
             progressDialog = new ProgressDialog(context);
-            getProgressDialog().setCancelable(true);
-            getProgressDialog().setMessage("Decrypting Files");
-            getProgressDialog().setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            getProgressDialog().setProgress(0);
-            getProgressDialog().setMax(getFiles().size());
-            getProgressDialog().show();
+            progressDialog.setCancelable(true);
+            progressDialog.setMessage(progressMessage);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setProgress(0);
+            progressDialog.setMax(getFiles().size());
+            progressDialog.show();
         }
 
         @Override final protected void onProgressUpdate(Void... values) {
             getProgressDialog().setProgress(1 + getProgressDialog().getProgress());
+        }
+
+        @Override protected void onCancelled(Boolean success) {
+            finishedExecuting(success);
+        }
+
+        @Override protected void onPostExecute(Boolean success) {
+            if (!isCancelled()) {
+                progressDialog.dismiss();
+            }
+            finishedExecuting(success);
         }
 
         public Context getContext() {
@@ -441,21 +505,51 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         public ProgressDialog getProgressDialog() {
             return progressDialog;
         }
+
+        public Bus getBus() {
+            return bus;
+        }
+
+        public interface TaskFinishedCallback {
+            void onSuccess();
+
+            void onError();
+        }
+
+        private void finishedExecuting(boolean success) {
+            getBus().post(new EncryptionEvent(EncryptionEvent.EncryptionState.NONE));
+            if (success) {
+                callback.onSuccess();
+            } else {
+                callback.onError();
+            }
+        }
     }
 
-    private final class DecryptFilesTask extends AbstractFilesTask {
+    private static final class DecryptFilesTask extends FileCryptographyTask {
 
         private final File appExternalDirectory;
+        private final EncryptionProvider encryptionProvider;
 
-        DecryptFilesTask(@NotNull File appExternalDirectory, @NotNull Context context, @NotNull List<File> files) {
-            super(context, files);
-            this.appExternalDirectory = checkNotNull(appExternalDirectory);
+        DecryptFilesTask(
+                @NotNull File appExternalDirectory,
+                @NotNull EncryptionProvider encryptionProvider,
+                @NotNull Context context,
+                @NotNull List<File> files,
+                @NotNull TaskFinishedCallback callback,
+                @NotNull String progressMessage,
+                @NotNull Bus bus
+        ) {
+            super(context, files, callback, progressMessage, bus);
+            this.appExternalDirectory = appExternalDirectory;
+            this.encryptionProvider = encryptionProvider;
+            bus.post(new EncryptionEvent(EncryptionEvent.EncryptionState.DECRYPTING));
         }
 
         @Override protected Boolean doInBackground(Void... params) {
 
-            boolean errorShown = false;
-            //noinspection ConstantConditions
+            boolean success = true;
+
             for (File encrypted : getFiles()) {
                 File unencrypted = new File(appExternalDirectory, encrypted.getName());
                 try {
@@ -467,65 +561,69 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                     // Deleted the file that was put on the sdcard and was not the full file
                     //noinspection ResultOfMethodCallIgnored
                     unencrypted.delete();
-                    errorShown = true;
+                    success = false;
                 }
                 publishProgress();
             }
 
-            return errorShown;
-        }
-
-        @Override protected void onPostExecute(Boolean errorShown) {
-            getProgressDialog().dismiss();
-
-            if (isCancelled()) {
-                return;
-            }
-
-            // Error not shown display the notification
-            if (!errorShown) {
-                notificationManager.notify(
-                        NOTIFICATION_ID,
-                        unlockNotification
-                );
-                switchPreferenceDecrypt.setChecked(true);
-            } else {
-                // there was an error reset the switch preferences
-                switchPreferenceDecrypt.setChecked(false);
-            }
+            return success;
         }
     }
 
-    private final class EncryptFilesTask extends AbstractFilesTask {
-        private volatile boolean done = false;
+    private final static class EncryptFilesTask extends FileCryptographyTask {
+        private final File appInternalUnencryptedDirectory;
+        private final File appInternalEncryptedDirectory;
+        private final SecureDelete secureDelete;
+        private final EncryptionProvider encryptionProvider;
 
-        EncryptFilesTask(@NotNull Context context, @NotNull List<File> files) {
-            super(context, files);
+        EncryptFilesTask(
+                @NotNull File appInternalUnencryptedDirectory,
+                @NotNull File appInternalEncryptedDirectory,
+                @NotNull SecureDelete secureDelete,
+                @NotNull Context context,
+                @NotNull List<File> files,
+                @NotNull EncryptionProvider encryptionProvider,
+                @NotNull TaskFinishedCallback callback,
+                @NotNull String progressMessage,
+                @NotNull Bus bus
+        ) {
+            super(context, files, callback, progressMessage, bus);
+            this.appInternalEncryptedDirectory = appInternalEncryptedDirectory;
+            this.appInternalUnencryptedDirectory = appInternalUnencryptedDirectory;
+            this.secureDelete = secureDelete;
+            this.encryptionProvider = encryptionProvider;
+            bus.post(new EncryptionEvent(EncryptionEvent.EncryptionState.ENCRYPTING));
         }
 
         @Override protected Boolean doInBackground(Void... params) {
-            while (!done) {
+            boolean success = true;
+
+            for (File unencryptedFile : getFiles()) {
+                File unencryptedInternal = new File(appInternalUnencryptedDirectory, unencryptedFile.getName());
+                File encryptedFile = new File(appInternalEncryptedDirectory, unencryptedFile.getName());
+
                 try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    // I just don't care
+                    // Copy the file internally so the user can't mess with it while we are encrypting
+                    Files.copy(unencryptedFile, unencryptedInternal);
+
+                    // File moved internally now delete the original
+                    secureDelete.secureDelete(unencryptedFile);
+
+                    //noinspection ResultOfMethodCallIgnored
+                    encryptedFile.createNewFile();
+                    encryptionProvider.encrypt(unencryptedInternal, encryptedFile);
+
+                    //noinspection ResultOfMethodCallIgnored
+                    unencryptedInternal.delete();
+                } catch (IOException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+                    Timber.e(e, "Error encrypting and saving image");
+                    success = false;
                 }
+
+                publishProgress();
             }
-            return null;
-        }
 
-        @Subscribe public void handleEncryptionFinishedEvent(FileEncryptedEvent event) {
-
-        }
-
-        @Subscribe public void handleEncryptionEvent(EncryptionEvent event) {
-            if (event.state == EncryptionEvent.EncryptionState.NONE) {
-                done = true;
-            }
-        }
-
-        @Override protected void onPostExecute(Boolean errorShown) {
-            getProgressDialog().dismiss();
+            return success;
         }
     }
 }
