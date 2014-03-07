@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 
+import com.andrewreitz.encryptedcamera.di.annotation.ForActivity;
 import com.andrewreitz.encryptedcamera.ui.activity.CameraActivity;
 import com.andrewreitz.encryptedcamera.ui.activity.SettingsActivity;
-import com.andrewreitz.encryptedcamera.di.annotation.ForActivity;
 import com.andrewreitz.encryptedcamera.ui.fragment.SettingsHomeFragment;
 
 import javax.inject.Singleton;
@@ -51,5 +51,11 @@ public class ActivityModule {
     @Singleton
     FragmentManager provideFragmentManager() {
         return activity.getFragmentManager();
+    }
+
+    @Provides
+    @Singleton
+    GalleryAdapter provideGalleryAdapter() {
+        return new GalleryAdapter
     }
 }

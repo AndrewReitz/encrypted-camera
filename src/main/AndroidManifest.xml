@@ -29,14 +29,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.AboutActivity"
-            android:label="@string/about"
-            android:theme="@style/Theme.Encryptedcamera">
-            <intent-filter>
-                <action android:name="com.andrewreitz.encryptedcamera.AboutActivity"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
+            android:name=".ui.activity.GalleryActivity"
+            android:label="@string/photos"
+            android:theme="@style/Theme.Encryptedcamera"/>
 
         <service
             android:name="com.andrewreitz.encryptedcamera.service.EncryptionIntentService"

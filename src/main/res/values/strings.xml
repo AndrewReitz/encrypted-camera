@@ -42,4 +42,5 @@
     <string name="error_currently_decrypting">Settings can not be changed at this time. Images are currently being decrypted</string>
     <string name="donate">Donate</string>
     <string name="about">About</string>
+    <string name="photos">Photos</string>
 </resources>
