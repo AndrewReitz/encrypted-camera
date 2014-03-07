@@ -5,9 +5,16 @@ import android.app.FragmentManager;
 import android.content.Context;
 
 import com.andrewreitz.encryptedcamera.di.annotation.ForActivity;
+import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.ui.activity.CameraActivity;
+import com.andrewreitz.encryptedcamera.ui.activity.GalleryActivity;
 import com.andrewreitz.encryptedcamera.ui.activity.SettingsActivity;
+import com.andrewreitz.encryptedcamera.ui.adapter.GalleryAdapter;
 import com.andrewreitz.encryptedcamera.ui.fragment.SettingsHomeFragment;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Singleton;
 
@@ -24,7 +31,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
         injects = {
                 CameraActivity.class,
                 SettingsHomeFragment.class,
-                SettingsActivity.class
+                SettingsActivity.class,
+                GalleryActivity.class
         },
         addsTo = AndroidModule.class,
         library = true
@@ -42,20 +50,20 @@ public class ActivityModule {
      */
     @Provides
     @Singleton
-    @ForActivity
-    Context provideActivityContext() {
+    @ForActivity Context provideActivityContext() {
         return activity;
     }
 
     @Provides
-    @Singleton
-    FragmentManager provideFragmentManager() {
+    @Singleton FragmentManager provideFragmentManager() {
         return activity.getFragmentManager();
     }
 
     @Provides
-    @Singleton
-    GalleryAdapter provideGalleryAdapter() {
-        return new GalleryAdapter
+    @Singleton GalleryAdapter provideGalleryAdapter(ExternalStorageManager externalStorageManager) {
+        // Wouldn't be null since it would have crashed earlier
+        //noinspection ConstantConditions
+        List<File> files = Arrays.asList(externalStorageManager.getAppExternalDirectory().listFiles());
+        return new GalleryAdapter(activity, files);
     }
 }

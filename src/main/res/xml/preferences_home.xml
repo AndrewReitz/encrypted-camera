@@ -6,6 +6,8 @@
             android:title="@string/decrypt_photos"
             android:key="@string/pref_key_decrypt"
             android:summary="@string/show_photos_in_sd_card"/>
+        <Preference android:title="Gallery"
+            android:key="@string/pref_key_gallery"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/photos_storage">

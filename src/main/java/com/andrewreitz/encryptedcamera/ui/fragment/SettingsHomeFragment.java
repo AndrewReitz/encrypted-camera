@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
+import com.andrewreitz.encryptedcamera.ui.activity.GalleryActivity;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
@@ -99,6 +101,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         switchPreferenceDecrypt.setOnPreferenceChangeListener(this);
         switchPreferencePassword = (SwitchPreference) findPreference(getString(R.string.pref_key_use_password));
         switchPreferencePassword.setOnPreferenceChangeListener(this);
+        findPreference(getString(R.string.pref_key_gallery)).setIntent(new Intent(getActivity(), GalleryActivity.class));
     }
 
     @Override public void onPause() {

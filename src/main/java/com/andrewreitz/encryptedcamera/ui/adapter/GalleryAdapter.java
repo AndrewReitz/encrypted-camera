@@ -19,14 +19,10 @@ public class GalleryAdapter extends BindableAdapter<File> {
 
     private final Context context;
 
-    public GalleryAdapter(@NotNull Context context) {
+    public GalleryAdapter(@NotNull Context context, List<File> images) {
         super(context);
         this.context = context;
-    }
-
-    public void setFiles(List<File> images) {
         this.images = images;
-        notifyDataSetChanged();
     }
 
     @Override public int getCount() {

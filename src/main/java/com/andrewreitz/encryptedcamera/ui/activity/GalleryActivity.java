@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.GridView;
 
 import com.andrewreitz.encryptedcamera.R;
+import com.andrewreitz.encryptedcamera.ui.adapter.GalleryAdapter;
 
 import javax.inject.Inject;
 
