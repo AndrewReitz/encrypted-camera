@@ -15,7 +15,19 @@
             android:key="@string/pref_key_use_password"/>
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="Other">
+        android:title="@string/about">
+        <Preference
+            android:title="Version"/>
+        <Preference
+            android:title="View Source"
+            android:summary="Help make this app better! View the source on GitHub"/>
+        <!-- TODO PLACE IN INTENT -->
+        <Preference
+            android:title="Contact the Developer">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://plus.google.com/+AndrewReitz"/>
+        </Preference>
         <Preference
             android:title="Donate">
             <intent
@@ -23,9 +35,8 @@
                 android:data="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=aj%2ereitz%40gmail%2ecom&amp;lc=US&amp;item_name=Encrypted%20Camera&amp;item_number=encrypted%2dcamera&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"/>
         </Preference>
         <Preference
-            android:title="About">
-            <intent
-                android:action="com.andrewreitz.encryptedcamera.AboutActivity"/>
+            android:title="Thanks"
+            android:summary="Thanks for downloading this application! I hope you like it.">
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
