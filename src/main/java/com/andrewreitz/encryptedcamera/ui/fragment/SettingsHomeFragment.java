@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -30,6 +31,7 @@ import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
+import com.google.common.net.MediaType;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -58,10 +60,6 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener, ErrorDialog.ErrorDialogCallback {
 
     private static final int NOTIFICATION_ID = 1337;
-    private static final Uri DONATION_URL = Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=" +
-            "_donations&business=aj%2ereitz%40gmail%2ecom&lc=US&item_name=Encrypted%20Camera&item" +
-            "_number=encrypted%2dcamera&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2" +
-            "egif%3aNonHosted");
 
     @Inject NotificationManager notificationManager;
     @Inject KeyManager keyManager;
@@ -101,7 +99,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         switchPreferenceDecrypt.setOnPreferenceChangeListener(this);
         switchPreferencePassword = (SwitchPreference) findPreference(getString(R.string.pref_key_use_password));
         switchPreferencePassword.setOnPreferenceChangeListener(this);
-        findPreference(getString(R.string.pref_key_gallery)).setIntent(new Intent(getActivity(), GalleryActivity.class));
+
+        // TODO Check that we are unencrypted state or that there are images in the dir
+        findPreference(getString(R.string.pref_key_gallery)).setIntent(
+                new Intent(getActivity(), GalleryActivity.class)
+        );
     }
 
     @Override public void onPause() {
