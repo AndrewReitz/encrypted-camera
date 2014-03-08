@@ -4,8 +4,6 @@ import dagger.Module;
 
 /**
  * Used for compile time validation
- *
- * @author areitz
  */
 @SuppressWarnings("UnusedDeclaration")
 @Module(

@@ -2,6 +2,8 @@ package com.andrewreitz.encryptedcamera;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.util.LruCache;
 
 import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
 import com.andrewreitz.encryptedcamera.di.module.AndroidModule;
@@ -39,11 +41,12 @@ public class EncryptedCameraApp extends Application {
     @Inject EncryptedCameraPreferenceManager preferenceManager;
     @Inject KeyManager keyManager;
     @Inject Bus bus;
+    @Inject LruCache<String, Bitmap> cache;
 
     private ObjectGraph applicationGraph;
     private EncryptionEvent.EncryptionState lastSate = EncryptionEvent.EncryptionState.NONE;
 
-    public void onCreate() {
+    @Override public void onCreate() {
         super.onCreate();
 
         // Logging Setup
@@ -63,6 +66,27 @@ public class EncryptedCameraApp extends Application {
 
         // Generate an encryption key if there isn't one already
         generateKey();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        Timber.i("onTrimMemory() with level=%s", level);
+
+        // Memory we can release here will help overall system performance, and
+        // make us a smaller target as the system looks for memory
+
+        if (level >= Application.TRIM_MEMORY_MODERATE) { // 60
+            // Nearing middle of list of cached background apps; evict our
+            // entire thumbnail cache
+            Timber.i("evicting entire thumbnail cache");
+            cache.evictAll();
+
+        } else if (level >= Application.TRIM_MEMORY_BACKGROUND) { // 40
+            // Entering list of cached background apps; evict oldest half of our
+            // thumbnail cache
+            Timber.i("evicting oldest half of thumbnail cache");
+            cache.trimToSize(cache.size() / 2);
+        }
     }
 
     /**

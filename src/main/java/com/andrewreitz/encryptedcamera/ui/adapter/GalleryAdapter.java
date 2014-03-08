@@ -30,13 +30,11 @@ public class GalleryAdapter extends BindableAdapter<File> {
     private final int viewSize;
     private final LruCache<String, Bitmap> cache;
 
-    public GalleryAdapter(@NotNull Context context, @NotNull List<File> images) {
+    public GalleryAdapter(@NotNull Context context, @NotNull List<File> images, @NotNull LruCache<String, Bitmap> cache) {
         super(context);
         this.viewSize = context.getResources().getDimensionPixelSize(R.dimen.gridview_image);
         this.images = images;
-        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
-        this.cache = new ThumbnailCache(memoryClassBytes);
+        this.cache = cache;
     }
 
     @Override public int getCount() {
@@ -56,6 +54,7 @@ public class GalleryAdapter extends BindableAdapter<File> {
     }
 
     @Override public void bindView(File file, int position, View view) {
+        // TODO Make this faster! (RenderScript?)
         ImageView imageView = ButterKnife.findById(view, R.id.gallery_imageview);
         // Cancel any pending thumbnail task, since this view is now bound
         // to new thumbnail
@@ -77,19 +76,6 @@ public class GalleryAdapter extends BindableAdapter<File> {
         imageView.setImageBitmap(null);
         imageView.setTag(task);
         task.execute(file);
-    }
-
-    // TODO PULL THE CACHE OUT
-    public void clearCache() {
-        cache.evictAll();
-    }
-
-    public void trimCache(int size) {
-        cache.trimToSize(size);
-    }
-
-    public int getCacheSize() {
-        return cache.size();
     }
 
     private class ThumbnailAsyncTask extends AsyncTask<File, Void, Bitmap> {

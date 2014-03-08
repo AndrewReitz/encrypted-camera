@@ -1,16 +1,19 @@
 package com.andrewreitz.encryptedcamera.di.module;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.util.LruCache;
 
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.ui.activity.SettingsActivity;
+import com.andrewreitz.encryptedcamera.cache.ThumbnailCache;
 import com.andrewreitz.encryptedcamera.di.annotation.CameraIntent;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptionErrorNotification;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptionNotification;
@@ -18,6 +21,7 @@ import com.andrewreitz.encryptedcamera.di.annotation.ForApplication;
 import com.andrewreitz.encryptedcamera.di.annotation.MediaFormat;
 import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
+import com.andrewreitz.encryptedcamera.ui.activity.SettingsActivity;
 import com.squareup.otto.Bus;
 
 import java.security.SecureRandom;
@@ -31,9 +35,6 @@ import dagger.Provides;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * @author areitz
- */
 @SuppressWarnings("UnusedDeclaration")
 @Module(
         library = true,
@@ -141,5 +142,19 @@ public class AndroidModule {
 
     @Provides @Singleton Bus provideBus() {
         return new Bus();
+    }
+
+    @Provides @Singleton ActivityManager provideActivityManager() {
+        return (ActivityManager) application.getSystemService(Context.ACTIVITY_SERVICE);
+    }
+
+    @Provides @Singleton LruCache<String, Bitmap> provideCache(ActivityManager am) {
+        // Keep the cache as a singleton so as along as the application is running we are
+        // using the cache hopefully keeping the speed of the application up
+        // Also allows us to hook into the application class easily to handle onLowMemory events
+
+        int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
+        // TODO Play with this number to find the best size
+        return new ThumbnailCache(memoryClassBytes / 8);
     }
 }

@@ -3,6 +3,8 @@ package com.andrewreitz.encryptedcamera.di.module;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.util.LruCache;
 
 import com.andrewreitz.encryptedcamera.di.annotation.ForActivity;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
@@ -23,9 +25,6 @@ import dagger.Provides;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * @author areitz
- */
 @SuppressWarnings("UnusedDeclaration")
 @Module(
         injects = {
@@ -60,10 +59,10 @@ public class ActivityModule {
     }
 
     @Provides
-    @Singleton GalleryAdapter provideGalleryAdapter(ExternalStorageManager externalStorageManager) {
+    @Singleton GalleryAdapter provideGalleryAdapter(LruCache<String, Bitmap> cache, ExternalStorageManager externalStorageManager) {
         // Wouldn't be null since it would have crashed earlier
         //noinspection ConstantConditions
         List<File> files = Arrays.asList(externalStorageManager.getAppExternalDirectory().listFiles());
-        return new GalleryAdapter(activity, files);
+        return new GalleryAdapter(activity, files, cache);
     }
 }
