@@ -75,6 +75,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         if (!preferenceManager.isDecrypted()) {
             encryptAndSaveImage(fileUri.getPath());
         }
+        openCameraWithIntent();
     }
 
     @Override
@@ -85,7 +86,6 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
     private void encryptAndSaveImage(final String unencryptedFilePath) {
         EncryptionIntentService.startEncryptAction(this, unencryptedFilePath);
-        openCameraWithIntent();
     }
 
     private void openCameraWithIntent() {
