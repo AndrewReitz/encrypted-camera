@@ -32,13 +32,14 @@ import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
 import com.andrewreitz.encryptedcamera.di.annotation.EncryptedDirectory;
+import com.andrewreitz.encryptedcamera.di.annotation.ForActivity;
 import com.andrewreitz.encryptedcamera.di.annotation.InternalDecryptedDirectory;
 import com.andrewreitz.encryptedcamera.di.annotation.UnlockNotification;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
-import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.andrewreitz.encryptedcamera.sharedpreference.AppPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
 import com.andrewreitz.encryptedcamera.ui.activity.GalleryActivity;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
@@ -72,14 +73,14 @@ import timber.log.Timber;
 
 import static com.andrewreitz.encryptedcamera.bus.EncryptionEvent.EncryptionState.NONE;
 
-public class SettingsHomeFragment extends PreferenceFragment implements
+public class AppPreferenceFragment extends PreferenceFragment implements
         SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener, ErrorDialog.ErrorDialogCallback {
 
     private static final int NOTIFICATION_ID = 1337;
 
     @Inject NotificationManager notificationManager;
     @Inject KeyManager keyManager;
-    @Inject EncryptedCameraPreferenceManager preferenceManager;
+    @Inject AppPreferenceManager preferenceManager;
     @Inject @UnlockNotification Notification unlockNotification;
     @Inject @EncryptedDirectory File encryptedDirectory;
     @Inject @InternalDecryptedDirectory File unencryptedInternalDirectory;
@@ -89,6 +90,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Inject Bus bus;
     @Inject SecureDelete secureDelete;
     @Inject SecureRandom secureRandom;
+    @Inject @ForActivity Context context;
 
     private SwitchPreference switchPreferenceDecrypt;
     private SwitchPreference switchPreferencePassword;
@@ -100,15 +102,15 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         BaseActivity.get(this).inject(this);
 
         if (!preferenceManager.hasSeenFirstRunFragment()) {
-            preferenceManager.setHasPassword(true);
-            FirstRunActivity.navigateTo(getActivity());
+            preferenceManager.setHasSeenFirstLaunchFragment(true);
+            FirstRunActivity.navigateTo(context);
         }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences_home);
+        addPreferencesFromResource(R.xml.app_preference_screen);
     }
 
     @Override
@@ -124,10 +126,8 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         switchPreferencePassword.setOnPreferenceChangeListener(this);
 
         findPreference(getString(R.string.pref_key_version)).setSummary(BuildConfig.VERSION_NAME);
-
-        // TODO Check that we are unencrypted state or that there are images in the dir
         findPreference(getString(R.string.pref_key_gallery)).setIntent(
-                new Intent(getActivity(), GalleryActivity.class)
+                new Intent(context, GalleryActivity.class)
         );
     }
 
@@ -378,7 +378,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         runningTask = new DecryptFilesTask(
                 appExternalDirectory,
                 encryptionProvider,
-                getActivity(),
+                context,
                 ImmutableList.copyOf(encryptedDirectory.listFiles()),
                 new FileCryptographyTask.TaskFinishedCallback() {
                     @Override public void onSuccess() {
@@ -394,7 +394,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                         switchPreferenceDecrypt.setChecked(false);
                     }
                 },
-                "Decrypting Files", // TODO
+                context.getString(R.string.decrypting_files),
                 bus
         );
         //noinspection unchecked
@@ -410,11 +410,12 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     private void encryptSdDirectory(File appExternalDirectory) {
+        //noinspection ConstantConditions
         runningTask = new EncryptFilesTask(
                 unencryptedInternalDirectory,
                 encryptedDirectory,
                 secureDelete,
-                getActivity(), // TODO
+                context,
                 ImmutableList.copyOf(appExternalDirectory.listFiles()),
                 encryptionProvider,
                 new FileCryptographyTask.TaskFinishedCallback() {
@@ -427,7 +428,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
                         switchPreferenceDecrypt.setChecked(true);
                     }
                 },
-                "Encrypting Files", // TODO
+                context.getString(R.string.encrypting_files),
                 bus
         );
 

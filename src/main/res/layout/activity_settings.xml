@@ -26,6 +26,6 @@
         android:id="@+id/settings_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.andrewreitz.encryptedcamera.ui.fragment.SettingsHomeFragment" />
+        android:name="com.andrewreitz.encryptedcamera.ui.fragment.AppPreferenceFragment" />
 
 </FrameLayout>

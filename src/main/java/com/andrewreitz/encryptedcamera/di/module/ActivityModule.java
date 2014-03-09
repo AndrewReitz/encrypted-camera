@@ -28,7 +28,7 @@ import com.andrewreitz.encryptedcamera.ui.activity.CameraActivity;
 import com.andrewreitz.encryptedcamera.ui.activity.GalleryActivity;
 import com.andrewreitz.encryptedcamera.ui.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.ui.adapter.GalleryAdapter;
-import com.andrewreitz.encryptedcamera.ui.fragment.SettingsHomeFragment;
+import com.andrewreitz.encryptedcamera.ui.fragment.AppPreferenceFragment;
 
 import java.io.File;
 import java.util.Arrays;
@@ -45,7 +45,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Module(
         injects = {
                 CameraActivity.class,
-                SettingsHomeFragment.class,
+                AppPreferenceFragment.class,
                 SettingsActivity.class,
                 GalleryActivity.class
         },

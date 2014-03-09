@@ -94,8 +94,8 @@ public class AndroidModule {
     @EncryptionNotification Notification provideEncryptionNotification() {
         return new NotificationCompat.Builder(application)
                 .setProgress(0, 0, true)
-                .setContentTitle("Encrypted Camera") // TODO ... you know what
-                .setContentText("Encrypting your photos")
+                .setContentTitle(application.getString(R.string.app_name))
+                .setContentText(application.getString(R.string.encrypting_your_photos))
                 .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
                 .build();
     }
@@ -104,7 +104,6 @@ public class AndroidModule {
     @Singleton
     @EncryptionErrorNotification Notification provideEncryptionErrorNotification() {
         Notification notification = new NotificationCompat.Builder(application)
-                .setProgress(0, 0, true)
                 .setContentTitle(application.getString(R.string.error_encrypting))
                 .setContentText(application.getString(R.string.error_encrypting_photo))
                 .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon

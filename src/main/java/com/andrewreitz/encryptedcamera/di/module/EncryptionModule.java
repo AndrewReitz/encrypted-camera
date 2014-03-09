@@ -24,6 +24,8 @@ import com.andrewreitz.encryptedcamera.encryption.EncryptionProvider;
 import com.andrewreitz.encryptedcamera.encryption.EncryptionProviderImpl;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.encryption.KeyManagerImpl;
+import com.andrewreitz.encryptedcamera.sharedpreference.AppPreferenceManager;
+import com.andrewreitz.encryptedcamera.sharedpreference.SharedPreferenceService;
 
 import java.io.IOException;
 import java.security.KeyStoreException;
@@ -47,8 +49,7 @@ import timber.log.Timber;
 public class EncryptionModule {
 
     @Provides
-    @Singleton
-    KeyManager provideKeyManager(@ForApplication Context context) {
+    @Singleton KeyManager provideKeyManager(@ForApplication Context context) {
         try {
             return new KeyManagerImpl(context);
         } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException e) {
@@ -56,8 +57,7 @@ public class EncryptionModule {
         }
     }
 
-    @Provides
-    Cipher provideCipher() {
+    @Provides Cipher provideCipher() {
         try {
             return Cipher.getInstance(EncryptedCameraApp.CIPHER_TRANSFORMATION);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
@@ -67,15 +67,12 @@ public class EncryptionModule {
 
     @Provides
     @Singleton
-    EncryptionProvider provideEncryptionProvider(Cipher cipher, KeyManager keyManager) {
+    EncryptionProvider provideEncryptionProvider(Cipher cipher, KeyManager keyManager, AppPreferenceManager preferenceManager) {
         try {
             return new EncryptionProviderImpl(
                     cipher,
                     keyManager.getKey(EncryptedCameraApp.KEY_STORE_ALIAS),
-                    new byte[] { // TODO MOVE TO SHARED PREFS
-                            0x4,0xA,0xF,0xF,0x4,0x5,0x9,0x5,
-                            0x0,0x2,0x0,0x7,0x9,0x3,0xd,0x2
-                    }
+                    preferenceManager.getIv()
             );
         } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
             Timber.w(e, "Could not create EncryptionProvider");

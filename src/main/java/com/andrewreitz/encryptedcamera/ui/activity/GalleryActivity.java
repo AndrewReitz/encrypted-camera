@@ -16,6 +16,8 @@
 
 package com.andrewreitz.encryptedcamera.ui.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.GridView;
 
@@ -37,6 +39,8 @@ public class GalleryActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
         ButterKnife.inject(this);
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         gallery.setAdapter(adapter);
     }

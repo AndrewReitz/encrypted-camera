@@ -30,11 +30,11 @@ import dagger.ObjectGraph;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 /** Ensuring that saving the salts works */
-public class EncryptedCameraPreferenceManagerTest extends AndroidTestCase {
+public class AppPreferenceManagerTest extends AndroidTestCase {
 
     @Inject SharedPreferenceService sharedPreferenceService;
 
-    private EncryptedCameraPreferenceManager preferenceManager;
+    private AppPreferenceManager preferenceManager;
 
     @Override public void setUp() throws Exception {
         super.setUp();
@@ -46,7 +46,7 @@ public class EncryptedCameraPreferenceManagerTest extends AndroidTestCase {
                 new AndroidModule((EncryptedCameraApp) context.getApplicationContext())
         ).inject(this);
 
-        preferenceManager = new EncryptedCameraPreferenceManager(
+        preferenceManager = new AppPreferenceManager(
                 context,
                 sharedPreferenceService
         );
@@ -66,7 +66,7 @@ public class EncryptedCameraPreferenceManagerTest extends AndroidTestCase {
 
     @Module(
             includes = AndroidModule.class,
-            injects = EncryptedCameraPreferenceManagerTest.class,
+            injects = AppPreferenceManagerTest.class,
             overrides = true
     )
     static class TestModule {

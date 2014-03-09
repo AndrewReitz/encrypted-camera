@@ -46,6 +46,7 @@
         </activity>
         <activity
             android:name=".ui.activity.GalleryActivity"
+            android:parentActivityName=".ui.activity.SettingsActivity"
             android:label="@string/photos"
             android:theme="@style/Theme.Encryptedcamera"/>
         <activity

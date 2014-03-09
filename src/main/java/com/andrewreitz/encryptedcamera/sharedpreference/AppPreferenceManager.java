@@ -17,6 +17,7 @@
 package com.andrewreitz.encryptedcamera.sharedpreference;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Base64;
 
 import com.andrewreitz.encryptedcamera.R;
@@ -25,27 +26,36 @@ import com.andrewreitz.encryptedcamera.di.annotation.ForApplication;
 import org.jetbrains.annotations.NotNull;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.security.SecureRandom;
+
 import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EncryptedCameraPreferenceManager {
+public class AppPreferenceManager {
 
     private static final String SALT = "salt";
     private static final String GENERATED_KEY = "generated_key";
     private static final String PASSWORD_HASH = "password_hash";
     private static final String HAS_SEEN_FIRST_LAUNCH_FRAGMENT = "has_seen_first_launch_frag";
+    private static final String IV = "iv";
+
+    /** The required length of the IV for encrypting */
+    private static final int IV_LENGTH = 16;
 
     private final Context context;
     private final SharedPreferenceService sharedPreferenceService;
+    private final SecureRandom secureRandom;
 
     @Inject
-    public EncryptedCameraPreferenceManager(
-            @ForApplication Context context,
-            SharedPreferenceService sharedPreferenceService
+    public AppPreferenceManager(
+            @NotNull @ForApplication Context context,
+            @NotNull SharedPreferenceService sharedPreferenceService,
+            @NotNull SecureRandom secureRandom
     ) {
-        this.context = checkNotNull(context);
-        this.sharedPreferenceService = checkNotNull(sharedPreferenceService);
+        this.context = context;
+        this.sharedPreferenceService = sharedPreferenceService;
+        this.secureRandom = secureRandom;
     }
 
     public void setHasPassword(boolean hasPassword) {
@@ -120,5 +130,16 @@ public class EncryptedCameraPreferenceManager {
 
     public void setHasSeenFirstLaunchFragment(boolean value) {
         sharedPreferenceService.saveBoolean(HAS_SEEN_FIRST_LAUNCH_FRAGMENT, value);
+    }
+
+    public byte[] getIv() {
+        String iv = sharedPreferenceService.getString(IV, null);
+        if (iv == null) {
+            byte[] ivBytes = new byte[IV_LENGTH];
+            secureRandom.nextBytes(ivBytes);
+            iv = Base64.encodeToString(ivBytes, Base64.DEFAULT);
+            sharedPreferenceService.saveString(IV, iv);
+        }
+        return Base64.decode(iv, Base64.DEFAULT);
     }
 }

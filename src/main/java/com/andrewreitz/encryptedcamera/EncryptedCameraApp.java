@@ -23,9 +23,9 @@ import android.support.v4.util.LruCache;
 
 import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
 import com.andrewreitz.encryptedcamera.di.module.AndroidModule;
+import com.andrewreitz.encryptedcamera.sharedpreference.AppPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.encryption.KeyManager;
-import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
@@ -51,7 +51,7 @@ public class EncryptedCameraApp extends Application {
     public static final String MEDIA_OUTPUT_DATE_FORMAT = "yyyyMMdd_HHmmss";
     public static final String CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding";
 
-    @Inject EncryptedCameraPreferenceManager preferenceManager;
+    @Inject AppPreferenceManager preferenceManager;
     @Inject KeyManager keyManager;
     @Inject Bus bus;
     @Inject LruCache<String, Bitmap> cache;

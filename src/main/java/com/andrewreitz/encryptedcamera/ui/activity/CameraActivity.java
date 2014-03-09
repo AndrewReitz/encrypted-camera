@@ -26,7 +26,7 @@ import com.andrewreitz.encryptedcamera.di.annotation.CameraIntent;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
-import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.andrewreitz.encryptedcamera.sharedpreference.AppPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.ui.fragment.FirstRunActivity;
 import com.google.common.net.MediaType;
@@ -43,7 +43,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
 
     @Inject @CameraIntent Intent cameraIntent;
     @Inject ExternalStorageManager externalStorageManager;
-    @Inject EncryptedCameraPreferenceManager preferenceManager;
+    @Inject AppPreferenceManager preferenceManager;
 
     private Uri fileUri;
 
