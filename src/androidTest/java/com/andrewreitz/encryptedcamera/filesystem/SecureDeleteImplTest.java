@@ -27,9 +27,6 @@ import java.security.SecureRandom;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-/**
- * @author areitz
- */
 public class SecureDeleteImplTest extends AndroidTestCase {
 
     private SecureDelete secureDelete;

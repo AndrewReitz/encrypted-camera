@@ -41,11 +41,7 @@ import javax.inject.Inject;
 import dagger.Module;
 import dagger.ObjectGraph;
 
-/**
- * Because I was having issues with how the decryption was working I made a test
- *
- * @author areitz
- */
+/** Because I was having issues with how the decryption was working, so, I made a test */
 @SuppressWarnings("ConstantConditions") public class FullEncryptionTest extends AndroidTestCase {
 
     private static final String ALIAS = "MyAlias";

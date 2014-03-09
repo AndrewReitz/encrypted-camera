@@ -40,9 +40,6 @@ import dagger.ObjectGraph;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-/**
- * @author Andrew
- */
 public class EncryptionProviderImplTest extends AndroidTestCase {
 
     @Inject Cipher cipher;

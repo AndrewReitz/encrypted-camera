@@ -32,9 +32,6 @@ import javax.crypto.SecretKey;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-/**
- * @author areitz
- */
 @SuppressWarnings("ConstantConditions")
 public class KeyManagerImplTest extends AndroidTestCase {
 

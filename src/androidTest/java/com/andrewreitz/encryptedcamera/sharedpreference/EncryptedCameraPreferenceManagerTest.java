@@ -31,9 +31,7 @@ import dagger.ObjectGraph;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-/**
- * @author areitz
- */
+/** Ensuring that saving the salts works */
 public class EncryptedCameraPreferenceManagerTest extends AndroidTestCase {
 
     @Inject SharedPreferenceService sharedPreferenceService;
