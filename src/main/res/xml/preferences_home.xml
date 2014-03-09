@@ -7,7 +7,8 @@
             android:key="@string/pref_key_decrypt"
             android:summary="@string/show_photos_in_sd_card"/>
         <Preference
-            android:title="Gallery"
+            android:title="@string/gallery"
+            android:summary="@string/view_unencrypted_images"
             android:key="@string/pref_key_gallery"/>
     </PreferenceCategory>
     <PreferenceCategory
@@ -23,24 +24,24 @@
             android:key="@string/pref_key_version"
             android:title="Version"/>
         <Preference
-            android:title="View Source"
-            android:summary="Help make this app better! View the source on GitHub">
+            android:title="@string/view_source"
+            android:summary="@string/view_source_summary">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/pieces029/encrypted-camera"/>
+        </Preference>
+        <Preference
+            android:title="@string/donate"
+            android:summary="@string/donate_summary">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=aj%2ereitz%40gmail%2ecom&amp;lc=US&amp;item_name=Encrypted%20Camera&amp;item_number=encrypted%2dcamera&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"/>
         </Preference>
         <Preference
             android:title="Contact the Developer">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://plus.google.com/+AndrewReitz"/>
-        </Preference>
-        <Preference
-            android:title="Donate"
-            android:summary="Thanks for downloading this application! I hope you like it.">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=aj%2ereitz%40gmail%2ecom&amp;lc=US&amp;item_name=Encrypted%20Camera&amp;item_number=encrypted%2dcamera&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"/>
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

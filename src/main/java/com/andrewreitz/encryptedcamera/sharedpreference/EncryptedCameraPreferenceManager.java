@@ -21,7 +21,7 @@ public class EncryptedCameraPreferenceManager {
     private static final String SALT = "salt";
     private static final String GENERATED_KEY = "generated_key";
     private static final String PASSWORD_HASH = "password_hash";
-    private static final String IS_DECRYPTING = "is_decrypting";
+    private static final String HAS_SEEN_FIRST_LAUNCH_FRAGMENT = "has_seen_first_launch_frag";
 
     private final Context context;
     private final SharedPreferenceService sharedPreferenceService;
@@ -99,5 +99,13 @@ public class EncryptedCameraPreferenceManager {
             throw new RuntimeException("Password hash was never set.  Call setPassword first");
         }
         return hash;
+    }
+
+    public boolean hasSeenFirstRunFragment() {
+        return sharedPreferenceService.getBoolean(HAS_SEEN_FIRST_LAUNCH_FRAGMENT, false);
+    }
+
+    public void setHasSeenFirstLaunchFragment(boolean value) {
+        sharedPreferenceService.saveBoolean(HAS_SEEN_FIRST_LAUNCH_FRAGMENT, value);
     }
 }

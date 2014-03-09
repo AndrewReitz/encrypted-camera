@@ -80,6 +80,11 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         BaseActivity.get(this).inject(this);
+
+        if (!preferenceManager.hasSeenFirstRunFragment()) {
+            preferenceManager.setHasPassword(true);
+            FirstRunActivity.navigateTo(getActivity());
+        }
     }
 
     @Override

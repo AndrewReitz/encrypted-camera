@@ -7,11 +7,12 @@ import android.provider.MediaStore;
 
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.di.annotation.CameraIntent;
-import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
 import com.andrewreitz.encryptedcamera.exception.SDCardException;
 import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 import com.andrewreitz.encryptedcamera.sharedpreference.EncryptedCameraPreferenceManager;
+import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
+import com.andrewreitz.encryptedcamera.ui.fragment.FirstRunActivity;
 import com.google.common.net.MediaType;
 
 import java.io.IOException;
@@ -35,6 +36,10 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         openCameraWithIntent();
+
+        if (!preferenceManager.hasSeenFirstRunFragment()) {
+            FirstRunActivity.navigateTo(this);
+        }
     }
 
     @Override

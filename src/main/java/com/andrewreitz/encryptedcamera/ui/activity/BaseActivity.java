@@ -10,11 +10,9 @@ import com.andrewreitz.encryptedcamera.di.module.ActivityModule;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 
-/**
- * @author Andrew
- */
 public abstract class BaseActivity extends Activity {
 
     private ObjectGraph mActivityGraph;

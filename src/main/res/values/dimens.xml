@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="default_padding">16dp</dimen>
     <dimen name="gridview_image">148dp</dimen>
+    <dimen name="default_padding_half">8dp</dimen>
 </resources>
