@@ -74,4 +74,6 @@
     <string name="encrypting_your_photos">Encrypting your photos</string>
     <string name="decrypting_files">Decrypting Files</string>
     <string name="encrypting_files">Encrypting Files</string>
+    <string name="Other">Other</string>
+    <string name="pref_key_about">pref_key_about</string>
 </resources>

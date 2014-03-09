@@ -126,6 +126,9 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         switchPreferencePassword.setOnPreferenceChangeListener(this);
 
         findPreference(getString(R.string.pref_key_version)).setSummary(BuildConfig.VERSION_NAME);
+        findPreference(getString(R.string.pref_key_about)).setIntent(
+                new Intent(context, FirstRunActivity.class)
+        );
         findPreference(getString(R.string.pref_key_gallery)).setIntent(
                 new Intent(context, GalleryActivity.class)
         );
