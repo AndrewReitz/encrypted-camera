@@ -4,15 +4,14 @@ import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import com.andrewreitz.encryptedcamera.BuildConfig;
 import com.andrewreitz.encryptedcamera.EncryptedCameraApp;
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.bus.EncryptionEvent;
@@ -31,7 +30,6 @@ import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
-import com.google.common.net.MediaType;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -94,11 +92,15 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     @SuppressWarnings("ConstantConditions")
     public void onResume() {
         super.onResume();
+
         bus.register(this);
+
         switchPreferenceDecrypt = (SwitchPreference) findPreference(getString(R.string.pref_key_decrypt));
         switchPreferenceDecrypt.setOnPreferenceChangeListener(this);
         switchPreferencePassword = (SwitchPreference) findPreference(getString(R.string.pref_key_use_password));
         switchPreferencePassword.setOnPreferenceChangeListener(this);
+
+        findPreference(getString(R.string.pref_key_version)).setSummary(BuildConfig.VERSION_NAME);
 
         // TODO Check that we are unencrypted state or that there are images in the dir
         findPreference(getString(R.string.pref_key_gallery)).setIntent(
