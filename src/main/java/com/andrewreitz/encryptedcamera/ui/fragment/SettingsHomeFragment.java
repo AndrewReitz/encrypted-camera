@@ -1,3 +1,21 @@
+/*
+ *
+ *  * Copyright (C) 2014 Andrew Reitz
+ *  *
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *
+ */
+
 package com.andrewreitz.encryptedcamera.ui.fragment;
 
 import android.app.FragmentManager;
@@ -54,6 +72,8 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+import static com.andrewreitz.encryptedcamera.bus.EncryptionEvent.EncryptionState.NONE;
+
 public class SettingsHomeFragment extends PreferenceFragment implements
         SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener, ErrorDialog.ErrorDialogCallback {
 
@@ -75,7 +95,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     private SwitchPreference switchPreferenceDecrypt;
     private SwitchPreference switchPreferencePassword;
     private FileCryptographyTask runningTask;
-    private EncryptionEvent.EncryptionState encryptionState = EncryptionEvent.EncryptionState.NONE;
+    private EncryptionEvent.EncryptionState encryptionState = NONE;
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -185,7 +205,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     private boolean checkNotCurrentlyEncrypting() {
-        if (!encryptionState.equals(EncryptionEvent.EncryptionState.NONE)) {
+        if (!encryptionState.equals(NONE)) {
             showErrorDialog(
                     getString(R.string.error),
                     EncryptionEvent.EncryptionState.DECRYPTING == encryptionState ?
@@ -198,7 +218,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
     }
 
     @Subscribe public void handleEncryptionEvent(EncryptionEvent event) {
-        if (event.state.equals(EncryptionEvent.EncryptionState.NONE)) {
+        if (event.state.equals(NONE)) {
             getActivity().setProgressBarIndeterminateVisibility(false);
         } else {
             getActivity().setProgressBarIndeterminateVisibility(true);
@@ -534,7 +554,7 @@ public class SettingsHomeFragment extends PreferenceFragment implements
         }
 
         private void finishedExecuting(boolean success) {
-            getBus().post(new EncryptionEvent(EncryptionEvent.EncryptionState.NONE));
+            getBus().post(new EncryptionEvent(NONE));
             if (success) {
                 callback.onSuccess();
             } else {
