@@ -103,7 +103,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         super.onActivityCreated(savedInstanceState);
         BaseActivity.get(this).inject(this);
 
-        if (true) { //!preferenceManager.hasSeenFirstRunFragment()) {
+        if (!preferenceManager.hasSeenFirstRunFragment()) {
             FirstRunDialog dialog = FirstRunDialog.newInstance();
             dialog.show(fragmentManager, "dialog_first_run");
             preferenceManager.setHasSeenFirstLaunchFragment(true);
