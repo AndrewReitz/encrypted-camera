@@ -70,7 +70,7 @@
     <string name="view_unencrypted_images">View Unencrypted Images</string>
     <string name="view_source">View Source</string>
     <string name="view_source_summary">Help make this app better! Report a bug or view the source on GitHub</string>
-    <string name="donate_summary">Thanks for downloading this application! I hope you like it.</string>
+    <string name="donate_summary">Thanks for downloading this application! Hope you like it.</string>
     <string name="encrypting_your_photos">Encrypting your photos</string>
     <string name="decrypting_files">Decrypting Files</string>
     <string name="encrypting_files">Encrypting Files</string>
