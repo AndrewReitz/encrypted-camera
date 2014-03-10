@@ -53,6 +53,8 @@ public class GalleryActivity extends BaseActivity implements AdapterView.OnItemC
     }
 
     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        // Open the files to other apps.  If other apps start bogarting thumbnails and not cleaning
+        // up properly might need to add full screen images
         File file = adapter.getItem(position);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.parse(file.getAbsolutePath()), MediaType.ANY_IMAGE_TYPE.toString());
