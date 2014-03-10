@@ -77,4 +77,6 @@
     <string name="Other">Other</string>
     <string name="pref_key_about">pref_key_about</string>
     <string name="learn_more">Learn More</string>
+    <string name="first_run_main_text">This app has two launchers, one for the settings and one for the camera. This is so you can quickly get to the camera when you need it.</string>
+    <string name="welcome">Welcome</string>
 </resources>

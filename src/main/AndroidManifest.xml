@@ -50,7 +50,7 @@
             android:label="@string/photos"
             android:theme="@style/Theme.Encryptedcamera"/>
         <activity
-            android:name=".ui.fragment.FirstRunActivity"
+            android:name=".ui.activity.AboutActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.Encryptedcamera"/>
 

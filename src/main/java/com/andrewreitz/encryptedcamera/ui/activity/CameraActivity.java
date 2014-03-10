@@ -28,7 +28,6 @@ import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.service.EncryptionIntentService;
 import com.andrewreitz.encryptedcamera.sharedpreference.AppPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
-import com.andrewreitz.encryptedcamera.ui.fragment.FirstRunActivity;
 import com.google.common.net.MediaType;
 
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class CameraActivity extends BaseActivity implements ErrorDialog.ErrorDia
         openCameraWithIntent();
 
         if (!preferenceManager.hasSeenFirstRunFragment()) {
-            FirstRunActivity.navigateTo(this);
+            AboutActivity.navigateTo(this);
         }
     }
 

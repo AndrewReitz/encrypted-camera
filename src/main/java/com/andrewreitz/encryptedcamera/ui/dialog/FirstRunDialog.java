@@ -23,12 +23,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 
 import com.andrewreitz.encryptedcamera.R;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
+import com.andrewreitz.encryptedcamera.ui.activity.AboutActivity;
 
 public class FirstRunDialog extends DialogFragment implements AlertDialog.OnClickListener {
 
@@ -44,13 +41,12 @@ public class FirstRunDialog extends DialogFragment implements AlertDialog.OnClic
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        View view = inflater.inflate(R.layout.dialog_password, null);
-        ButterKnife.inject(this, view);
+        View view = inflater.inflate(R.layout.dialog_firstrun, null);
         builder.setView(view)
-                .setPositiveButton(R.string.got_it, this)
+                .setTitle(getString(R.string.welcome))
+                .setPositiveButton(R.string.got_it, null)
                 .setNegativeButton(R.string.learn_more, this);
-        AlertDialog dialog = builder.create();
-        return dialog;
+        return builder.create();
     }
 
     @Override public void onClick(DialogInterface dialog, int which) {
@@ -58,6 +54,7 @@ public class FirstRunDialog extends DialogFragment implements AlertDialog.OnClic
             case DialogInterface.BUTTON_POSITIVE:
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
+                AboutActivity.navigateTo(getActivity());
                 break;
             default:
                 throw new IllegalArgumentException("Unknown button pressed, which == " + which);

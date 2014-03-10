@@ -21,4 +21,6 @@
     <dimen name="default_padding">16dp</dimen>
     <dimen name="gridview_image">148dp</dimen>
     <dimen name="default_padding_half">8dp</dimen>
+    <dimen name="default_margin_quarter">4dp</dimen>
+    <dimen name="default_margin">16dp</dimen>
 </resources>

@@ -41,8 +41,10 @@ import com.andrewreitz.encryptedcamera.externalstoreage.ExternalStorageManager;
 import com.andrewreitz.encryptedcamera.filesystem.SecureDelete;
 import com.andrewreitz.encryptedcamera.sharedpreference.AppPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
+import com.andrewreitz.encryptedcamera.ui.activity.AboutActivity;
 import com.andrewreitz.encryptedcamera.ui.activity.GalleryActivity;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
+import com.andrewreitz.encryptedcamera.ui.dialog.FirstRunDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.PasswordDialog;
 import com.andrewreitz.encryptedcamera.ui.dialog.SetPasswordDialog;
 import com.google.common.collect.ImmutableList;
@@ -101,9 +103,10 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         super.onActivityCreated(savedInstanceState);
         BaseActivity.get(this).inject(this);
 
-        if (!preferenceManager.hasSeenFirstRunFragment()) {
+        if (true) { //!preferenceManager.hasSeenFirstRunFragment()) {
+            FirstRunDialog dialog = FirstRunDialog.newInstance();
+            dialog.show(fragmentManager, "dialog_first_run");
             preferenceManager.setHasSeenFirstLaunchFragment(true);
-            FirstRunActivity.navigateTo(context);
         }
     }
 
@@ -127,7 +130,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
 
         findPreference(getString(R.string.pref_key_version)).setSummary(BuildConfig.VERSION_NAME);
         findPreference(getString(R.string.pref_key_about)).setIntent(
-                new Intent(context, FirstRunActivity.class)
+                new Intent(context, AboutActivity.class)
         );
         findPreference(getString(R.string.pref_key_gallery)).setIntent(
                 new Intent(context, GalleryActivity.class)
@@ -397,7 +400,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
                         switchPreferenceDecrypt.setChecked(false);
                     }
                 },
-                context.getString(R.string.decrypting_files),
+                getString(R.string.decrypting_files),
                 bus
         );
         //noinspection unchecked
@@ -431,7 +434,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
                         switchPreferenceDecrypt.setChecked(true);
                     }
                 },
-                context.getString(R.string.encrypting_files),
+                getString(R.string.encrypting_files),
                 bus
         );
 
@@ -549,12 +552,6 @@ public class AppPreferenceFragment extends PreferenceFragment implements
             return bus;
         }
 
-        public interface TaskFinishedCallback {
-            void onSuccess();
-
-            void onError();
-        }
-
         private void finishedExecuting(boolean success) {
             getBus().post(new EncryptionEvent(NONE));
             if (success) {
@@ -562,6 +559,12 @@ public class AppPreferenceFragment extends PreferenceFragment implements
             } else {
                 callback.onError();
             }
+        }
+
+        public interface TaskFinishedCallback {
+            void onSuccess();
+
+            void onError();
         }
     }
 

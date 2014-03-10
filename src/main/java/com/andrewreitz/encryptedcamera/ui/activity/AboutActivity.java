@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.andrewreitz.encryptedcamera.ui.fragment;
+package com.andrewreitz.encryptedcamera.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -33,10 +33,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-public class FirstRunActivity extends Activity {
+public class AboutActivity extends Activity {
 
     public static void navigateTo(@NotNull Context context) {
-        Intent intent = new Intent(context, FirstRunActivity.class);
+        Intent intent = new Intent(context, AboutActivity.class);
         context.startActivity(intent);
     }
 
