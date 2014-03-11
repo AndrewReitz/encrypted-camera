@@ -228,6 +228,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         return false;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     @Subscribe public void handleEncryptionEvent(EncryptionEvent event) {
         if (event.state.equals(NONE)) {
             getActivity().setProgressBarIndeterminateVisibility(false);
@@ -351,9 +352,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         return false;
     }
 
-    /**
-     * true for decrypt, false for encrypt
-     */
+    /** true for decrypt, false for encrypt */
     private void handleEncryption(boolean decrypt) {
         File appExternalDirectory = getAppExternalDirectory();
         if (appExternalDirectory == null) return;
