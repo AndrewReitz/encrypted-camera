@@ -132,6 +132,8 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         findPreference(getString(R.string.pref_key_about)).setIntent(
                 new Intent(context, AboutActivity.class)
         );
+
+        // TODO Disable when unecrypted (images are available because of the cache
         findPreference(getString(R.string.pref_key_gallery)).setIntent(
                 new Intent(context, GalleryActivity.class)
         );
@@ -147,7 +149,10 @@ public class AppPreferenceFragment extends PreferenceFragment implements
     }
 
     @Override public void onPasswordSet(String password) {
-        // TODO Re-Encrypt all files that were encrypted with the original key
+        File appExternalDirectory = getAppExternalDirectory();
+        if (appExternalDirectory == null) return;
+        decryptToSdDirectory(appExternalDirectory);
+
         byte[] salt = new byte[10];
         secureRandom.nextBytes(salt);
         try {
@@ -164,6 +169,8 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         preferenceManager.setSalt(salt);
         preferenceManager.setHasPassword(true);
         switchPreferencePassword.setChecked(true);
+
+        encryptSdDirectory(appExternalDirectory);
     }
 
     @Override public void onPasswordEntered(String password) {
@@ -231,7 +238,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
     }
 
     private boolean handleDecryptedPreference(boolean value) {
-        handleDecrypt(value);
+        handleEncryption(value);
         return false;
     }
 
@@ -344,18 +351,12 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         return false;
     }
 
-    private void handleDecrypt(boolean decrypt) {
-        File appExternalDirectory = externalStorageManager.getAppExternalDirectory();
-
-        if (appExternalDirectory == null || !externalStorageManager.checkSdCardIsInReadAndWriteState()) {
-            //noinspection ConstantConditions
-            showErrorDialog(
-                    getString(R.string.error),
-                    getString(R.string.error_sdcard_message),
-                    "error_dialog_sdcard"
-            );
-            return;
-        }
+    /**
+     * true for decrypt, false for encrypt
+     */
+    private void handleEncryption(boolean decrypt) {
+        File appExternalDirectory = getAppExternalDirectory();
+        if (appExternalDirectory == null) return;
 
         if (decrypt) {
             if (preferenceManager.hasPassword()) {
@@ -368,6 +369,21 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         } else {
             encryptSdDirectory(appExternalDirectory);
         }
+    }
+
+    private File getAppExternalDirectory() {
+        File appExternalDirectory = externalStorageManager.getAppExternalDirectory();
+
+        if (appExternalDirectory == null || !externalStorageManager.checkSdCardIsInReadAndWriteState()) {
+            //noinspection ConstantConditions
+            showErrorDialog(
+                    getString(R.string.error),
+                    getString(R.string.error_sdcard_message),
+                    "error_dialog_sdcard"
+            );
+            return null;
+        }
+        return appExternalDirectory;
     }
 
     private void decryptToSdDirectory(@NotNull File appExternalDirectory) {
