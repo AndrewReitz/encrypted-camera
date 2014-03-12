@@ -75,8 +75,10 @@ import timber.log.Timber;
 
 import static com.andrewreitz.encryptedcamera.bus.EncryptionEvent.EncryptionState.NONE;
 
-public class AppPreferenceFragment extends PreferenceFragment implements
-        SetPasswordDialog.SetPasswordDialogListener, Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener, ErrorDialog.ErrorDialogCallback {
+public class AppPreferenceFragment extends PreferenceFragment
+        implements SetPasswordDialog.SetPasswordDialogListener,
+        Preference.OnPreferenceChangeListener, PasswordDialog.PasswordDialogListener,
+        ErrorDialog.ErrorDialogCallback {
 
     private static final int NOTIFICATION_ID = 1337;
 
@@ -133,7 +135,6 @@ public class AppPreferenceFragment extends PreferenceFragment implements
                 new Intent(context, AboutActivity.class)
         );
 
-        // TODO Disable when unecrypted (images are available because of the cache
         findPreference(getString(R.string.pref_key_gallery)).setIntent(
                 new Intent(context, GalleryActivity.class)
         );
@@ -148,11 +149,24 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         bus.unregister(this);
     }
 
-    @Override public void onPasswordSet(String password) {
+    @Override public void onPasswordSet(final String password) {
         File appExternalDirectory = getAppExternalDirectory();
         if (appExternalDirectory == null) return;
-        decryptToSdDirectory(appExternalDirectory);
+        executeDecryptFileTask(appExternalDirectory, new FileCryptographyTask.TaskFinishedCallback() {
+            @Override public void onSuccess() {
+                if (setNewPassword(password)) return;
+                File appExternalDirectory = getAppExternalDirectory();
+                if (appExternalDirectory == null) return;
+                encryptSdDirectory(appExternalDirectory);
+            }
 
+            @Override public void onError() {
+                Timber.e("error encrypting images after password was set");
+            }
+        });
+    }
+
+    private boolean setNewPassword(String password) {
         byte[] salt = new byte[10];
         secureRandom.nextBytes(salt);
         try {
@@ -163,14 +177,13 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | CertificateException | KeyStoreException | IOException e) {
             Timber.e(e, "Error saving encryption key with password");
             ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
-            return;
+            return true;
         }
         preferenceManager.setPassword(password);
         preferenceManager.setSalt(salt);
         preferenceManager.setHasPassword(true);
         switchPreferencePassword.setChecked(true);
-
-        encryptSdDirectory(appExternalDirectory);
+        return false;
     }
 
     @Override public void onPasswordEntered(String password) {
@@ -370,6 +383,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
         }
     }
 
+    /** Would pull this out and just set once, but we need to constantly check due to possibility of changing state */
     private File getAppExternalDirectory() {
         File appExternalDirectory = externalStorageManager.getAppExternalDirectory();
 
@@ -395,12 +409,8 @@ public class AppPreferenceFragment extends PreferenceFragment implements
             return;
         }
 
-        //noinspection ConstantConditions
-        runningTask = new DecryptFilesTask(
+        executeDecryptFileTask(
                 appExternalDirectory,
-                encryptionProvider,
-                context,
-                ImmutableList.copyOf(encryptedDirectory.listFiles()),
                 new FileCryptographyTask.TaskFinishedCallback() {
                     @Override public void onSuccess() {
                         notificationManager.notify(
@@ -414,7 +424,18 @@ public class AppPreferenceFragment extends PreferenceFragment implements
                         // there was an error reset the switch preferences
                         switchPreferenceDecrypt.setChecked(false);
                     }
-                },
+                }
+        );
+    }
+
+    private void executeDecryptFileTask(@NotNull File appExternalDirectory, FileCryptographyTask.TaskFinishedCallback callback) {
+        //noinspection ConstantConditions
+        runningTask = new DecryptFilesTask(
+                appExternalDirectory,
+                encryptionProvider,
+                context,
+                ImmutableList.copyOf(encryptedDirectory.listFiles()),
+                callback,
                 getString(R.string.decrypting_files),
                 bus
         );
@@ -431,14 +452,7 @@ public class AppPreferenceFragment extends PreferenceFragment implements
     }
 
     private void encryptSdDirectory(File appExternalDirectory) {
-        //noinspection ConstantConditions
-        runningTask = new EncryptFilesTask(
-                unencryptedInternalDirectory,
-                encryptedDirectory,
-                secureDelete,
-                context,
-                ImmutableList.copyOf(appExternalDirectory.listFiles()),
-                encryptionProvider,
+        executeEncryptFileTask(appExternalDirectory,
                 new FileCryptographyTask.TaskFinishedCallback() {
                     @Override public void onSuccess() {
                         notificationManager.cancel(NOTIFICATION_ID);
@@ -448,7 +462,20 @@ public class AppPreferenceFragment extends PreferenceFragment implements
                     @Override public void onError() {
                         switchPreferenceDecrypt.setChecked(true);
                     }
-                },
+                }
+        );
+    }
+
+    private void executeEncryptFileTask(File appExternalDirectory, FileCryptographyTask.TaskFinishedCallback callback) {
+        //noinspection ConstantConditions
+        runningTask = new EncryptFilesTask(
+                unencryptedInternalDirectory,
+                encryptedDirectory,
+                secureDelete,
+                context,
+                ImmutableList.copyOf(appExternalDirectory.listFiles()),
+                encryptionProvider,
+                callback,
                 getString(R.string.encrypting_files),
                 bus
         );
@@ -551,19 +578,19 @@ public class AppPreferenceFragment extends PreferenceFragment implements
             finishedExecuting(success);
         }
 
-        public Context getContext() {
+        protected Context getContext() {
             return context;
         }
 
-        public List<File> getFiles() {
+        protected List<File> getFiles() {
             return files;
         }
 
-        public ProgressDialog getProgressDialog() {
+        protected ProgressDialog getProgressDialog() {
             return progressDialog;
         }
 
-        public Bus getBus() {
+        protected Bus getBus() {
             return bus;
         }
 

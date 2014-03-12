@@ -44,7 +44,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class KeyManagerImpl implements KeyManager {
     private final Context context;
     private final KeyStore keyStore;
-    private String keyStoreName = "app.keystore"; // default name
+
+    /** Default name of keystore if not provided with one */
+    private String keyStoreName = "app.keystore";
 
     public KeyManagerImpl(@NotNull Context context) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         this.context = checkNotNull(context);
