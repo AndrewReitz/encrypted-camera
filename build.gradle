@@ -65,6 +65,15 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 
+    signingConfigs {
+        release {
+            storeFile file(storeFilePath)
+            storePassword keystorePassword
+            keyAlias "encrypted-camera"
+            keyPassword aliasKeyPassword
+        }
+    }
+
     buildTypes {
         debug {
             packageNameSuffix '.dev'
@@ -72,8 +81,7 @@ android {
         }
 
         release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
         }
     }
 

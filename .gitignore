@@ -33,7 +33,7 @@ proguard/
 target/
 gen-external-apklibs/
 
-
+gradle.properties
 .gradle
 /local.properties
 /.idea/workspace.xml

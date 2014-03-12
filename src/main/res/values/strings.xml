@@ -60,7 +60,7 @@
     <string name="about">About</string>
     <string name="photos">Photos</string>
     <string name="pref_key_gallery">pref_key_gallery</string>
-    <string name="first_run_paragraph1">This application is a little different than your normal application. It has two launchers. One for the settings and one for launching the camera. The camera is your default camera app, just wrapped by this application so that all output is encrypted when saved.</string>
+    <string name="first_run_paragraph1">This application is a little different than your normal application. It has two launchers. One for the settings and one for launching the camera. The camera is your default camera app, just wrapped by this application so that all output is encrypted when saved. To access your decrytped files on the SdCard look in EncryptedCamera folder</string>
     <string name="launcher_image_content_description">Launchers Side By Side</string>
     <string name="first_run_paragraph2">This application is build pretty securely, but as with anything nothing is completely safe. I encourage you to set a password if you are really worried. <strong>If you loose this password there is nothing that can be done, your images will be lost!</strong></string>
     <string name="first_run_paragraph3">Check out <a href="https://github.com/pieces029/encrypted-camera">github</a> to help contribute, report bugs, see how the encryption is done, etc. Launcher icons provided by the lovely <a href="https://plus.google.com/110832905322329574902/posts">Andrea Sittler</a></string>

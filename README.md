@@ -1,6 +1,9 @@
 # Encrypted Camera
 
-This Application is a wrapper for your cammera encrypting them as you take photos.
+This Application is a wrapper for your camera encrypting them as you take photos.
+
+To build clone the repo and then
+    cp gradle.properties.dist gradle.properties
 
 ## TODO
 
