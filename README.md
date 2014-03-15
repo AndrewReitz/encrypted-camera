@@ -1,6 +1,9 @@
 # Encrypted Camera
 
+![App Icon](web_hi_res_512.png)
+
 This Application is a wrapper for your camera encrypting them as you take photos.
+Get it on the [Play Store](https://play.google.com/store/apps/details?id=com.andrewreitz.encryptedcamera)
 
 To build clone the repo and then
     cp gradle.properties.dist gradle.properties
@@ -9,7 +12,6 @@ To build clone the repo and then
 
 * Speed up / make the gallery pretty
 * Add a warning when opening a file outside of the app
-* Add play store link to this readme
 
 ## License
 
