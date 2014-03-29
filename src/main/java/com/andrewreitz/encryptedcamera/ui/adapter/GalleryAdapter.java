@@ -20,6 +20,8 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
@@ -35,16 +37,21 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
+import static android.graphics.Bitmap.CompressFormat.PNG;
+import static android.media.ExifInterface.ORIENTATION_NORMAL;
+import static android.media.ExifInterface.TAG_ORIENTATION;
+
 public class GalleryAdapter extends BindableAdapter<File> {
-    private List<File> images = Collections.emptyList();
     private final int viewSize;
     private final LruCache<String, Bitmap> cache;
+    private List<File> images = Collections.emptyList();
 
     public GalleryAdapter(@NotNull Context context, @NotNull List<File> images, @NotNull LruCache<String, Bitmap> cache) {
         super(context);
@@ -70,7 +77,6 @@ public class GalleryAdapter extends BindableAdapter<File> {
     }
 
     @Override public void bindView(File file, int position, View view) {
-        // TODO Make this faster! (RenderScript?)
         ImageView imageView = ButterKnife.findById(view, R.id.gallery_imageview);
         // Cancel any pending thumbnail task, since this view is now bound
         // to new thumbnail
@@ -86,40 +92,68 @@ public class GalleryAdapter extends BindableAdapter<File> {
             return;
         }
 
+        int rotation = 0;
+        try {
+            ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+            int orientation = exif.getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotation = 270;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotation = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotation = 90;
+                    break;
+            }
+        } catch (IOException e) {
+            Timber.e(e, "Error using exif data");
+        }
+
         // If we arrived here, either cache is disabled or cache miss, so we
         // need to kick task to load manually
-        final ThumbnailAsyncTask task = new ThumbnailAsyncTask(imageView);
+        final ThumbnailAsyncTask task = new ThumbnailAsyncTask(imageView, viewSize, cache, rotation);
         imageView.setImageBitmap(null);
         imageView.setTag(task);
         task.execute(file);
     }
 
-    private class ThumbnailAsyncTask extends AsyncTask<File, Void, Bitmap> {
-        private final ImageView target;
+    private static class ThumbnailAsyncTask extends AsyncTask<File, Void, Bitmap> {
 
-        public ThumbnailAsyncTask(ImageView target) {
+        private final static Matrix matrix = new Matrix();
+
+        private final ImageView target;
+        private final int viewSize;
+        private final int rotation;
+        private final LruCache<String, Bitmap> cache;
+
+        public ThumbnailAsyncTask(ImageView target, int viewSize,
+                                  LruCache<String, Bitmap> cache, int rotation) {
             this.target = target;
+            this.viewSize = viewSize;
+            this.cache = cache;
+            this.rotation = rotation;
         }
 
-        @Override
-        protected void onPreExecute() {
+        @Override protected void onPreExecute() {
             target.setTag(this);
         }
 
-        @Override
-        protected Bitmap doInBackground(File... params) {
+        @Override protected Bitmap doInBackground(File... params) {
             Bitmap result = null;
             File file = params[0];
             try {
                 FileInputStream fis = new FileInputStream(file.getAbsolutePath());
                 Bitmap imageBitmap = BitmapFactory.decodeStream(fis);
 
-                imageBitmap = Bitmap.createScaledBitmap(imageBitmap, viewSize, viewSize, false);
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                imageBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                byte[] imageData = baos.toByteArray();
-                result = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+                final int width = imageBitmap.getWidth();
+                final int height = imageBitmap.getHeight();
+                final float sx = viewSize / (float) width;
+                final float sy = viewSize / (float) height;
+                matrix.setScale(sx, sy);
+                matrix.postRotate(rotation);
+                result = Bitmap.createBitmap(imageBitmap, 0, 0, width, height, matrix, false);
             } catch (Exception e) {
                 Timber.e(e, "Error resizing image");
             }
@@ -128,8 +162,7 @@ public class GalleryAdapter extends BindableAdapter<File> {
             return result;
         }
 
-        @Override
-        protected void onPostExecute(Bitmap result) {
+        @Override protected void onPostExecute(Bitmap result) {
             if (target.getTag() == this) {
                 target.setImageBitmap(result);
                 target.setTag(null);

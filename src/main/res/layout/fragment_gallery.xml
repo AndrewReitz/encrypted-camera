@@ -15,10 +15,8 @@
   ~ limitations under the License.
   -->
 
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          android:name="com.andrewreitz.encryptedcamera.ui.fragment.GalleryFragment"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:id="@+id/gallery_content"
-          tools:layout="@layout/fragment_gallery"/>
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:numColumns="@integer/gallery_columns"
+         android:id="@+id/gallery"/>

@@ -29,6 +29,7 @@ import com.andrewreitz.encryptedcamera.ui.activity.GalleryActivity;
 import com.andrewreitz.encryptedcamera.ui.activity.SettingsActivity;
 import com.andrewreitz.encryptedcamera.ui.adapter.GalleryAdapter;
 import com.andrewreitz.encryptedcamera.ui.fragment.AppPreferenceFragment;
+import com.andrewreitz.encryptedcamera.ui.fragment.GalleryFragment;
 
 import java.io.File;
 import java.util.Arrays;
@@ -47,7 +48,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
                 CameraActivity.class,
                 AppPreferenceFragment.class,
                 SettingsActivity.class,
-                GalleryActivity.class
+                GalleryActivity.class,
+                GalleryFragment.class
         },
         addsTo = AndroidModule.class,
         library = true
@@ -75,7 +77,8 @@ public class ActivityModule {
     }
 
     @Provides
-    @Singleton GalleryAdapter provideGalleryAdapter(LruCache<String, Bitmap> cache, ExternalStorageManager externalStorageManager) {
+    @Singleton
+    GalleryAdapter provideGalleryAdapter(LruCache<String, Bitmap> cache, ExternalStorageManager externalStorageManager) {
         // Wouldn't be null since it would have crashed earlier
         //noinspection ConstantConditions
         List<File> files = Arrays.asList(externalStorageManager.getAppExternalDirectory().listFiles());

@@ -16,48 +16,19 @@
 
 package com.andrewreitz.encryptedcamera.ui.activity;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.app.ActionBar;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.ui.adapter.GalleryAdapter;
-import com.google.common.net.MediaType;
 
-import java.io.File;
-
-import javax.inject.Inject;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-
-public class GalleryActivity extends BaseActivity implements AdapterView.OnItemClickListener {
-
-    @Inject GalleryAdapter adapter;
-
-    @InjectView(R.id.gallery) GridView gallery;
-
+public class GalleryActivity extends BaseActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gallery);
-        ButterKnife.inject(this);
 
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        gallery.setAdapter(adapter);
-        gallery.setOnItemClickListener(this);
-    }
-
-    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // Open the files to other apps.  If other apps start bogarting thumbnails and not cleaning
-        // up properly might need to add full screen images
-        File file = adapter.getItem(position);
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.parse(file.getAbsolutePath()), MediaType.ANY_IMAGE_TYPE.toString());
-        startActivity(intent);
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }
