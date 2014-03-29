@@ -27,6 +27,7 @@ import android.widget.GridView;
 
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.ui.adapter.GalleryAdapter;
+import com.google.common.net.MediaType;
 
 import java.io.File;
 
@@ -61,7 +62,7 @@ public class GalleryFragment extends BaseFragment implements AdapterView.OnItemC
         // up properly might need to add full screen images
         File file = adapter.getItem(position);
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.parse(file.getAbsolutePath());
+        Uri uri = Uri.fromFile(file);
         intent.setDataAndType(uri, ANY_IMAGE_TYPE.toString());
         startActivity(intent);
     }

@@ -16,12 +16,10 @@
 
 package com.andrewreitz.encryptedcamera.ui.adapter;
 
-import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
@@ -30,11 +28,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.andrewreitz.encryptedcamera.R;
-import com.andrewreitz.encryptedcamera.cache.ThumbnailCache;
+import com.andrewreitz.encryptedcamera.image.ImageRotation;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,10 +40,6 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import timber.log.Timber;
-
-import static android.graphics.Bitmap.CompressFormat.PNG;
-import static android.media.ExifInterface.ORIENTATION_NORMAL;
-import static android.media.ExifInterface.TAG_ORIENTATION;
 
 public class GalleryAdapter extends BindableAdapter<File> {
     private final int viewSize;
@@ -94,19 +87,7 @@ public class GalleryAdapter extends BindableAdapter<File> {
 
         int rotation = 0;
         try {
-            ExifInterface exif = new ExifInterface(file.getAbsolutePath());
-            int orientation = exif.getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL);
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    rotation = 270;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    rotation = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    rotation = 90;
-                    break;
-            }
+            rotation = ImageRotation.getRotation(file);
         } catch (IOException e) {
             Timber.e(e, "Error using exif data");
         }
@@ -115,7 +96,6 @@ public class GalleryAdapter extends BindableAdapter<File> {
         // need to kick task to load manually
         final ThumbnailAsyncTask task = new ThumbnailAsyncTask(imageView, viewSize, cache, rotation);
         imageView.setImageBitmap(null);
-        imageView.setTag(task);
         task.execute(file);
     }
 
@@ -128,7 +108,7 @@ public class GalleryAdapter extends BindableAdapter<File> {
         private final int rotation;
         private final LruCache<String, Bitmap> cache;
 
-        public ThumbnailAsyncTask(ImageView target, int viewSize,
+        ThumbnailAsyncTask(ImageView target, int viewSize,
                                   LruCache<String, Bitmap> cache, int rotation) {
             this.target = target;
             this.viewSize = viewSize;

@@ -6,8 +6,14 @@ import android.os.Bundle;
 import com.andrewreitz.encryptedcamera.ui.activity.BaseActivity;
 
 import butterknife.ButterKnife;
+import icepick.Icepick;
 
 public abstract class BaseFragment extends Fragment {
+
+    @Override public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+    }
 
     @Override public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -20,5 +26,10 @@ public abstract class BaseFragment extends Fragment {
 
         // Release the views injected by butterknife
         ButterKnife.reset(this);
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Icepick.saveInstanceState(this, outState);
     }
 }
