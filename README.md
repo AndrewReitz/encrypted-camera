@@ -5,23 +5,19 @@
 This Application is a wrapper for your camera encrypting them as you take photos.
 Get it on the [Play Store](https://play.google.com/store/apps/details?id=com.andrewreitz.encryptedcamera)
 
-To build clone the repo and then
-    cp gradle.properties.dist gradle.properties
-
-## TODO
-
-* Speed up / make the gallery pretty
-* Add a warning when opening a file outside of the app
+## Contributing
+To build, clone the repo and then run
+    `cp gradle.properties.dist gradle.properties`
 
 ## License
 
     Copyright 2014 Andrew Reitz
 
     Licensed under the Apache License, Version 2.0 (the "License");
-	    you may not use this file except in compliance with the License.
-		    You may obtain a copy of the License at
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+      http://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,

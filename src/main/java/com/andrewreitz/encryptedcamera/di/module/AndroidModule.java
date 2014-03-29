@@ -170,6 +170,6 @@ public class AndroidModule {
 
         int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
         // TODO Play with this number to find the best size
-        return new ThumbnailCache(memoryClassBytes / 8);
+        return new ThumbnailCache(memoryClassBytes / 4);
     }
 }

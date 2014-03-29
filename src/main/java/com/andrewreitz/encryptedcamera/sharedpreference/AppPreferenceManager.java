@@ -39,6 +39,7 @@ public class AppPreferenceManager {
     private static final String PASSWORD_HASH = "password_hash";
     private static final String HAS_SEEN_FIRST_LAUNCH_FRAGMENT = "has_seen_first_launch_frag";
     private static final String IV = "iv";
+    private static final String HAS_SEEN_EXTERNAL_LAUNCH_WARNING = "external_launch";
 
     /** The required length of the IV for encrypting */
     private static final int IV_LENGTH = 16;
@@ -79,10 +80,6 @@ public class AppPreferenceManager {
         );
     }
 
-    public void setSalt(byte[] salt) {
-        sharedPreferenceService.saveString(SALT, Base64.encodeToString(salt, Base64.DEFAULT));
-    }
-
     public byte[] getSalt() {
         String salt = sharedPreferenceService.getString(SALT, null);
         if (salt == null) {
@@ -90,6 +87,10 @@ public class AppPreferenceManager {
         }
 
         return Base64.decode(salt, Base64.DEFAULT);
+    }
+
+    public void setSalt(byte[] salt) {
+        sharedPreferenceService.saveString(SALT, Base64.encodeToString(salt, Base64.DEFAULT));
     }
 
     /**
@@ -141,5 +142,13 @@ public class AppPreferenceManager {
             sharedPreferenceService.saveString(IV, iv);
         }
         return Base64.decode(iv, Base64.DEFAULT);
+    }
+
+    public void setHasSeenExternalLaunchWarning(boolean value) {
+        sharedPreferenceService.saveBoolean(HAS_SEEN_EXTERNAL_LAUNCH_WARNING, value);
+    }
+
+    public boolean hasSeenExternalLaunchWarning() {
+        return sharedPreferenceService.getBoolean(HAS_SEEN_EXTERNAL_LAUNCH_WARNING, false);
     }
 }
