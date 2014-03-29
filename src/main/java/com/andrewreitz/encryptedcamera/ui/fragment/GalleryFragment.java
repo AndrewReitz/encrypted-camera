@@ -27,9 +27,6 @@ import android.widget.GridView;
 
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.ui.adapter.GalleryAdapter;
-import com.google.common.net.MediaType;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
