@@ -79,4 +79,6 @@
     <string name="learn_more">Learn More</string>
     <string name="first_run_main_text">This app has two launchers, one for the settings and one for the camera. This is so you can quickly get to the camera when you need it.</string>
     <string name="welcome">Welcome</string>
+    <string name="warning">Warning!</string>
+    <string name="leaving_app_message">You are about to leave %s. Be careful which apps you share these photos with. They my save them in places you don\'t want!</string>
 </resources>

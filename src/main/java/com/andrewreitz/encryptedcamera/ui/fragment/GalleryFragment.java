@@ -16,6 +16,7 @@
 
 package com.andrewreitz.encryptedcamera.ui.fragment;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,8 +27,8 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import com.andrewreitz.encryptedcamera.R;
+import com.andrewreitz.encryptedcamera.sharedpreference.AppPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.adapter.GalleryAdapter;
-import com.google.common.net.MediaType;
 
 import java.io.File;
 
@@ -40,7 +41,9 @@ import static com.google.common.net.MediaType.ANY_IMAGE_TYPE;
 
 public class GalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
+    @Inject AppPreferenceManager preferenceManager;
     @Inject GalleryAdapter adapter;
+
     @InjectView(R.id.gallery) GridView gallery;
 
     @Override
@@ -58,6 +61,23 @@ public class GalleryFragment extends BaseFragment implements AdapterView.OnItemC
     }
 
     @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        if (!preferenceManager.hasSeenExternalLaunchWarning()) {
+            @SuppressWarnings("ConstantConditions")
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(getString(R.string.warning))
+                    .setMessage(String.format(
+                            getString(R.string.leaving_app_message), getString(R.string.app_name)
+                    ))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .create()
+                    .show();
+
+
+            preferenceManager.setHasSeenExternalLaunchWarning(true);
+            return;
+        }
+
         // Open the files to other apps.  If other apps start bogarting thumbnails and not cleaning
         // up properly might need to add full screen images
         File file = adapter.getItem(position);

@@ -9,10 +9,6 @@ Get it on the [Play Store](https://play.google.com/store/apps/details?id=com.and
 To build, clone the repo and then run
     `cp gradle.properties.dist gradle.properties`
 
-## TODO
-
-* Add a warning when opening a file outside of the app
-
 ## License
 
     Copyright 2014 Andrew Reitz
