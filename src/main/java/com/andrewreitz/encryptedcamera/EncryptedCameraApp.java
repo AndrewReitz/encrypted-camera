@@ -41,7 +41,6 @@ import java.util.List;
 import javax.crypto.SecretKey;
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import dagger.ObjectGraph;
 import timber.log.Timber;
 
