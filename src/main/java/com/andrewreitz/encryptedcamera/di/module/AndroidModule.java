@@ -51,125 +51,99 @@ import dagger.Provides;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@SuppressWarnings("UnusedDeclaration")
-@Module(
-        library = true,
-        includes = {
-                SharedPrefsModule.class,
-                EncryptionModule.class,
-                FileSystemModule.class
-        },
-        injects = {
-                EncryptedCameraApp.class,
-                EncryptionIntentService.class
-        }
-)
+@SuppressWarnings("UnusedDeclaration") @Module(
+    library = true,
+    includes = {
+        SharedPrefsModule.class, EncryptionModule.class, FileSystemModule.class
+    },
+    injects = {
+        EncryptedCameraApp.class, EncryptionIntentService.class
+    })
 public class AndroidModule {
 
-    private final EncryptedCameraApp application;
+  private final EncryptedCameraApp application;
 
-    public AndroidModule(EncryptedCameraApp application) {
-        this.application = checkNotNull(application);
-    }
+  public AndroidModule(EncryptedCameraApp application) {
+    this.application = checkNotNull(application);
+  }
 
-    /**
-     * Allow the application context to be injected but require that it be annotated with
-     * {@link com.andrewreitz.encryptedcamera.di.annotation.ForApplication
-     *
-     * @ForApplication} to explicitly differentiate it from an activity context.
-     */
-    @Provides
-    @Singleton
-    @ForApplication Context provideApplicationContext() {
-        return application;
-    }
+  /**
+   * Allow the application context to be injected but require that it be annotated with
+   * {@link com.andrewreitz.encryptedcamera.di.annotation.ForApplication
+   *
+   * @ForApplication} to explicitly differentiate it from an activity context.
+   */
+  @Provides @Singleton @ForApplication Context provideApplicationContext() {
+    return application;
+  }
 
-    @Provides
-    @Singleton NotificationManager provideNotificationManager() {
-        return (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
-    }
+  @Provides @Singleton NotificationManager provideNotificationManager() {
+    return (NotificationManager) application.getSystemService(Context.NOTIFICATION_SERVICE);
+  }
 
-    @Provides
-    @Singleton
-    @EncryptionNotification Notification provideEncryptionNotification() {
-        return new NotificationCompat.Builder(application)
-                .setProgress(0, 0, true)
-                .setContentTitle(application.getString(R.string.app_name))
-                .setContentText(application.getString(R.string.encrypting_your_photos))
-                .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
-                .build();
-    }
+  @Provides @Singleton @EncryptionNotification Notification provideEncryptionNotification() {
+    return new NotificationCompat.Builder(application).setProgress(0, 0, true) //
+        .setContentTitle(application.getString(R.string.app_name)) //
+        .setContentText(application.getString(R.string.encrypting_your_photos)) //
+        .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
+        .build();
+  }
 
-    @Provides
-    @Singleton
-    @EncryptionErrorNotification Notification provideEncryptionErrorNotification() {
-        Notification notification = new NotificationCompat.Builder(application)
-                .setContentTitle(application.getString(R.string.error_encrypting))
-                .setContentText(application.getString(R.string.error_encrypting_photo))
-                .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
-                .build();
+  @Provides @Singleton @EncryptionErrorNotification
+  Notification provideEncryptionErrorNotification() {
+    Notification notification = new NotificationCompat.Builder(application) //
+        .setContentTitle(application.getString(R.string.error_encrypting)) //
+        .setContentText(application.getString(R.string.error_encrypting_photo)) //
+        .setSmallIcon(R.drawable.ic_unlocked) //TODO New Icon
+        .setAutoCancel(true) //
+        .build();
 
-        notification.flags |= Notification.FLAG_NO_CLEAR;
+    notification.flags |= Notification.FLAG_NO_CLEAR;
 
-        return notification;
-    }
+    return notification;
+  }
 
-    @Provides
-    @Singleton
-    @UnlockNotification Notification provideUnlockNotification() {
-        Notification notification = new NotificationCompat.Builder(application)
-                .setContentTitle(application.getString(R.string.app_name))
-                .setContentText(application.getString(R.string.images_unencryped_message))
-                .setContentIntent(
-                        PendingIntent.getActivity(
-                                application,
-                                0,
-                                new Intent(
-                                        application,
-                                        SettingsActivity.class
-                                ),
-                                0
-                        )
-                )
-                .setSmallIcon(R.drawable.ic_unlocked)
-                .build();
+  @Provides @Singleton @UnlockNotification Notification provideUnlockNotification() {
+    Notification notification = new NotificationCompat.Builder(application) //
+        .setContentTitle(application.getString(R.string.app_name)) //
+        .setContentText(application.getString(R.string.images_unencryped_message)) //
+        .setContentIntent(PendingIntent.getActivity(application, 0,
+            new Intent(application, SettingsActivity.class), 0)) //
+        .setSmallIcon(R.drawable.ic_unlocked) //
+        .build();
 
-        notification.flags |= Notification.FLAG_NO_CLEAR;
+    notification.flags |= Notification.FLAG_NO_CLEAR;
 
-        return notification;
-    }
+    return notification;
+  }
 
-    @Provides
-    @Singleton SecureRandom provideSecureRandom() {
-        return new SecureRandom();
-    }
+  @Provides @Singleton SecureRandom provideSecureRandom() {
+    return new SecureRandom();
+  }
 
-    @Provides
-    @Singleton
-    @MediaFormat DateFormat provideMediaDateFormat() {
-        return new SimpleDateFormat(EncryptedCameraApp.MEDIA_OUTPUT_DATE_FORMAT);
-    }
+  @Provides @Singleton @MediaFormat DateFormat provideMediaDateFormat() {
+    return new SimpleDateFormat(EncryptedCameraApp.MEDIA_OUTPUT_DATE_FORMAT);
+  }
 
-    @Provides
-    @CameraIntent Intent provideCameraIntent() {
-        return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    }
+  @Provides @CameraIntent Intent provideCameraIntent() {
+    return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+  }
 
-    @Provides @Singleton Bus provideBus() {
-        return new Bus();
-    }
+  @Provides @Singleton Bus provideBus() {
+    return new Bus();
+  }
 
-    @Provides @Singleton ActivityManager provideActivityManager() {
-        return (ActivityManager) application.getSystemService(Context.ACTIVITY_SERVICE);
-    }
+  @Provides @Singleton ActivityManager provideActivityManager() {
+    return (ActivityManager) application.getSystemService(Context.ACTIVITY_SERVICE);
+  }
 
-    @Provides @Singleton LruCache<String, Bitmap> provideCache(ActivityManager am) {
-        // Keep the cache as a singleton so as along as the application is running we are
-        // using the cache hopefully keeping the speed of the application up
-        // Also allows us to hook into the application class easily to handle onLowMemory events
+  @Provides @Singleton LruCache<String, Bitmap> provideCache(ActivityManager am) {
+    // Keep the cache as a singleton so as along as the application is running we are
+    // using the cache hopefully keeping the speed of the application up
+    // Also allows us to hook into the application class easily to handle onLowMemory events
 
-        int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
-        // TODO Play with this number to find the best size
-        return new ThumbnailCache(memoryClassBytes / 4);
-    }
+    int memoryClassBytes = am.getMemoryClass() * 1024 * 1024;
+    // TODO Play with this number to find the best size
+    return new ThumbnailCache(memoryClassBytes / 4);
+  }
 }
