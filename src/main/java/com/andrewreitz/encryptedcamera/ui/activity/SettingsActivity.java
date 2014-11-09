@@ -18,17 +18,14 @@ package com.andrewreitz.encryptedcamera.ui.activity;
 
 import android.os.Bundle;
 import android.view.Window;
-
 import com.andrewreitz.encryptedcamera.R;
-import com.crashlytics.android.Crashlytics;
 
 public class SettingsActivity extends BaseActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Crashlytics.start(this);
-        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.activity_settings);
-    }
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+    setContentView(R.layout.activity_settings);
+  }
 }

@@ -27,6 +27,7 @@ import com.andrewreitz.encryptedcamera.encryption.KeyManager;
 import com.andrewreitz.encryptedcamera.logging.CrashlyticsTree;
 import com.andrewreitz.encryptedcamera.sharedpreference.AppPreferenceManager;
 import com.andrewreitz.encryptedcamera.ui.dialog.ErrorDialog;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
@@ -66,6 +67,7 @@ public class EncryptedCameraApp extends Application {
     if (BuildConfig.DEBUG) {
       Timber.plant(new Timber.DebugTree());
     } else {
+      Crashlytics.start(this);
       Timber.plant(new CrashlyticsTree());
     }
 
@@ -92,7 +94,6 @@ public class EncryptedCameraApp extends Application {
       // entire thumbnail cache
       Timber.i("evicting entire thumbnail cache");
       cache.evictAll();
-
     } else if (level >= Application.TRIM_MEMORY_BACKGROUND) { // 40
       // Entering list of cached background apps; evict oldest half of our
       // thumbnail cache
@@ -130,7 +131,8 @@ public class EncryptedCameraApp extends Application {
         preferenceManager.setGeneratedKey(true);
       } catch (NoSuchAlgorithmException | KeyStoreException | CertificateException | IOException e) {
         Timber.e(e, "Error saving key with out a password set");
-        ErrorDialog.newInstance(getString(R.string.encryption_error), getString(R.string.error_saving_encryption_key));
+        ErrorDialog.newInstance(getString(R.string.encryption_error),
+            getString(R.string.error_saving_encryption_key));
       }
     }
   }
