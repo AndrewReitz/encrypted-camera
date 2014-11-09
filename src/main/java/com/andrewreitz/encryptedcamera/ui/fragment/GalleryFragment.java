@@ -41,49 +41,47 @@ import static com.google.common.net.MediaType.ANY_IMAGE_TYPE;
 
 public class GalleryFragment extends BaseFragment implements AdapterView.OnItemClickListener {
 
-    @Inject AppPreferenceManager preferenceManager;
-    @Inject GalleryAdapter adapter;
+  @Inject AppPreferenceManager preferenceManager;
+  @Inject GalleryAdapter adapter;
 
-    @InjectView(R.id.gallery) GridView gallery;
+  @InjectView(R.id.gallery) GridView gallery;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_gallery, container, false);
-        ButterKnife.inject(this, view);
-        return view;
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+      Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.fragment_gallery, container, false);
+    ButterKnife.inject(this, view);
+    return view;
+  }
+
+  @Override public void onStart() {
+    super.onStart();
+    gallery.setAdapter(adapter);
+    gallery.setOnItemClickListener(this);
+  }
+
+  @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+    if (!preferenceManager.hasSeenExternalLaunchWarning()) {
+      @SuppressWarnings("ConstantConditions") AlertDialog.Builder builder =
+          new AlertDialog.Builder(getActivity());
+      builder.setTitle(getString(R.string.warning))
+          .setMessage(
+              String.format(getString(R.string.leaving_app_message), getString(R.string.app_name)))
+          .setPositiveButton(android.R.string.ok, null)
+          .create()
+          .show();
+
+      preferenceManager.setHasSeenExternalLaunchWarning(true);
+      return;
     }
 
-    @Override public void onStart() {
-        super.onStart();
-        gallery.setAdapter(adapter);
-        gallery.setOnItemClickListener(this);
-    }
-
-    @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-        if (!preferenceManager.hasSeenExternalLaunchWarning()) {
-            @SuppressWarnings("ConstantConditions")
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(getString(R.string.warning))
-                    .setMessage(String.format(
-                            getString(R.string.leaving_app_message), getString(R.string.app_name)
-                    ))
-                    .setPositiveButton(android.R.string.ok, null)
-                    .create()
-                    .show();
-
-
-            preferenceManager.setHasSeenExternalLaunchWarning(true);
-            return;
-        }
-
-        // Open the files to other apps.  If other apps start bogarting thumbnails and not cleaning
-        // up properly might need to add full screen images
-        File file = adapter.getItem(position);
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.fromFile(file);
-        intent.setDataAndType(uri, ANY_IMAGE_TYPE.toString());
-        startActivity(intent);
-    }
+    // Open the files to other apps.  If other apps start bogarting thumbnails and not cleaning
+    // up properly might need to add full screen images
+    File file = adapter.getItem(position);
+    Intent intent = new Intent(Intent.ACTION_VIEW);
+    Uri uri = Uri.fromFile(file);
+    intent.setDataAndType(uri, ANY_IMAGE_TYPE.toString());
+    startActivity(intent);
+  }
 }
