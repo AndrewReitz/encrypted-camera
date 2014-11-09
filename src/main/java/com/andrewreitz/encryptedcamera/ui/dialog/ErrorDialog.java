@@ -22,9 +22,8 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Error Dialog for displaying error messages easily in the application

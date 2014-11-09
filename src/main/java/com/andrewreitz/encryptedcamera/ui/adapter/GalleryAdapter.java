@@ -21,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +30,6 @@ import android.widget.ImageView;
 
 import com.andrewreitz.encryptedcamera.R;
 import com.andrewreitz.encryptedcamera.image.ImageRotation;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +45,7 @@ public class GalleryAdapter extends BindableAdapter<File> {
     private final LruCache<String, Bitmap> cache;
     private List<File> images = Collections.emptyList();
 
-    public GalleryAdapter(@NotNull Context context, @NotNull List<File> images, @NotNull LruCache<String, Bitmap> cache) {
+    public GalleryAdapter(@NonNull Context context, @NonNull List<File> images, @NonNull LruCache<String, Bitmap> cache) {
         super(context);
         this.viewSize = context.getResources().getDimensionPixelSize(R.dimen.gridview_image);
         this.images = images;

@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,15 +28,13 @@ import android.widget.TextView;
 
 import com.andrewreitz.encryptedcamera.R;
 
-import org.jetbrains.annotations.NotNull;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
 public class AboutActivity extends Activity {
 
-    public static void navigateTo(@NotNull Context context) {
+    public static void navigateTo(@NonNull Context context) {
         Intent intent = new Intent(context, AboutActivity.class);
         context.startActivity(intent);
     }

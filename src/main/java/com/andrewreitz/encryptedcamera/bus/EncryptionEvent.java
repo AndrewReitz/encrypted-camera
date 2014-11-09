@@ -16,20 +16,20 @@
 
 package com.andrewreitz.encryptedcamera.bus;
 
-import org.jetbrains.annotations.NotNull;
+import android.support.annotation.NonNull;
 
 /** Class to post events about whether or not the application is currently decrypting */
 public class EncryptionEvent {
 
-    public final EncryptionState state;
+  public final EncryptionState state;
 
-    public EncryptionEvent(@NotNull EncryptionState state) {
-        this.state = state;
-    }
+  public EncryptionEvent(@NonNull EncryptionState state) {
+    this.state = state;
+  }
 
-    public enum EncryptionState {
-        ENCRYPTING,
-        DECRYPTING,
-        NONE
-    }
+  public enum EncryptionState {
+    ENCRYPTING,
+    DECRYPTING,
+    NONE
+  }
 }
